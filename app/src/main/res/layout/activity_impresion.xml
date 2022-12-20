@@ -1,0 +1,211 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="top"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context=".ImpresionActivity">
+
+    <Button
+        android:id="@+id/GuardarInfo"
+        style="@android:style/Widget.Material.Button.Colored"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:onClick="onClickAceptar"
+        android:text="Guardar"
+        android:theme="@style/AppTheme" />
+
+    <TextView
+        android:id="@+id/ActualizacionLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button4"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="20dp"
+        android:text="TextView"
+        android:textColor="@color/orange"
+        android:textSize="18sp"
+        android:visibility="gone" />
+
+    <ProgressBar
+        android:id="@+id/ActualizacionProgress"
+        style="@style/ProgressBarStyle"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_above="@+id/button4"
+        android:layout_centerHorizontal="true"
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/button3"
+        style="@android:style/Widget.Material.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/GuardarInfo"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentStart="true"
+        android:onClick="onSettingPrinter"
+        android:text="Configurar Impresora" />
+
+    <Button
+        android:id="@+id/button4"
+        style="@android:style/Widget.Material.Button.Colored"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/button3"
+        android:onClick="onPrintTest"
+        android:text="Impresion de prueba"
+        android:visibility="invisible" />
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/GuardarInfo"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/TituloImpresora"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="@string/impreconfigtitulo"
+                android:textColor="@color/orange"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="20dp"
+                android:background="#f3eae2"
+                android:elevation="22dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/EncabezadoLabel"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="15dp"
+                    android:text="@string/encabeticket"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/black"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/Renglon1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:maxLength="45"
+                    android:maxLines="1" />
+
+                <requestFocus android:layout_width="match_parent" />
+
+                <EditText
+                    android:id="@+id/Renglon2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:maxLength="45">
+
+                </EditText>
+
+                <EditText
+                    android:id="@+id/Reglon3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:ems="10"
+                    android:maxLength="45" />
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/BusquedamacAdress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:onClick="onClicBuscar"
+                android:text="@string/buscaimpmac"
+                android:visibility="gone" />
+
+            <TextView
+                android:id="@+id/MacAdressLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/impresormac"
+                android:visibility="gone" />
+
+            <EditText
+                android:id="@+id/macAdress"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="false"
+                android:ems="10"
+                android:enabled="false"
+                android:focusable="false"
+                android:focusableInTouchMode="false"
+                android:visibility="gone" />
+
+            <Switch
+                android:id="@+id/MostrarImpresionBut"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:text="Impresion de venta" />
+
+            <Switch
+                android:id="@+id/impresionCorte"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:checked="true"
+                android:text="Impresion de corte" />
+
+            <Switch
+                android:id="@+id/impresionDuplicado"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:checked="false"
+                android:text="Impresion con duplicado" />
+
+            <CheckBox
+                android:id="@+id/ventacheck"
+                style="@android:style/Widget.Material.CompoundButton.CheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginRight="15dp"
+                android:layoutDirection="rtl"
+                android:text="Ventas" />
+
+            <CheckBox
+                android:id="@+id/inventariocheck"
+                style="@android:style/Widget.Material.Light.CompoundButton.CheckBox"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="right"
+                android:layout_marginRight="15dp"
+                android:foregroundGravity="right"
+                android:gravity="right|end"
+                android:layoutDirection="rtl"
+                android:text="Inventario" />
+
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

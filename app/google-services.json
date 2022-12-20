@@ -1,0 +1,42 @@
+{
+  "project_info": {
+    "project_number": "1008203805511",
+    "firebase_url": "https://ventaenruta-144017.firebaseio.com",
+    "project_id": "ventaenruta-144017",
+    "storage_bucket": "ventaenruta-144017.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1008203805511:android:a7edf371b6a4b72d",
+        "android_client_info": {
+          "package_name": "dinamica.ventaenruta"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1008203805511-ptjl3g8bsqhik7pcb1hm3i7p55rh5k0a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCgYpXdDw1ztsoRa1P3o6ZUh3uCEi9-Ej0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

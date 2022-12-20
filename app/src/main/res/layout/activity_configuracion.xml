@@ -1,0 +1,258 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#ffffff"
+    android:gravity="center"
+    android:rotation="0"
+    tools:context=".ConfiguracionActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/botonproductos"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="1dp"
+        android:orientation="vertical"
+        android:scrollbars="vertical">
+
+        <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+            android:id="@+id/LoadingActualizacion"
+            style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="20dp"
+            android:layout_centerHorizontal="true"
+            android:elevation="20dp"
+            android:indeterminate="true"
+            app:mpb_indeterminateTint="@color/orange"
+            app:mpb_progressStyle="horizontal" />
+
+        <TextView
+            android:id="@+id/MensajeActualizacion"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/LoadingActualizacion"
+            android:layout_centerHorizontal="true"
+            android:elevation="20dp"
+            android:text="@string/ActualizaMensaje"
+            android:textSize="18sp" />
+
+        <TextView
+            android:id="@+id/numInterior"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/ip_FTP"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <EditText
+            android:id="@+id/Ftp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="http://ip/negocio/"
+            android:inputType="text"
+            android:text="@string/EnBlanco" />
+
+        <ScrollView
+            android:id="@+id/scrollView1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+
+                <Switch
+                    android:id="@+id/checkBox1"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="15dp"
+                    android:text="@string/EntradaSalida" />
+
+
+                <Switch
+                    android:id="@+id/checkBox2"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/Claveproducto" />
+
+                <Switch
+                    android:id="@+id/checkBox3"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/Existencia" />
+
+                <Switch
+                    android:id="@+id/checkBox4"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginRight="15dp"
+                    android:layout_marginTop="10dp"
+                    android:text="Modificar precios" />
+                <Switch
+                    android:id="@+id/checkBox6"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="15dp"
+                    android:text="Seleccionar precios" />
+
+                <Switch
+                    android:id="@+id/checkBox7"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="15dp"
+                    android:text="Editar ventas" />
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="?android:attr/scrollbarSize"
+                    android:layout_marginStart="@dimen/cardview_default_radius"
+                    android:layout_marginLeft="@dimen/cardview_default_radius"
+                    android:layout_marginTop="@dimen/cardview_default_radius"
+                    android:layout_marginEnd="@dimen/cardview_default_radius"
+                    android:layout_marginRight="@dimen/cardview_default_radius"
+                    android:layout_marginBottom="@dimen/cardview_default_radius"
+                    android:gravity="center|center_vertical"
+                    android:orientation="horizontal"
+                    android:padding="@dimen/fab_plus_icon_stroke"
+                    android:paddingStart="@dimen/fab_labels_margin"
+                    android:paddingLeft="@dimen/fab_labels_margin"
+                    android:paddingEnd="@dimen/fab_labels_margin"
+                    android:paddingRight="@dimen/fab_labels_margin">
+
+                    <TextView
+                        android:id="@+id/tiempoVentas"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal|center_vertical"
+                        android:layout_weight="3"
+                        android:text="Tiempo minimo limpiar las ventas"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1" />
+
+                    <EditText
+                        android:id="@+id/tiempoLimpiarVentas"
+                        style="@android:style/Widget.Material.EditText"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:hint="0 min"
+                        android:inputType="number"
+                        android:text="@string/EnBlanco"
+                        android:textAlignment="viewEnd"
+                        android:textSize="14sp" />
+                </LinearLayout>
+
+                <Switch
+                    android:id="@+id/checkBox5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="15dp"
+                    android:text="Mostrar comentario en venta" />
+
+
+
+
+                <TextView
+                    android:id="@+id/etiquetalimite"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:gravity="center_horizontal"
+                    android:text="@string/Limite"
+                    android:textAlignment="center"
+                    android:textColor="@android:color/black"
+                    android:textSize="14sp" />
+
+                <com.shawnlin.numberpicker.NumberPicker
+                    android:id="@+id/number_picker"
+                    android:layout_width="match_parent"
+                    android:layout_height="30dp"
+                    android:layout_centerInParent="true"
+                    app:np_max="100"
+                    app:np_min="0"
+                    app:np_orientation="horizontal"
+                    app:np_selectedTextColor="@color/orange"
+                    app:np_textColor="@color/accent_material_light"
+                    app:np_textSize="12dp"
+                    app:np_value="0" />
+
+                <Button
+                    android:id="@+id/actualizacion"
+                    style="@style/Widget.AppCompat.Button.Colored"
+                    android:theme="@style/AppTheme"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignTop="@+id/linearLayout1"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="10dp"
+                    android:onClick="onClickActualizar"
+                    android:text="@string/Actualizacion" />
+
+                <LinearLayout
+                    android:id="@+id/linearLayout1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_alignParentBottom="false"
+                    android:foregroundGravity="bottom"
+                    android:gravity="bottom|end">
+
+                    <Button
+                        android:id="@+id/Button01"
+                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:theme="@style/AppTheme"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="fill"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:onClick="onClickCancelar"
+                        android:text="@string/boton_Cancelar" />
+
+                    <Button
+                        android:id="@+id/BuscarProducto"
+                        style="@style/Widget.AppCompat.Button.Colored"
+                        android:theme="@style/AppTheme"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="fill"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginRight="10dp"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical|center_horizontal"
+                        android:onClick="onClickAceptar"
+                        android:text="@string/boton_Aceptar" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+
+    </LinearLayout>
+
+</RelativeLayout>

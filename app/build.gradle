@@ -1,0 +1,56 @@
+apply plugin: 'com.android.application'
+android {
+    compileSdkVersion 33
+    useLibrary 'org.apache.http.legacy'
+    defaultConfig {
+        applicationId "dinamica.ventaenruta"
+        //applicationId "dinamica.registroventa"
+        minSdkVersion 28
+        targetSdkVersion 33
+        multiDexEnabled true
+        versionCode 577
+        versionName "5.7.7"
+    }
+    packagingOptions {
+        exclude 'AndroidManifest.xml'
+        exclude 'META-INF/DEPENDENCIES'
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.txt'
+        }
+    }
+    lint {
+        checkReleaseBuilds false
+    }
+    namespace 'com.example.registroventa'
+}
+
+dependencies {
+
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.4'
+//    implementation 'com.google.firebase:firebase-crashlytics-buildtools:2.9.2'
+//    implementation 'com.google.firebase:firebase-crashlytics:18.3.2'
+//    implementation 'com.google.firebase:firebase-core:21.1.1'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
+    implementation 'androidx.appcompat:appcompat:1.5.1'
+    implementation 'com.google.android.material:material:1.7.0'
+    implementation 'org.apache.httpcomponents:httpcore:4.4.13'
+    implementation 'org.apache.httpcomponents:httpclient:4.5.13'
+
+    implementation 'com.google.code.gson:gson:2.10'
+    implementation 'me.zhanghai.android.materialprogressbar:library:1.6.1'
+
+    implementation 'com.getbase:floatingactionbutton:1.10.1'
+    implementation 'io.github.ShawnLin013:number-picker:2.4.13'
+
+    implementation files('libs/commons-io-2.2.jar')
+    implementation files('libs/commons-net-3.1.jar')
+    implementation files('libs/opencsv-2.2.jar')
+    implementation files('libs/snmp6_1.jar')
+    implementation files('libs/ZSDK_ANDROID_API.jar')
+    implementation files('libs/ZXingAndroid.jar')
+}
+apply plugin: 'com.google.gms.google-services'

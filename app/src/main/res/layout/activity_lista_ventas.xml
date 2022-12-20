@@ -1,0 +1,146 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="#ffffff"
+    tools:context=".ListaVentasActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/agregarVenta"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dp"
+            android:layout_marginTop="5dp"
+            android:layout_marginRight="15dp"
+            android:layout_marginBottom="10dp"
+            android:layout_weight="1"
+            android:height="60dp"
+            android:minHeight="60dp"
+            android:onClick="agregarVentaOnClick"
+            android:text="NUEVA VENTA"
+            android:textSize="22sp"
+            android:textStyle="bold"
+            android:theme="@style/AppTheme" />
+
+        <ListView
+            android:id="@+id/listaVentas"
+            style="@style/spinnerItemStyle"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="25"
+            android:background="@android:color/white"
+            android:footerDividersEnabled="false"
+            android:theme="@style/AppBaseTheme"
+            tools:listheader="@android:layout/simple_spinner_item"
+            tools:listitem="@android:layout/simple_list_item_1">
+
+        </ListView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/imprimirCorte"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_weight="1"
+                android:height="50dp"
+                android:focusableInTouchMode="true"
+                android:minHeight="50dp"
+                android:onClick="imprimirInventarios"
+                android:text="INVENTARIO"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:theme="@style/AppTheme" />
+
+            <Button
+                android:id="@+id/imprimirCorte2"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_weight="1"
+                android:height="50dp"
+                android:focusableInTouchMode="true"
+                android:minHeight="50dp"
+                android:onClick="imprimirCortes"
+                android:text="CORTE"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:theme="@style/AppTheme" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/imprimirAbonos"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="15dp"
+                android:layout_marginRight="15dp"
+                android:layout_weight="1"
+                android:height="50dp"
+                android:focusableInTouchMode="true"
+                android:minHeight="50dp"
+                android:onClick="imprimirAbonos"
+                android:text="CORTE ABONOS"
+                android:textSize="22sp"
+                android:textStyle="bold"
+                android:theme="@style/AppTheme" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_weight="1"
+            android:orientation="horizontal">
+
+            <TextView
+                android:id="@+id/VersionC"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="7dp"
+                android:layout_weight="1"
+                android:text="Large Text"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/orange"
+                android:textSize="18sp"
+                tools:ignore="HardcodedText" />
+
+            <TextView
+                android:id="@+id/numInterior"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="7dp"
+                android:layout_weight="1"
+                android:text="Large Text"
+                android:textAlignment="textEnd"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@color/orange"
+                tools:ignore="HardcodedText" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

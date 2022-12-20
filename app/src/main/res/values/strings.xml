@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">Venta en Ruta 5.9.0</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="title_activity_lista_ventas">ListaVentasActivity</string>
+    <string name="title_activity_venta">VentaActivity</string>
+    <string name="title_activity_inicio">InicioActivity</string>
+    <string name="title_config_activity">Configuracion</string>
+    <string name="ip_FTP">FTP de tu Negocio</string>
+    <string name="botones_IO">Mostrar botones Llegada/Salida de Venta</string>
+    <string name="title_activity_configuracion">Configuracion</string>
+    <string name="boton_Aceptar">Aceptar</string>
+    <string name="boton_Cancelar">Cancelar</string>
+    <string name="Busqueda">Busqueda</string>
+    <string name="Blanco"></string>
+    <string name="EnBlanco"></string>
+    <string name="Claveproducto">Mostrar la clave del producto</string>
+    <string name="Existencia">Mostrar existencias de productos</string>
+    <string name="EntradaSalida">"Mostrar botones de entrada y salida "</string>
+    <string name="ExistenciaLabel">En existencia</string>
+    <string name="Actualizacion">Buscar actualizaciones</string>
+    <string name="vendedor">Vendedor</string>
+    <string name="cliente">Cliente</string>
+    <string name="fecha">Fecha:  </string>
+    <string name="codigo">Leer Código</string>
+    <string name="total">Total de la Venta:</string>
+    <string name="precio_total">$ 0.00</string>
+    <string name="registro_ventas">Registro de nuevas ventas</string>
+    <string name="producto">Producto</string>
+    <string name="cantidad">Cantidad</string>
+    <string name="precio">Precio</string>
+    <string name="textview">TextView</string>
+    <string name="imageViewDescription"> </string>
+    <string name="ActualizaMensaje">Buscando actualizaciones...</string>
+    <string name="Impresora">TICKET A IMPRIMIR</string>
+    <string name="impreconfigtitulo">Configurar Impresion</string>
+    <string name="encabeticket">Encabezado de tickets</string>
+    <string name="impresormac">Impresora</string>
+    <string name="buscaimpmac">Buscar Impresora</string>
+    <string name="guardaimpresor">Guardar configuracion</string>
+    <string name="MostrarImpresionBoton">Impresion en venta</string>
+    <string name="EjemplodeFTP">Ej.: http://IP/pruebas/</string>
+    <string name="labelclave">Clave</string>
+    <string name="labelexisten">Existencia</string>
+    <string name="titulovisual">Datos del cliente</string>
+    <string name="Nombre">Nombre</string>
+    <string name="callecliente">Calle</string>
+    <string name="Limite">Lineas por archivo (0 = sin limite)</string>
+    <string name="LinkPage"><a href="http://www.puntozero.mx/">www.puntozero.mx</a></string>
+    <string name="todo">TODO</string>
+    <string name="NombreClave">Nombre o clave del cliente</string>
+    <string name="title_activity_floating">FloatingActivity</string>
+    <string name="ingresar">Ingresar</string>
+    <string name="actualizar_nbase_de_datos">Actualizar Base de datos</string>
+</resources>

@@ -1,0 +1,61 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!--
+        Base application theme, dependent on API level. This theme is replaced
+        by AppBaseTheme from res/values-vXX/styles.xml on newer devices.
+    -->
+    <style name="AppBaseTheme" parent="android:Theme.Material.Light">
+
+        <!--
+            Theme customizations available in newer API levels can go in
+            res/values-vXX/styles.xml, while customizations related to
+            backward-compatibility can go here.
+        -->
+    </style>
+
+    <!-- Application theme. -->
+    <style name="AppTheme" parent="android:Theme.Material.Light">
+        <!-- All customizations that are NOT specific to a particular API-level can go here. -->
+        <!-- For the resting Spinner style -->
+        <item name="colorPrimary">@color/orange</item>
+        <item name="colorPrimaryDark">@color/primary_material_light</item>
+
+        <item name="android:colorAccent">@color/orange</item>
+        <item name="android:spinnerItemStyle">
+            @style/spinnerItemStyle
+        </item>
+
+        <!-- For each individual Spinner list item once clicked on -->
+        <item name="android:spinnerDropDownItemStyle">
+            @style/spinnerDropDownItemStyle
+        </item>
+        <item name="android:colorPrimary">@color/primary_material_light</item>
+
+    </style>
+    <style name="AppTheme.FullScreen" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+    <style name="ProgressHorizontal" parent="AppTheme">
+        <item name="android:colorAccent">@color/orange</item>
+        <item name="android:progressBackgroundTint">@color/darkgrey</item>
+    </style>
+    <style name="ProgressBarStyle" parent="android:Widget.Material.Light.ProgressBar.Horizontal">
+        <item name="android:colorAccent">@color/orange</item>
+        <item name="android:indeterminateOnly">true</item>
+    </style>
+    <style name="spinnerItemStyle">
+        <item name="android:padding">10dp</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:typeface">monospace</item>
+        <item name="android:textColor">#323232</item>
+        <item name="android:background">#555555</item>
+    </style>
+
+    <style name="spinnerDropDownItemStyle">
+        <item name="android:padding">20dp</item>
+        <item name="android:textSize">30sp</item>
+        <item name="android:textColor">#323232</item>
+        <item name="android:background">#555555</item>
+    </style>
+</resources>

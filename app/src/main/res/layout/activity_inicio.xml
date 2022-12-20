@@ -1,0 +1,134 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#ffffff"
+    android:gravity="center"
+    android:rotation="0"
+    tools:context=".InicioActivity">
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="130dp"
+        android:layout_below="@+id/Vendedores"
+        android:layout_centerHorizontal="true"
+        android:layout_marginLeft="15dp"
+        android:layout_marginRight="15dp"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/acepta"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/ingresar"
+            android:textSize="18sp"
+            android:theme="@style/AppTheme" />
+
+        <Button
+            android:id="@+id/cargar"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="@string/actualizar_nbase_de_datos"
+            android:textSize="18sp"
+            android:theme="@style/AppTheme" />
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/LinkPuntoZero"
+        android:layout_width="250dp"
+        android:layout_height="30dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/linearLayout"
+        android:layout_gravity="right"
+        android:autoLink="all|web"
+        android:clickable="true"
+        android:focusable="true"
+        android:gravity="center_vertical|center_horizontal"
+        android:linksClickable="true"
+        android:text="@string/LinkPage"
+        android:textSize="18sp"
+        android:theme="@style/AppTheme" />
+
+    <TextView
+        android:id="@+id/leyendaIngresar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ProgressMensaje"
+        android:layout_centerHorizontal="true"
+        android:layout_centerInParent="false"
+        android:layout_marginBottom="-3dp"
+        android:text="@string/vendedor"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textColor="@color/orange" />
+
+    <Spinner
+        android:id="@+id/Vendedores"
+        style="@android:style/Widget.Material.Light.Spinner"
+        android:layout_width="match_parent"
+        android:layout_height="35dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/leyendaIngresar"
+        android:layout_marginTop="5dp"
+        android:theme="@style/AppTheme" />
+
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:id="@+id/Cargandoinfo"
+        style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_alignBottom="@+id/linearLayout1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-5dp"
+        android:indeterminate="true"
+        android:visibility="gone"
+        app:mpb_indeterminateTint="@color/orange"
+        app:mpb_progressStyle="horizontal" />
+
+    <TextView
+        android:id="@+id/ProgressMensaje"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="15dp"
+        android:gravity="center_horizontal"
+        android:text="@string/EnBlanco"
+        android:textColor="@color/orange"
+        android:textSize="16sp"
+        android:visibility="gone" />
+    <Button
+        android:id="@+id/button5"
+        android:layout_width="150dp"
+        android:layout_height="300dp"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentStart="false"
+        android:layout_alignTop="@+id/imageView1"
+        android:layout_marginBottom="50dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="90dp"
+        android:background="@android:color/transparent"
+        android:foregroundGravity="center"
+        android:onClick="onClickConfigHide" />
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:adjustViewBounds="true"
+        android:contentDescription="TODO"
+        android:scaleType="fitXY"
+        android:src="@drawable/encabezado2" />
+
+</RelativeLayout>

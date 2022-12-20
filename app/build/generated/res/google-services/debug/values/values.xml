@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="default_web_client_id" translatable="false">1008203805511-ptjl3g8bsqhik7pcb1hm3i7p55rh5k0a.apps.googleusercontent.com</string>
+    <string name="firebase_database_url" translatable="false">https://ventaenruta-144017.firebaseio.com</string>
+    <string name="gcm_defaultSenderId" translatable="false">1008203805511</string>
+    <string name="google_api_key" translatable="false">AIzaSyCgYpXdDw1ztsoRa1P3o6ZUh3uCEi9-Ej0</string>
+    <string name="google_app_id" translatable="false">1:1008203805511:android:a7edf371b6a4b72d</string>
+    <string name="google_crash_reporting_api_key" translatable="false">AIzaSyCgYpXdDw1ztsoRa1P3o6ZUh3uCEi9-Ej0</string>
+    <string name="google_storage_bucket" translatable="false">ventaenruta-144017.appspot.com</string>
+    <string name="project_id" translatable="false">ventaenruta-144017</string>
+</resources>

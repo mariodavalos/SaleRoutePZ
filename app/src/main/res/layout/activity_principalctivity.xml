@@ -1,0 +1,125 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_gravity="end"
+    android:background="#ffffff"
+    android:gravity="bottom|start"
+    tools:context=".Principalctivity">
+
+    <ImageView
+        android:id="@+id/imageView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_gravity="bottom"
+        android:adjustViewBounds="true"
+        android:scaleType="fitXY"
+        android:src="@drawable/encabezado2" />
+
+    <Button
+        android:id="@+id/button5"
+        android:layout_width="150dp"
+        android:layout_height="300dp"
+        android:layout_alignParentBottom="false"
+        android:layout_alignParentStart="false"
+        android:layout_alignTop="@+id/imageView1"
+        android:layout_marginBottom="50dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="90dp"
+        android:background="@android:color/transparent"
+        android:foregroundGravity="center"
+        android:onClick="onClickConfigHide" />
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_above="@+id/imageView1"
+        android:elevation="20dp">
+
+        <LinearLayout
+            android:id="@+id/layout"
+            android:layout_width="match_parent"
+            android:layout_height="266dp"
+            android:layout_above="@+id/imageView1"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentRight="false"
+            android:layout_alignParentTop="true"
+            android:layout_gravity="center"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:elevation="20dp"
+            android:foregroundGravity="center"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageButton
+                android:id="@+id/acepta"
+                style="#00000000"
+                android:layout_width="fill_parent"
+                android:layout_height="100dp"
+                android:layout_weight="1"
+                android:background="#00000000"
+                android:contentDescription="@string/imageViewDescription"
+                android:onClick="cargarInformacionOnClick"
+                android:scaleType="fitCenter"
+                android:src="@drawable/boton2"
+                android:visibility="gone" />
+
+            <Button
+                android:id="@+id/ImageButton02"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:text="Ventas"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:theme="@style/AppTheme" />
+
+            <Button
+                android:id="@+id/Borrar"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:text="limpiar ventas "
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:theme="@style/AppTheme" />
+
+            <Button
+                android:id="@+id/ImageButton01"
+                style="@style/Widget.AppCompat.Button.Colored"
+                android:layout_width="match_parent"
+                android:layout_height="60dp"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="10dp"
+                android:layout_marginTop="10dp"
+                android:layout_weight="1"
+                android:text="Subir ventas"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:theme="@style/AppTheme" />
+
+        </LinearLayout>
+    </FrameLayout>
+
+    <me.zhanghai.android.materialprogressbar.MaterialProgressBar
+        android:id="@+id/avance"
+        style="@style/Widget.MaterialProgressBar.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="20dp"
+        android:layout_alignBottom="@+id/linearLayout1"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="-5dp"
+        android:indeterminate="true"
+        app:mpb_indeterminateTint="@color/orange"
+        app:mpb_progressStyle="horizontal" />
+
+</RelativeLayout>

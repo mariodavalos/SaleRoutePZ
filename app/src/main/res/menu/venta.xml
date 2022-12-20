@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/modificarVenta"
+        android:orderInCategory="100"
+        android:title="Modificar Venta" />
+
+    <item
+        android:id="@+id/eliminarVenta"
+        android:orderInCategory="100"
+        android:title="Eliminar Venta" />
+
+</menu>

@@ -1,0 +1,329 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <ScrollView
+        android:id="@+id/scrollView1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/TituloVisualizacion">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_below="@+id/TituloVisualizacion">
+
+                <TextView
+                    android:id="@+id/Nombrecliente"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:text="@string/Nombre"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/Nombretext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/Nombrecliente"
+                    android:clickable="false"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:longClickable="false"
+                    android:selectAllOnFocus="false"
+                    android:textColor="#FFFFFF" />
+
+                <TextView
+                    android:id="@+id/callecliente"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/Nombretext"
+                    android:text="@string/callecliente"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/Calletext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/callecliente"
+                    android:layout_toLeftOf="@+id/Numextext"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:longClickable="false"
+                    android:selectAllOnFocus="false"
+                    android:textColor="#FFFFFF" />
+
+                <TextView
+                    android:id="@+id/numexterior"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/Calletext"
+                    android:layout_alignLeft="@+id/Numextext"
+                    android:layout_alignRight="@+id/Numextext"
+                    android:text="#Exterior"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/Numextext"
+                    android:layout_width="80dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/callecliente"
+                    android:layout_toLeftOf="@+id/Numintext"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:longClickable="false"
+                    android:selectAllOnFocus="false"
+                    android:textColor="#FFFFFF" />
+
+                <EditText
+                    android:id="@+id/Numintext"
+                    android:layout_width="60dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/Numextext"
+                    android:layout_alignBottom="@+id/Numextext"
+                    android:layout_alignParentRight="true"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:longClickable="false"
+                    android:selectAllOnFocus="false"
+                    android:textColor="#FFFFFF" />
+
+                <TextView
+                    android:id="@+id/numinterior"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/Numextext"
+                    android:layout_alignLeft="@+id/Numintext"
+                    android:layout_alignParentRight="true"
+                    android:text="#Interior"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/colonia"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/Calletext"
+                    android:text="Colonia"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/coloniatext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/colonia"
+                    android:layout_toLeftOf="@+id/Numextext"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:longClickable="false"
+                    android:selectAllOnFocus="false"
+                    android:textColor="#FFFFFF" />
+
+                <TextView
+                    android:id="@+id/codigopostal"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/coloniatext"
+                    android:layout_toLeftOf="@+id/Numintext"
+                    android:text="CP"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/cptext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBaseline="@+id/coloniatext"
+                    android:layout_alignBottom="@+id/coloniatext"
+                    android:layout_toRightOf="@+id/coloniatext"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:longClickable="false"
+                    android:selectAllOnFocus="false"
+                    android:textColor="#FFFFFF" />
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/coloniatext"
+                    android:text="Estado"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/textView7"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/estadotext"
+                    android:text="Telefono 1"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/telefono1text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/textView7"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:longClickable="false"
+                    android:selectAllOnFocus="false"
+                    android:textColor="#FFFFFF" />
+
+                <TextView
+                    android:id="@+id/textView8"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/telefono1text"
+                    android:text="Telefono 2"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/telefono2text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/textView8"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:longClickable="false"
+                    android:selectAllOnFocus="false"
+                    android:textColor="#FFFFFF" />
+
+                <TextView
+                    android:id="@+id/textView9"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/telefono2text"
+                    android:text="Telefono 3"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/telefono3text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/textView9"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:longClickable="false"
+                    android:selectAllOnFocus="false"
+                    android:textColor="#FFFFFF" />
+
+                <TextView
+                    android:id="@+id/textView10"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/telefono3text"
+                    android:text="Telefono 4"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/telefono4text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/textView10"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:longClickable="false"
+                    android:selectAllOnFocus="false"
+                    android:textColor="#FFFFFF" />
+
+                <EditText
+                    android:id="@+id/ciudadtext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/textView7"
+                    android:layout_alignParentRight="true"
+                    android:layout_toRightOf="@+id/estadotext"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:longClickable="false"
+                    android:selectAllOnFocus="false"
+                    android:textColor="#FFFFFF" />
+
+                <EditText
+                    android:id="@+id/estadotext"
+                    android:layout_width="200dp"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/textView5"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:longClickable="false"
+                    android:selectAllOnFocus="false"
+                    android:textColor="#FFFFFF" />
+
+                <TextView
+                    android:id="@+id/ciudad"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_above="@+id/ciudadtext"
+                    android:layout_alignLeft="@+id/ciudadtext"
+                    android:text="Ciudad"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <TextView
+        android:id="@+id/TituloVisualizacion"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:gravity="center"
+        android:text="@string/titulovisual"
+        android:textSize="18dp"
+        android:textStyle="bold" />
+
+</RelativeLayout>
