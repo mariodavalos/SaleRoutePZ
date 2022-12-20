@@ -67,7 +67,7 @@ import java.util.List;
 public class ConfiguracionActivity extends FragmentActivity {
 
     public static Context ConfiguracionActividad;
-    public static String version = "Versionactual(5.9.0).apk";
+    public static String version = "Versionactual(5.9.1).apk";
     private static Configura configuracion;
     String mensajeError = "Version Actual";
     String oldFTP = "";
@@ -553,7 +553,7 @@ public class ConfiguracionActivity extends FragmentActivity {
                     directorio = new File(getExternalFilesDir(null), "Android/data/com.ventaenruta");
                 }
                 if (directorio.exists() == false) {
-                    version = "Versionactual(5.9.0).apk";
+                    version = "Versionactual(5.9.1).apk";
                     AlertDialog.Builder build = new AlertDialog.Builder(ConfiguracionActivity.this);
                     build.setMessage("No se pudo completar la descarga. Intente de nuevo por favor.")
                             .setTitle("Actualizacion no completada")

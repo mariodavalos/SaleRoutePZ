@@ -1336,6 +1336,7 @@ public class VentaActivity extends FragmentActivity {
 
 
     public void onActivityResult(int requestCode, int resultCode, Intent intent) {
+        super.onActivityResult(requestCode, resultCode, intent);
         IntentResult scanResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, intent);
         if (scanResult != null) {
             String upc = scanResult.getContents();

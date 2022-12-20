@@ -77,6 +77,12 @@ public class DialogoPrint extends DialogFragment {
                         //dataToPrint=dataToPrint+dataToPrint+dataToPrint+dataToPrint+dataToPrint+dataToPrint+dataToPrint+dataToPrint+dataToPrint+dataToPrint;
                         Intent intentPrint = new Intent();
 
+                        if(InicioActivity.impresiones.getimprimirDuplicado()==1){
+                            dataToPrint = dataToPrint+"$intro$"+"$intro$"+
+                                    "-----------------------------"+
+                                    "$intro$"+"$intro$"+dataToPrint;
+                        }
+
                         intentPrint.setAction(Intent.ACTION_SEND);
                         intentPrint.putExtra(Intent.EXTRA_TEXT, dataToPrint);
                         intentPrint.setPackage("com.fidelier.posprinterdriver");

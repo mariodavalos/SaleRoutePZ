@@ -9,6 +9,7 @@ public class Impresorayencabezado {
     private String Nombreimpresora;
     private int Mostrarimpresion;
     private int Imprimircorte;
+    private int ImpresionDuplicado;
 
     public String getencabezado1() {
         return encabezadorenglon1;
@@ -63,5 +64,12 @@ public class Impresorayencabezado {
 
     public void setimprimirCorte(int imprimirCorte) {
         Imprimircorte = imprimirCorte;
+    }
+
+    public int getimprimirDuplicado() {
+        return ImpresionDuplicado;
+    }
+    public void setimprimirDuplicado(int imprimirDuplicado) {
+        ImpresionDuplicado = imprimirDuplicado;
     }
 }

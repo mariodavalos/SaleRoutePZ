@@ -58,6 +58,7 @@ public class ImpresionActivity extends Activity {
     Button Guardarlosdatos;
     Switch MostrarImpresion;
     Switch ImpresionCorte;
+    Switch ImpresionDuplicado;
     Button impresionprueba;
     CheckBox ventaCheck, inventarioCheck;
 
@@ -122,6 +123,7 @@ public class ImpresionActivity extends Activity {
         MostrarImpresion = (Switch) this.findViewById(R.id.MostrarImpresionBut);
         impresionprueba = (Button) this.findViewById(R.id.button4);
         ImpresionCorte =  (Switch) this.findViewById(R.id.impresionCorte);
+        ImpresionDuplicado =  (Switch) this.findViewById(R.id.impresionDuplicado);
         ventaCheck = this.findViewById(R.id.ventacheck);
         inventarioCheck = this.findViewById(R.id.inventariocheck);
 
@@ -164,6 +166,8 @@ public class ImpresionActivity extends Activity {
         else if (datos.getimprimirCorte() > 0) ImpresionCorte.setChecked(true);
         if(datos.getimprimirCorte() == 1 || datos.getimprimirCorte() == 3) ventaCheck.setChecked(true);
         if(datos.getimprimirCorte() > 1) inventarioCheck.setChecked(true);
+        if (datos.getimprimirDuplicado() == 0) ImpresionDuplicado.setChecked(false);
+        else if (datos.getimprimirDuplicado() == 1) ImpresionDuplicado.setChecked(true);
 //        macAdres = impresoraencontrada();
 
         if(InicioActivity.getListaConfiguracion().get(0).getClaveconfiguracion()!=null)
@@ -216,6 +220,9 @@ public class ImpresionActivity extends Activity {
             datos.setimprimirCorte(Corte);
         }
 
+        if (ImpresionDuplicado.isChecked()) datos.setimprimirDuplicado(1);
+        else datos.setimprimirDuplicado(0);
+
         intent = new Intent(this, InicioActivity.class);
         final AlertDialog.Builder build = new AlertDialog.Builder(this);
         build.setMessage("La configuracion se ha guardado con exito")
@@ -253,6 +260,7 @@ public class ImpresionActivity extends Activity {
                     escritor.write(datos.getmostrarImpresion() + "\n");
                     escritor.write(datos.getnombreImpresora() + "\n");
                     escritor.write(datos.getimprimirCorte() + "\n");
+                    escritor.write(datos.getimprimirDuplicado() + "\n");
                     InicioActivity.impresiones = datos;
                 } catch (Exception ex) {
                 } finally {
@@ -454,6 +462,8 @@ public class ImpresionActivity extends Activity {
             if (texto != null) InicioActivity.impresiones.setnombreImpresora(texto);
             texto = lector.readLine();
             if (texto != null)InicioActivity.impresiones.setimprimirCorte(Integer.parseInt(texto));
+            texto = lector.readLine();
+            if (texto != null)InicioActivity.impresiones.setimprimirDuplicado(Integer.parseInt(texto));
         } catch (Exception ex) {
         } finally {
             try {
