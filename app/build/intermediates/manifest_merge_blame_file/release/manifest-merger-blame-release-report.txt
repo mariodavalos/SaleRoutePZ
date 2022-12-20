@@ -1,0 +1,222 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="dinamica.ventaenruta"
+4    android:versionCode="577"
+5    android:versionName="5.7.7" >
+6
+7    <uses-sdk
+7-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:5:5-17
+8        android:minSdkVersion="28"
+8-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:5:5-17
+9        android:targetSdkVersion="33" />
+9-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:5:5-17
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:6:5-67
+11-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:6:22-64
+12    <uses-permission android:name="android.permission.BLUETOOTH" />
+12-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:7:5-68
+12-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:7:22-65
+13    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+13-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:8:5-74
+13-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:8:22-71
+14    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+14-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:9:5-75
+14-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:9:22-72
+15    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+15-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:10:5-80
+15-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:10:22-77
+16    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
+16-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:12:5-13:47
+16-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:12:22-83
+17    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+17-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:14:5-81
+17-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:14:22-78
+18    <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
+18-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:15:5-82
+18-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:15:22-80
+19    <uses-permission android:name="android.permission.MANAGE_EXTERNAL_STORAGE" />
+19-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:16:5-17:40
+19-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:16:22-79
+20    <uses-permission android:name="android.permission.WRITE_SETTINGS" />
+20-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:19:5-21:47
+20-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:20:9-57
+21    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+21-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:22:5-76
+21-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:22:22-73
+22
+23    <queries>
+23-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:24:5-26:15
+24        <package android:name="com.fidelier.posprinterdriver" />
+24-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:25:9-65
+24-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:25:18-62
+25    </queries>
+26
+27    <application
+27-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:28:5-106:19
+28        android:allowBackup="true"
+28-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:29:9-35
+29        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+29-->[androidx.core:core:1.8.0] C:\Users\mario\.jdks\corretto-11.0.17\caches\transforms-3\817b2fb9475b60d41f673b4294c05843\transformed\core-1.8.0\AndroidManifest.xml:24:18-86
+30        android:enabled="true"
+30-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:33:9-31
+31        android:extractNativeLibs="false"
+32        android:icon="@mipmap/ic_launcherpz"
+32-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:30:9-45
+33        android:label="@string/app_name"
+33-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:31:9-41
+34        android:largeHeap="true"
+34-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:32:9-33
+35        android:preserveLegacyExternalStorage="true"
+35-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:36:9-53
+36        android:requestLegacyExternalStorage="true"
+36-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:35:9-52
+37        android:theme="@style/AppTheme"
+37-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:37:9-40
+38        android:usesCleartextTraffic="true" >
+38-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:34:9-44
+39        <uses-library
+39-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:39:9-87
+40            android:name="org.apache.http.legacy"
+40-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:39:23-60
+41            android:required="false" />
+41-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:39:61-85
+42
+43        <activity
+43-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:41:9-47:55
+44            android:name="com.example.registroventa.Principalctivity"
+44-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:42:13-45
+45            android:configChanges="keyboardHidden|orientation|screenSize"
+45-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:43:13-74
+46            android:exported="true"
+46-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:46:13-36
+47            android:screenOrientation="portrait"
+47-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:44:13-49
+48            android:theme="@style/AppBaseTheme" />
+48-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:45:13-48
+49        <activity
+49-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:48:9-54:55
+50            android:name="com.example.registroventa.ListaVentasActivity"
+50-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:49:13-48
+51            android:configChanges="keyboardHidden|orientation|screenSize"
+51-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:50:13-74
+52            android:exported="true"
+52-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:53:13-36
+53            android:screenOrientation="portrait"
+53-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:51:13-49
+54            android:theme="@style/AppTheme.FullScreen" />
+54-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:52:13-55
+55        <activity
+55-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:55:9-61:55
+56            android:name="com.example.registroventa.VentaActivity"
+56-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:56:13-42
+57            android:configChanges="keyboardHidden|orientation|screenSize"
+57-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:57:13-74
+58            android:exported="true"
+58-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:60:13-36
+59            android:screenOrientation="portrait"
+59-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:58:13-49
+60            android:theme="@style/AppTheme.FullScreen" />
+60-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:59:13-55
+61        <activity
+61-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:62:9-66:55
+62            android:name="com.example.registroventa.services.BluetoothPrinter"
+62-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:63:13-54
+63            android:exported="true"
+63-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:65:13-36
+64            android:screenOrientation="portrait" />
+64-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:64:13-49
+65        <activity
+65-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:67:9-79:20
+66            android:name="com.example.registroventa.InicioActivity"
+66-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:68:13-43
+67            android:configChanges="keyboardHidden|orientation|screenSize"
+67-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:69:13-74
+68            android:exported="true"
+68-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:72:13-36
+69            android:screenOrientation="portrait"
+69-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:70:13-49
+70            android:theme="@style/AppBaseTheme" >
+70-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:71:13-48
+71            <intent-filter>
+71-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:74:13-78:29
+72                <action android:name="android.intent.action.MAIN" />
+72-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:75:17-69
+72-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:75:25-66
+73
+74                <category android:name="android.intent.category.LAUNCHER" />
+74-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:77:17-77
+74-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:77:27-74
+75            </intent-filter>
+76        </activity>
+77        <activity
+77-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:80:9-86:55
+78            android:name="com.example.registroventa.ConfiguracionActivity"
+78-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:81:13-50
+79            android:configChanges="keyboardHidden|orientation|screenSize"
+79-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:82:13-74
+80            android:exported="true"
+80-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:85:13-36
+81            android:screenOrientation="portrait"
+81-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:83:13-49
+82            android:windowSoftInputMode="stateHidden" />
+82-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:84:13-54
+83        <activity
+83-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:87:9-93:57
+84            android:name="com.example.registroventa.ImpresionActivity"
+84-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:88:13-46
+85            android:configChanges="keyboardHidden|orientation|screenSize"
+85-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:89:13-74
+86            android:exported="true"
+86-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:91:13-36
+87            android:screenOrientation="portrait"
+87-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:90:13-49
+88            android:windowSoftInputMode="stateHidden" />
+88-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:93:13-54
+89        <activity
+89-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:94:9-96:63
+90            android:name="dinamica.ventaenruta.FloatingActivity"
+90-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:95:13-65
+91            android:label="@string/title_activity_floating" />
+91-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:96:13-60
+92
+93        <provider
+94            android:name="androidx.core.content.FileProvider"
+94-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:98:13-62
+95            android:authorities="dinamica.ventaenruta.fileprovider"
+95-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:99:13-64
+96            android:exported="false"
+96-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:100:13-37
+97            android:grantUriPermissions="true" >
+97-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:101:13-47
+98            <meta-data
+98-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:102:13-104:53
+99                android:name="android.support.FILE_PROVIDER_PATHS"
+99-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:103:17-67
+100                android:resource="@xml/filepaths" />
+100-->C:\Users\mario\3D Objects\DICOM\SaleRoutePZ\app\src\main\AndroidManifest.xml:104:17-50
+101        </provider>
+102        <provider
+102-->[androidx.emoji2:emoji2:1.2.0] C:\Users\mario\.jdks\corretto-11.0.17\caches\transforms-3\dcb6a9e12784627ae45a583577e7e092\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:24:9-32:20
+103            android:name="androidx.startup.InitializationProvider"
+103-->[androidx.emoji2:emoji2:1.2.0] C:\Users\mario\.jdks\corretto-11.0.17\caches\transforms-3\dcb6a9e12784627ae45a583577e7e092\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:25:13-67
+104            android:authorities="dinamica.ventaenruta.androidx-startup"
+104-->[androidx.emoji2:emoji2:1.2.0] C:\Users\mario\.jdks\corretto-11.0.17\caches\transforms-3\dcb6a9e12784627ae45a583577e7e092\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:26:13-68
+105            android:exported="false" >
+105-->[androidx.emoji2:emoji2:1.2.0] C:\Users\mario\.jdks\corretto-11.0.17\caches\transforms-3\dcb6a9e12784627ae45a583577e7e092\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:27:13-37
+106            <meta-data
+106-->[androidx.emoji2:emoji2:1.2.0] C:\Users\mario\.jdks\corretto-11.0.17\caches\transforms-3\dcb6a9e12784627ae45a583577e7e092\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:29:13-31:52
+107                android:name="androidx.emoji2.text.EmojiCompatInitializer"
+107-->[androidx.emoji2:emoji2:1.2.0] C:\Users\mario\.jdks\corretto-11.0.17\caches\transforms-3\dcb6a9e12784627ae45a583577e7e092\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:30:17-75
+108                android:value="androidx.startup" />
+108-->[androidx.emoji2:emoji2:1.2.0] C:\Users\mario\.jdks\corretto-11.0.17\caches\transforms-3\dcb6a9e12784627ae45a583577e7e092\transformed\jetified-emoji2-1.2.0\AndroidManifest.xml:31:17-49
+109            <meta-data
+109-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\mario\.jdks\corretto-11.0.17\caches\transforms-3\8508431b56924959a90c594cfba04620\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:31:13-33:52
+110                android:name="androidx.lifecycle.ProcessLifecycleInitializer"
+110-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\mario\.jdks\corretto-11.0.17\caches\transforms-3\8508431b56924959a90c594cfba04620\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:32:17-78
+111                android:value="androidx.startup" />
+111-->[androidx.lifecycle:lifecycle-process:2.4.1] C:\Users\mario\.jdks\corretto-11.0.17\caches\transforms-3\8508431b56924959a90c594cfba04620\transformed\jetified-lifecycle-process-2.4.1\AndroidManifest.xml:33:17-49
+112        </provider>
+113    </application>
+114
+115</manifest>
