@@ -9,7 +9,7 @@ android {
         targetSdk 34
         multiDexEnabled true
         versionCode 51007
-        versionName '5.10.10'
+        versionName '5.10.11'
     }
     packagingOptions {
         exclude 'AndroidManifest.xml'

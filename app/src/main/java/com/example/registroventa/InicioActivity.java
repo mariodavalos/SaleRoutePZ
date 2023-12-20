@@ -1047,7 +1047,6 @@ public class InicioActivity extends android.app.Activity {
             if (checkSelfPermission(WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 return true;
             }
-
             if (shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE)) {
                 showStoragePermissionRationale();
             } else {
@@ -1056,12 +1055,7 @@ public class InicioActivity extends android.app.Activity {
             }
             return false;
         }else{
-            if (!Environment.isExternalStorageManager()) {
-                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
-                Uri uri = Uri.fromParts("package", getPackageName(), null);
-                intent.setData(uri);
-                startActivityForResult(intent, MY_PERMISSIONS_REQUEST_STORAGE_LEGACY);
-            }
+            showStoragePermissionRationale();
             return true;
         }
     }
@@ -1073,8 +1067,15 @@ public class InicioActivity extends android.app.Activity {
                 .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE},
-                                MY_PERMISSIONS_REQUEST_PHONE_STATE);
+                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                            requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE},
+                                    MY_PERMISSIONS_REQUEST_PHONE_STATE);
+                        }else{
+                            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                            Uri uri = Uri.fromParts("package", getPackageName(), null);
+                            intent.setData(uri);
+                            startActivityForResult(intent, MY_PERMISSIONS_REQUEST_STORAGE_LEGACY);
+                        }
                     }
                 })
                 .setNegativeButton("Cancelar", null)
@@ -1103,6 +1104,7 @@ public class InicioActivity extends android.app.Activity {
                     // Permiso concedido para Android 11 y superiores
                 } else {
                     // Permiso denegado
+                    showStoragePermissionRationale();
                 }
             }
         }

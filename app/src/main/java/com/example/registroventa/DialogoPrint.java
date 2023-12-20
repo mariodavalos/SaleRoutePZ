@@ -108,9 +108,7 @@ public class DialogoPrint extends DialogFragment {
                         intentPrint.putExtra(Intent.EXTRA_STREAM, bitmapUri);
                         intentPrint.setType("image/jpeg");*/
                         intentPrint.setType("text/plain");
-
                         startActivity(intentPrint);
-
                         //printFile(ticket);
                       if(actividad!=null) {
                           actividad.cancelarOnClick(null);
@@ -128,9 +126,10 @@ public class DialogoPrint extends DialogFragment {
                 .setNeutralButton("Compartir", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-
                         shareBitmap(ticket, "filename.png", getActivity());
-
+                        if(actividad!=null) {
+                            actividad.cancelarOnClick(null);
+                        }
                     }
                 });
 
