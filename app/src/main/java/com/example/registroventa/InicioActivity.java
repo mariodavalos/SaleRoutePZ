@@ -1,5 +1,6 @@
 package com.example.registroventa;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -12,6 +13,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.Settings;
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -35,12 +37,14 @@ import com.example.registroventa.models.ConfiguracionFTP;
 import com.example.registroventa.models.Cuentas;
 import com.example.registroventa.models.Impresorayencabezado;
 import com.example.registroventa.models.ListaPrecios;
+import com.example.registroventa.models.Metodos;
 import com.example.registroventa.models.PreciosAdicionales;
 import com.example.registroventa.models.Producto;
 import com.example.registroventa.models.Vendedor;
 import com.example.registroventa.models.Venta;
 import com.example.registroventa.models.VentaProducto;
 import com.example.registroventa.services.BaseDatosHelper;
+import com.example.registroventa.xmls.AnalizadorMetodos;
 import com.example.registroventa.xmls.AnalizadorXMLCliente;
 import com.example.registroventa.xmls.AnalizadorXMLConfiguracion;
 import com.example.registroventa.xmls.AnalizadorXMLCuentas;
@@ -48,6 +52,8 @@ import com.example.registroventa.xmls.AnalizadorXMLListaPrecios;
 import com.example.registroventa.xmls.AnalizadorXMLPreciosAdicionales;
 import com.example.registroventa.xmls.AnalizadorXMLProducto;
 import com.example.registroventa.xmls.AnalizadorXMLVendedor;
+
+import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -82,6 +88,7 @@ public class InicioActivity extends android.app.Activity {
     private static List<ListaPrecios> listaPrecios;
     private static List<PreciosAdicionales> listaPadionales;
     private static List<ConfiguracionFTP> listaConfiguracion;
+    private static List<Metodos> listaMetodos;
     private static List<String> listaVendedoresString;
     private static Vendedor vendedorSeleccionado;
     private static BaseDatosHelper db = null;
@@ -152,6 +159,13 @@ public class InicioActivity extends android.app.Activity {
         if ((listaConfiguracion2 != null) && (listaConfiguracion2.size() > 0))
             listaConfiguracion = listaConfiguracion2;
     }
+    public static void cargarMetodos(Boolean Internet) throws Exception {
+        AnalizadorMetodos analizador = new AnalizadorMetodos(ubicacion
+                + "formasdepago.xml",InicioActividad);
+        List<Metodos> listaMetodos2 = analizador.procesar(Internet);
+        if ((listaMetodos2 != null) && (listaMetodos2.size() > 0))
+            listaMetodos = listaMetodos2;
+    }
     public static Configura cargarConfiguracion() {
         return config;
     }
@@ -164,6 +178,8 @@ public class InicioActivity extends android.app.Activity {
         cargarCuentas(true);
         cargarListaPrecios(true);
         cargarConfiguracion(true);
+        cargarPreciosAdicionales(true);
+        cargarMetodos(true);
     }
 
     public static Configura cargarConfiguracionvieja() {
@@ -239,9 +255,14 @@ public class InicioActivity extends android.app.Activity {
             config.setVercxc(true);
             config.setModificarprecios(true);
             config.setClaveconfiguracion("");
+            config.setSerieclientes("");
             listConfig.add(config);
         }
         return listConfig;
+    }
+    public static List<Metodos> getListaMetodos() {
+        if(listaMetodos==null)listaMetodos = new ArrayList<Metodos>();
+        return listaMetodos;
     }
 
     public static Vendedor getVendedorSeleccionado() {
@@ -363,7 +384,7 @@ public class InicioActivity extends android.app.Activity {
                 } catch (Exception e) {
                 }
                 db = new BaseDatosHelper(InicioActividad,
-                        "BDRegistroVentas", null, 10);
+                        "BDRegistroVentas", null, 11);
                 cargar = new CargarDatos(InicioActividad, db);
                 cargar.execute(params);
                 //db.limpiarClientes(listaClientes);
@@ -377,7 +398,7 @@ public class InicioActivity extends android.app.Activity {
         cargaPrincipal();
         if (!configurando) {
             try {
-                db = new BaseDatosHelper(this, "BDRegistroVentas", null, 10);
+                db = new BaseDatosHelper(this, "BDRegistroVentas", null, 11);
 
                 List<Venta> listaVentas = new ArrayList<Venta>();
                 listaVentas = InicioActivity.getDB().cargarVentas(
@@ -561,6 +582,7 @@ public class InicioActivity extends android.app.Activity {
         try {cargarListaPrecios(false);} catch (Exception e) {}
         try {cargarPreciosAdicionales(false);} catch (Exception e) {}
         try {cargarConfiguracion(false);} catch (Exception e) {}
+        try {cargarMetodos(false);} catch (Exception e) {}
     }
     public void cargarOnClick(View view) {
         Vendedores = (Spinner) this.findViewById(R.id.Vendedores);
@@ -874,7 +896,9 @@ public class InicioActivity extends android.app.Activity {
                 publishProgress("Procesando Precios Negociados...");
                 cargarListaPrecios(true);base="PreciosAdicionales.xml";
                 publishProgress("Procesando Precios Adicionales...");
-                cargarPreciosAdicionales(true);
+                cargarPreciosAdicionales(true);base="MetodosPago.xml";
+                publishProgress("Procesando Metodos de Pago...");
+                cargarMetodos(true);
                 publishProgress(" ");
             } catch (Exception e) {
                 publishProgress(" ");
@@ -1010,85 +1034,165 @@ public class InicioActivity extends android.app.Activity {
         activity.getWindowManager().getDefaultDisplay().getSize(size);
         return size.x+300;
     }
-        private final int MY_PERMISSIONS = 100;
-        private boolean mayRequestStoragePermission() {
 
-            if(Build.VERSION.SDK_INT < Build.VERSION_CODES.M)
-                return true;
+    private static final int MY_PERMISSIONS_REQUEST_PHONE_STATE = 100;
+    private static final int MY_PERMISSIONS_REQUEST_STORAGE_LEGACY = 101;
+    private static final int REQUEST_CODE_OPEN_DOCUMENT = 102;
+    private static final int REQUEST_CODE_OPEN_DOCUMENT_TREE = 103;
+    private final int MY_PERMISSIONS = 100;
 
-            if((checkSelfPermission(WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) &&
-                    (checkSelfPermission(READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) )
+    private boolean mayRequestStoragePermission() {
+
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            if (checkSelfPermission(WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
                 return true;
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                AlertDialog.Builder confirmacion = new AlertDialog.Builder(InicioActivity.this);
-                confirmacion.setIcon(R.mipmap.ic_launcherpz);
-                confirmacion.setTitle("ACEPTAR PERMISOS");
-                confirmacion.setMessage("Necesitamos algunos permisos, por favor concede los permisos para utilizar optimamente nuestra app.");
-                confirmacion.setPositiveButton("PERMITIR", new DialogInterface.OnClickListener() {
-                    @RequiresApi(api = Build.VERSION_CODES.M)
-                    public void onClick(DialogInterface dialog, int id) {
-                        if ((shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE)) || (shouldShowRequestPermissionRationale(READ_PHONE_STATE))) {
-                            showExplanation();
-                        } else {
-                            requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, ACCESS_WIFI_STATE, WRITE_SETTINGS, READ_PHONE_STATE, BLUETOOTH_ADMIN,BLUETOOTH_ADMIN}, MY_PERMISSIONS);
-                        }
-                    }
-                });
-                AlertDialog alert = confirmacion.create();
-                alert.show();
-                Button possitive = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-                possitive.setTextColor(Color.parseColor("#e18a33"));
             }
 
+            if (shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE)) {
+                showStoragePermissionRationale();
+            } else {
+                requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE},
+                        MY_PERMISSIONS_REQUEST_PHONE_STATE);
+            }
             return false;
+        }else{
+            if (!Environment.isExternalStorageManager()) {
+                Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                Uri uri = Uri.fromParts("package", getPackageName(), null);
+                intent.setData(uri);
+                startActivityForResult(intent, MY_PERMISSIONS_REQUEST_STORAGE_LEGACY);
+            }
+            return true;
         }
+    }
 
+    private void showStoragePermissionRationale() {
+        new AlertDialog.Builder(this)
+                .setTitle("Permiso necesario")
+                .setMessage("Necesitas permitir el acceso al almacenamiento para utilizar optimamente nuestra app.")
+                .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE},
+                                MY_PERMISSIONS_REQUEST_PHONE_STATE);
+                    }
+                })
+                .setNegativeButton("Cancelar", null)
+                .create()
+                .show();
+    }
 
-        @Override
-       public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-
-            if(requestCode == MY_PERMISSIONS){
-                if(grantResults.length == 6 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
-
-                    Toast(InicioActivity.this, "Permisos aceptados");
-                    this.finish();
-                    Intent intent2 = new Intent(InicioActivity.this, InicioActivity.class);
-                    intent2.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
-                    startActivity(intent2);
-                }
-            }else{
-                showExplanation();
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_PHONE_STATE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permiso concedido
+            } else {
+                // Permiso denegado
+                showStoragePermissionRationale();
             }
         }
-        private void showExplanation() {
-            AlertDialog.Builder builder = new AlertDialog.Builder(InicioActivity.this);
-            builder.setTitle("Permisos denegados").setIcon(R.mipmap.ic_launcherpz);
-            builder.setMessage("Denegaste los permisos anteriormente, activalos manualmente en Permisos de CONFIGURACIÓN.");
-            builder.setPositiveButton("CONFIGURACIÓN", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    Intent intent = new Intent();
-                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                    Uri uri = Uri.fromParts("package", getPackageName(), null);
-                    intent.setData(uri);
-                    startActivity(intent);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == MY_PERMISSIONS_REQUEST_STORAGE_LEGACY) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                if (Environment.isExternalStorageManager()) {
+                    // Permiso concedido para Android 11 y superiores
+                } else {
+                    // Permiso denegado
                 }
-            });
-            builder.setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    dialog.dismiss();
-                    finish();
-                }
-            });
-            AlertDialog alert=builder.create();
-            alert.show();
-            Button possitive = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-            possitive.setTextColor(Color.parseColor("#e18a33"));
-            Button negative = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-            negative.setTextColor(Color.parseColor("#e18a33"));
+            }
         }
+    }
+
+    // Método para abrir un documento o directorio con SAF
+    private void openDocumentOrDirectory() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            // Android 10 y superiores
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
+            startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT_TREE);
+        } else {
+            // Android 9 y anteriores
+            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("*/*");
+            startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT);
+        }
+    }
+//        private final int MY_PERMISSIONS = 100;
+//        private boolean mayRequestStoragePermission() {
+//
+//            if((checkSelfPermission(WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) &&
+//                    (checkSelfPermission(READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED)) {
+//                return true;
+//            }
+//                AlertDialog.Builder confirmacion = new AlertDialog.Builder(InicioActivity.this);
+//                confirmacion.setIcon(R.mipmap.ic_launcherpz);
+//                confirmacion.setTitle("ACEPTAR PERMISOS");
+//                confirmacion.setMessage("Necesitamos algunos permisos, por favor concede los permisos para utilizar optimamente nuestra app.");
+//                confirmacion.setPositiveButton("PERMITIR", new DialogInterface.OnClickListener() {
+//                    public void onClick(DialogInterface dialog, int id) {
+//                        if ((shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE))
+//                                || (shouldShowRequestPermissionRationale(READ_PHONE_STATE))) {
+//                            showExplanation();
+//                        } else {
+//                            requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, ACCESS_WIFI_STATE, WRITE_SETTINGS, READ_PHONE_STATE, BLUETOOTH_ADMIN,BLUETOOTH_ADMIN}, MY_PERMISSIONS);
+//                        }
+//                    }
+//                });
+//                AlertDialog alert = confirmacion.create();
+//                alert.show();
+//                Button possitive = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+//                possitive.setTextColor(Color.parseColor("#e18a33"));
+//            return false;
+//        }
+//        @Override
+//       public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+//            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+//            if(requestCode == MY_PERMISSIONS){
+//                if(grantResults.length == 6 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+//
+//                    Toast(InicioActivity.this, "Permisos aceptados");
+//                    this.finish();
+//                    Intent intent2 = new Intent(InicioActivity.this, InicioActivity.class);
+//                    intent2.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+//                    startActivity(intent2);
+//                }
+//            }else{
+//                showExplanation();
+//            }
+//        }
+//        private void showExplanation() {
+//            AlertDialog.Builder builder = new AlertDialog.Builder(InicioActivity.this);
+//            builder.setTitle("Permisos denegados").setIcon(R.mipmap.ic_launcherpz);
+//            builder.setMessage("Denegaste los permisos anteriormente, activalos manualmente en Permisos de CONFIGURACIÓN.");
+//            builder.setPositiveButton("CONFIGURACIÓN", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//                    Intent intent = new Intent();
+//                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+//                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+//                    intent.setData(uri);
+//                    startActivity(intent);
+//                }
+//            });
+//            builder.setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+//                @Override
+//                public void onClick(DialogInterface dialog, int which) {
+//                    dialog.dismiss();
+//                    finish();
+//                }
+//            });
+//            AlertDialog alert=builder.create();
+//            alert.show();
+//            Button possitive = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+//            possitive.setTextColor(Color.parseColor("#e18a33"));
+//            Button negative = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+//            negative.setTextColor(Color.parseColor("#e18a33"));
+//        }
     int clicks = 0;
     public void onClickConfigHide(View view){
         clicks++;

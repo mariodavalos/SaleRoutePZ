@@ -61,7 +61,7 @@
                 android:minHeight="50dp"
                 android:onClick="imprimirInventarios"
                 android:text="INVENTARIO"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 android:theme="@style/AppTheme" />
 
@@ -78,7 +78,7 @@
                 android:minHeight="50dp"
                 android:onClick="imprimirCortes"
                 android:text="CORTE"
-                android:textSize="22sp"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 android:theme="@style/AppTheme" />
         </LinearLayout>
@@ -136,7 +136,7 @@
                 android:layout_weight="1"
                 android:text="Large Text"
                 android:textAlignment="textEnd"
-                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textAppearance="@style/TextAppearance.AppCompat.Medium"
                 android:textColor="@color/orange"
                 tools:ignore="HardcodedText" />
         </LinearLayout>

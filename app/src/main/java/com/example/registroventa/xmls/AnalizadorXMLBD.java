@@ -15,6 +15,7 @@ import org.xml.sax.Attributes;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.InputStream;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,9 +79,9 @@ public class AnalizadorXMLBD {
         }else {
             directorio = new File(Carpeta, "Android/data/com.ventaenruta");
         }
-        if (directorio.exists() == false) directorio.mkdirs();
+        if (!directorio.exists()) directorio.mkdirs();
         Xml1 = new File(directorio, "configuracion.xml");
-        InputStream leerXml = new FileInputStream(Xml1);
+        InputStream leerXml = Files.newInputStream(Xml1.toPath());
         Xml.parse(leerXml, Xml.Encoding.ISO_8859_1, root.getContentHandler());
         leerXml.close();
 

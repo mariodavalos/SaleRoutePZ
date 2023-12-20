@@ -10,6 +10,7 @@ import android.graphics.Point;
 import android.graphics.Typeface;
 import android.net.wifi.WifiInfo;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -18,13 +19,17 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentActivity;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
+import android.text.InputType;
 import android.text.TextWatcher;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -36,12 +41,16 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.registroventa.models.Cliente;
 import com.example.registroventa.models.Configura;
 import com.example.registroventa.models.Cuentas;
+import com.example.registroventa.models.Metodos;
+import com.example.registroventa.models.Producto;
 import com.example.registroventa.models.Venta;
 import com.example.registroventa.models.VentaProducto;
 import com.example.registroventa.services.IntentIntegrator;
@@ -52,7 +61,15 @@ import com.zebra.sdk.printer.discovery.BluetoothDiscoverer;
 import com.zebra.sdk.printer.discovery.DiscoveredPrinter;
 import com.zebra.sdk.printer.discovery.DiscoveryHandler;
 
+import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.message.BasicNameValuePair;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -61,6 +78,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -70,11 +88,13 @@ public class VentaActivity extends FragmentActivity {
     //region Declaraciones
     public static String entrada = null;
     public static String salida = null;
+    public static boolean nuevoCliente = false;
     public static String clienteseleccionado = "";
     public static Cliente clienteseleccionadoCliente;
     public static VentaProducto errorpro;
     public static Configura config = new Configura();
     public static Boolean addormod = true;
+
     public Venta venta = null;
     public Boolean cambio = false;
     public String producto = null;
@@ -194,9 +214,9 @@ public class VentaActivity extends FragmentActivity {
             nuevo = new EditText(getApplicationContext());
 
             venta = ListaVentasActivity.getVenta();
-            for (VentaProducto vp : venta.getVentaProductos())
+            for (VentaProducto vp : venta.getVentaProductos()) {
                 adapterProductosVentas.add(vp.toString());
-
+            }
             double total = 0;
             for (VentaProducto pv : venta.getVentaProductos()) total += pv.getTotal();
             totalVenta.setText(NumberFormat.getCurrencyInstance(Locale.US).format(total));
@@ -214,7 +234,7 @@ public class VentaActivity extends FragmentActivity {
             //adapter.clear();
             //my_listview.
             APagar = 0.0;
-            adapterProductosVentas = new ArrayAdapter<String>(this, R.layout.lista_item_layout, arregloProductosVentas);
+            adapterProductosVentas = new ArrayAdapter<String>(this, R.layout.lista_item_layout2, arregloProductosVentas);
             listaProductosVenta.setAdapter(adapterProductosVentas);
             listaProductosVenta.setOnItemClickListener(new OnItemClickListener() {
                 @Override
@@ -341,7 +361,6 @@ public class VentaActivity extends FragmentActivity {
                                 cxcadd = true;
                         } catch (Exception e) {
                         }
-
                         nuevo.setText(AbonoText.getText());
                         /*
                         nuevo.setLayoutParams(AbonoText.getLayoutParams());
@@ -725,7 +744,8 @@ public class VentaActivity extends FragmentActivity {
     }
     private static final Void params = null;
     private void cargarClientes() {
-        String arregloClientes[] = new String[InicioActivity.getListaClientes().size()];
+        ((DialogoBuscarCliente) dialog).actualizarArreglosClientes();
+        String[] arregloClientes = new String[InicioActivity.getListaClientes().size()];
         for (int i = 0; i < InicioActivity.getListaClientes().size(); i++)
             arregloClientes[i] = InicioActivity.getListaClientes().get(i).toString();
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -794,13 +814,35 @@ public class VentaActivity extends FragmentActivity {
         dialog.show(getSupportFragmentManager(), "Buscar Cliente");
     }
 
+    public void visualizarNuevoClienteOnClick() {
+        String baseClave = (InicioActivity.getListaConfiguracion()).get(0).getSerieclientes();
+        baseClave = baseClave==null? "":baseClave;
+        int baseSize = InicioActivity.getListaClientes().size() + 1;
+        String finalClave;
+        int diferenciador = 0;
+        boolean exists;
+        do {
+            finalClave = String.format("%s%s", baseClave, String.format("%04d", baseSize + diferenciador));
+            String currentClave = finalClave;
+            exists = InicioActivity.getListaClientes().stream().anyMatch(c -> c.getClave().equals(currentClave));
+            diferenciador++;
+        } while (exists);
+        clienteseleccionado = finalClave;
+        clienteseleccionadoCliente = new Cliente();
+        clienteseleccionadoCliente.setNumPrecio(1);
+        clienteseleccionadoCliente.setClave(finalClave);
+        nuevoCliente = true;
+        dialog2.show(getSupportFragmentManager(), "Nuevo Cliente");
+    }
     public void visualizarClienteOnClick(View view) {
+
         clienteseleccionado = clientes.getSelectedItem().toString();
         int[] arreglofinal = ((DialogoBuscarCliente) dialog).clientesEncontradosID();
         if(arreglofinal[clientes.getSelectedItemPosition()] == 0)
             clienteseleccionadoCliente = InicioActivity.getListaClientes().get(clientes.getSelectedItemPosition());
         else
             clienteseleccionadoCliente = InicioActivity.getListaClientes().get(arreglofinal[clientes.getSelectedItemPosition()]);
+        nuevoCliente = false;
         dialog2.show(getSupportFragmentManager(), "Buscar Cliente");
     }
 
@@ -895,34 +937,72 @@ public class VentaActivity extends FragmentActivity {
         Button possitive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
         possitive.setTextColor(Color.parseColor("#e18a33"));
     }
+    boolean[] checkedItems = null;
+    List<EditText> amountInputs = new ArrayList<>(); // Guardar referencias a los EditTexts para que podamos obtener sus valores más tarde
 
     public void aceptarOnClick(View view) {
         if(adapterProductosVentas.getCount()>0) {
-            if(venta.isNueva()) {
+            if(venta.isNueva() || (InicioActivity.getListaMetodos().size()>0)) {
                 AlertDialog levelDialog = null;
-                final CharSequence[] items = {" Contado ", " Credito "};
-
+                CharSequence[] items = {" Contado ", " Credito "};
+                if(InicioActivity.getListaMetodos().size()>0) {
+                    items = InicioActivity.getListaMetodos().stream().map(Metodos::getNombre).toArray(String[]::new);
+                }
+                checkedItems = new boolean[items.length]; // para rastrear qué elementos se han seleccionado
+                if(!venta.getMetodosMultiples().isEmpty()){
+                    Arrays.stream(venta.getMetodosMultiples().split(";")).sequential().forEach(metodo -> {
+                        String nombreMetodo = metodo.split(":")[0];
+                        int index = InicioActivity.getListaMetodos().indexOf(InicioActivity.getListaMetodos().stream().filter(m -> m.getNombre().contains(nombreMetodo)).findFirst().get());
+                        checkedItems[index] = true;
+                    });
+                }
                 // Creating and Building the Dialog
                 AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                if(InicioActivity.getListaMetodos().size() == 0) {
                 builder.setTitle("Selecciona metodo de pago");
-                final AlertDialog finalLevelDialog = levelDialog;
-                builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int item) {
-                        //finalLevelDialog1.dismiss();
-                        switch (item) {
-                            case 0:
-                                metodo = true;
-                                confirmacionDialog();
-                                break;
-                            case 1:
-                                metodo = false;
-                                confirmacionDialog();
-                                break;
-
+                    builder.setSingleChoiceItems(items, -1, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int item) {
+                            //finalLevelDialog1.dismiss();
+                            switch (item) {
+                                case 0:
+                                    metodo = true;
+                                    confirmacionDialog();
+                                    break;
+                                case 1:
+                                    metodo = false;
+                                    confirmacionDialog();
+                                    break;
+                            }
+                            dialog.dismiss();
                         }
-                        dialog.dismiss();
-                    }
-                });
+                    });
+                }else{
+                    builder.setTitle("Selecciona metodo(s) de pago");
+                    builder.setMultiChoiceItems(items, checkedItems, new DialogInterface.OnMultiChoiceClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which, boolean isChecked) {
+                            checkedItems[which] = isChecked;
+                        }
+                    });
+                    builder.setPositiveButton("Continuar", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Aquí puedes presentar otro diálogo para ingresar las cantidades para cada método seleccionado
+                            // O una nueva actividad, según tu preferencia
+                            List<Metodos> selectedMethods = new ArrayList<>();
+                            for (int i = 0; i < checkedItems.length; i++) {
+                                if (checkedItems[i]) {
+                                    selectedMethods.add(InicioActivity.getListaMetodos().get(i));
+                                }
+                            }
+                            Double total = 0.0;
+                            for (VentaProducto pv : venta.getVentaProductos()) total += pv.getTotal();
+                            totalAmount = total;
+                            // Pasar a la función de introducir montos o lo que decidas hacer
+                            enterAmountsForMethods(selectedMethods);
+                        }
+                    });
+                }
                 levelDialog = builder.create();
                 levelDialog.show();
             }
@@ -955,6 +1035,173 @@ public class VentaActivity extends FragmentActivity {
             negative.setTextColor(Color.parseColor("#e18a33"));
         }
     }
+    double totalAmount = 0.0; // Poner aquí tu total
+    private void enterAmountsForMethods(List<Metodos> selectedMethods) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Introduce la cantidad a pagar con cada metodo");
+        builder.setCancelable(false);
+
+        // Layout principal
+        LinearLayout layout = new LinearLayout(this);
+        layout.setOrientation(LinearLayout.VERTICAL);
+        layout.setPadding(10, 10, 10, 10);
+
+        TextView note = new TextView(this);
+        note.setText("La suma de las cantidades debe ser igual al total de la venta.");
+        note.setTextColor(Color.rgb(200, 100, 20));
+        note.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        note.setGravity(Gravity.CENTER);
+//        note.setPadding(10, 10, 10, 10);
+        layout.addView(note);
+
+        amountInputs = new ArrayList<>();
+
+// Obtener la altura de la pantalla
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int screenHeight = displayMetrics.heightPixels;
+
+// Calcular el 50% de la altura de la pantalla
+        int maxLayoutHeight = (int) (screenHeight * 0.30);
+
+        ScrollView scrollView = new ScrollView(this);
+        LinearLayout layoutScroll = new LinearLayout(this);
+        layoutScroll.setOrientation(LinearLayout.VERTICAL);
+        layoutScroll.setPadding(10, 10, 10, 10);
+
+// Establecer la altura máxima para el LinearLayout
+        scrollView.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, maxLayoutHeight));
+        double sum = 0.0;
+
+        for (Metodos method : selectedMethods) {
+            // Layout por método de pago
+            LinearLayout innerLayout = new LinearLayout(this);
+            innerLayout.setOrientation(LinearLayout.HORIZONTAL);
+            innerLayout.setGravity(Gravity.CENTER);
+
+            TextView textView = new TextView(this);
+            textView.setText(method.getNombre());
+            innerLayout.addView(textView);
+
+            EditText editText = new EditText(this);
+            editText.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL);
+            editText.setHint("0.0");
+            if(!venta.getMetodosMultiples().isEmpty()){
+                if(venta.getMetodosMultiples().contains(method.getNombre())) {
+                    String cantidad = Arrays.stream(venta.getMetodosMultiples().split(";")).sequential().filter(m -> m.contains(method.getNombre())).findFirst().get();
+                    if (!cantidad.isEmpty()) editText.setText(cantidad.split(":")[1]);
+                    sum += Double.parseDouble(cantidad.split(":")[1]);
+                }
+            }
+            innerLayout.addView(editText);
+
+            amountInputs.add(editText);
+
+            layoutScroll.addView(innerLayout);
+        }
+        scrollView.addView(layoutScroll);
+        layout.addView(scrollView);
+
+        TextView totals = new TextView(this);
+        totals.setText("Suma total: $" + String.format("%.2f", sum));
+        totals.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        totals.setGravity(Gravity.CENTER);
+        totals.setPadding(10, 10, 10, 0);
+        layout.addView(totals);
+
+        TextView total = new TextView(this);
+        total.setText("Total venta: $" + totalAmount);
+        total.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+        total.setGravity(Gravity.CENTER);
+        total.setPadding(10, 0, 10, 10);
+        total.setTextColor(Color.BLACK);
+        layout.addView(total);
+
+
+        builder.setView(layout); // Estableces layout como la vista del AlertDialog
+
+        builder.setPositiveButton("Confirmar", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                double sum = 0.0;
+                for (EditText input : amountInputs) {
+                    String valueStr = input.getText().toString().trim();
+                    if (!valueStr.isEmpty()) {
+                        sum += Double.parseDouble(valueStr);
+                    }
+                }
+
+                if (Math.abs(totalAmount - sum) < 0.01) { // Usar un pequeño margen debido a la precisión de los doubles
+                    // Mostrar mensaje de éxito
+                    metodosMultiples = "";
+                    for (int i = 0; i < selectedMethods.size(); i++) {
+                        metodosMultiples += selectedMethods.get(i).getNombre()
+                                + ":" + amountInputs.get(i).getText().toString() + ";";
+                    }
+                    confirmacionDialog();
+                } else {
+                    // Mostrar error
+                    Toast.makeText(getApplicationContext(), "La suma de las cantidades no coincide con el total", Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+        builder.setNegativeButton("Cancelar", null);
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        // Inhabilitar el botón de confirmar hasta que las cantidades sean correctas
+        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+
+        for (EditText input : amountInputs) {
+            String valueStr = input.getText().toString().trim();
+            if (!valueStr.isEmpty()) {
+                sum += Double.parseDouble(valueStr);
+            }
+        }
+        totals.setText("Suma total: $" + String.format("%.2f", sum));
+        if (Math.abs(totalAmount - sum) < 0.001) {
+            totals.setTextColor(Color.rgb(20, 200, 20));
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+        }else if(sum < 0.001){
+            totals.setText("Suma total: $"+String.format("%.2f", totalAmount - sum));
+            amountInputs.get(0).setText(String.format("%.2f", totalAmount - sum));
+            amountInputs.get(0).requestFocus();
+            amountInputs.get(0).setSelection(amountInputs.get(0).getText().length());
+            totals.setTextColor(Color.rgb(20, 200, 20));
+            alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+        }
+
+        for (EditText editText : amountInputs) {
+            editText.addTextChangedListener(new TextWatcher() {
+                @Override
+                public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+                @Override
+                public void onTextChanged(CharSequence s, int start, int before, int count) {
+                    double sum = 0.0;
+                    for (EditText input : amountInputs) {
+                        String valueStr = input.getText().toString().trim();
+                        if (!valueStr.isEmpty()) {
+                            sum += Double.parseDouble(valueStr);
+                        }
+                    }
+                    totals.setText("Suma total: $" + String.format("%.2f", sum));
+                    if (Math.abs(totalAmount - sum) < 0.001) {
+                        totals.setTextColor(Color.rgb(20, 200, 20));
+                        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
+                    } else {
+                        totals.setTextColor(Color.rgb(200, 20, 20));
+                        alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
+                    }
+                }
+
+                @Override
+                public void afterTextChanged(Editable s) {}
+            });
+        }
+    }
+
     public void confirmacionDialog(){
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder
@@ -985,6 +1232,7 @@ public class VentaActivity extends FragmentActivity {
         negative.setTextColor(Color.parseColor("#e18a33"));
     }
     Boolean metodo = true;
+    String metodosMultiples = "";
     android.app.Activity ventaActivity = null;
     public void aceptarconfirmacionOnClick(View view) {
 
@@ -993,12 +1241,14 @@ public class VentaActivity extends FragmentActivity {
                             venta.setFecha(new Date());
                             venta.setId(0);
                             venta.setMetodo(metodo);
+                            venta.setMetodosMultiples(metodosMultiples);
                             venta.setNueva(false);
                             venta.setNota("");
                             ListaVentasActivity.agregarVenta(venta);
                             InicioActivity.getDB().agregarVenta(venta);
                         } else {
                             venta.setNota("");
+                            venta.setMetodosMultiples(metodosMultiples);
                             InicioActivity.getDB().limpiarVentas();
                             ListaVentasActivity.modificarVenta(venta);
                             for (Venta ventax : ListaVentasActivity.getListaVentas())
@@ -1038,10 +1288,12 @@ public class VentaActivity extends FragmentActivity {
                             venta.setMetodo(metodo);
                             venta.setNueva(false);
                             venta.setNota(NotaText.getText().toString());
+                            venta.setMetodosMultiples(metodosMultiples);
                             ListaVentasActivity.agregarVenta(venta);
                             InicioActivity.getDB().agregarVenta(venta);
                         } else {
                             venta.setNota(NotaText.getText().toString());
+                            venta.setMetodosMultiples(metodosMultiples);
                             InicioActivity.getDB().limpiarVentas();
                             ListaVentasActivity.modificarVenta(venta);
                             for (Venta ventax : ListaVentasActivity.getListaVentas())
@@ -1089,7 +1341,7 @@ public class VentaActivity extends FragmentActivity {
                     .setIcon(android.R.drawable.ic_menu_upload)
                     .setPositiveButton("Si", new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
-                            DialogFragment dialogoimprimir = new DialogoPrint();
+                            DialogFragment dialogoimprimir = new DialogoPrint(getVenta());
                             dialogoimprimir.show(getSupportFragmentManager(), "Imprimir ventas");
                         }
                     })
@@ -1131,7 +1383,6 @@ public class VentaActivity extends FragmentActivity {
         Button negative = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
         negative.setTextColor(Color.parseColor("#e18a33"));
     }
-
     public Venta getventas() {
         return venta;
     }
@@ -1223,15 +1474,9 @@ public class VentaActivity extends FragmentActivity {
 //        return null;
     }
 
-    public void setCliente(Cliente cliente) {
-    }
 
     public Venta getVenta() {
         return venta;
-    }
-
-    public void setVenta(Venta venta) {
-        this.venta = venta;
     }
 
     public void leerCodigoOnClick(View view) {
@@ -1443,8 +1688,8 @@ public void Buttons(){
         Aceptar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(Configuracionleer().getEditarVenta()==0 && !venta.isNueva()){
-                    DialogFragment dialogoimprimir = new DialogoPrint();
+                if(Configuracionleer().getEditarVenta()==0 && !venta.isNueva() && InicioActivity.impresiones.getmostrarImpresion() == 1 && (InicioActivity.getListaMetodos().size() == 0)){
+                    DialogFragment dialogoimprimir = new DialogoPrint(getVenta());
                     dialogoimprimir.show(getSupportFragmentManager(), "Imprimir ventas");
                 }else{
                     aceptarOnClick(v);
@@ -1458,4 +1703,105 @@ public void Buttons(){
             }
         });
 }
+
+    public void guardarNuevoClienteOnClick() {
+        if (!(clienteseleccionado.isEmpty())) {
+            InicioActivity.getListaClientes().add(clienteseleccionadoCliente);
+            InicioActivity.Toast(VentaActivity.this,"Actualizando cliente...");
+            VentaActivity.EnviarClientesPOST envioClientes = new VentaActivity.EnviarClientesPOST() {
+                @Override
+                public void onGetValue(final String value) {
+                    VentaActivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            InicioActivity.Toast(VentaActivity.this,value);
+                            if(value.contains("error")){
+                                guardarNuevoClienteOnClick();
+                            }else{
+                                nuevoCliente = false;
+                                cargarClientes();
+                                clientes.setSelection(clientes.getCount()-1);
+                                InicioActivity.Toast(VentaActivity.this,"Envio correcto");
+                            }
+                        }
+                    });
+                }
+            };
+            envioClientes.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+            InicioActivity.Toast(this, "Cliente guardado");
+
+        }
+    }
+
+    /// Funcion para subir el XML actualizado de clientes
+    public abstract class EnviarClientesPOST extends AsyncTask<Void, Void, Void> {
+        public EnviarClientesPOST() {}
+        protected Void doInBackground(Void... progress) {
+            Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+            try {
+                InicioActivity.actualInventario();
+                HttpClient httpclient = new DefaultHttpClient();
+                HttpPost httppost = new HttpPost(Principalctivity.Configuracion(InicioActivity.InicioActividad.getExternalFilesDir(null)).getFTP().trim() + "recibirventas.php");
+
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
+
+                StringBuilder Datos = new StringBuilder("<clientes>");
+                for(Cliente cliente : InicioActivity.getListaClientes()){
+                    String productoString = "<cliente>"+
+                            "<clave>"+cliente.getClave()+"</clave>"+
+                            "<nombre>"+cliente.getNombre()+"</nombre>"+
+                            "<numPrecio>"+cliente.getNumPrecio()+"</numPrecio>"+
+                            "<calle>"+cliente.getCalle()+"</calle>"+
+                            "<numExterior>"+cliente.getNumEx()+"</numExterior>"+
+                            "<numInterior>"+cliente.getNumIn()+"</numInterior>"+
+                            "<colonia>"+cliente.getColonia()+"</colonia>"+
+                            "<cp>"+cliente.getCP()+"</cp>"+
+                            "<ciudad>"+cliente.getCiudad()+"</ciudad>"+
+                            "<estado>"+cliente.getEstado()+"</estado>"+
+                            "<telefono1>"+cliente.getTelefono1()+"</telefono1>"+
+                            "<telefono2>"+cliente.getTelefono2()+"</telefono2>"+
+                            "<telefono3>"+cliente.getTelefono3()+"</telefono3>"+
+                            "<telefono4>"+cliente.getTelefono4()+"</telefono4>"+
+                            "<atencion>"+cliente.getAtencion()+"</atencion>"+
+                            "<diascredito>"+cliente.getDiasCredito()+"</diascredito>"+
+                            "</cliente>";
+                    productoString = productoString.
+                            replace("&","&amp;").
+                            replace("ï¿½","N").
+                            replace("Ñ","N").
+                            replace("ñ","n").
+                            replace("null","");
+                    Datos.append(productoString);
+                }
+                Datos.append("</clientes>");
+                nameValuePairs.add(new BasicNameValuePair("archivo", "clientes.xml"));
+                nameValuePairs.add(new BasicNameValuePair("ventas", Datos.toString()));
+                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+
+                // Execute HTTP Post Request
+                HttpResponse response = httpclient.execute(httppost);
+                HttpEntity ent = response.getEntity();
+                BufferedReader lector = new BufferedReader(new InputStreamReader(ent.getContent()));
+                lector.close();
+                if(response.getStatusLine().getStatusCode()==200){
+                    onGetValue("El cliente se actualizado correctamente");
+                    InicioActivity.cargarClientes(true);
+                }else{
+                    onGetValue("Ocurrio un error al actualizar el cliente");
+                }
+            } catch (ClientProtocolException e) {
+                onGetValue("Existencias \n error Client:"+ e.getMessage());
+            } catch (IOException e) {
+                onGetValue("error: Revisa tu conexion a internet.");
+            } catch (Exception e) {
+                onGetValue("Existencias \n error exception:"+ e.getMessage());
+            }
+            return null;
+        }
+        protected void onProgressUpdate(Void... progress) {}
+        public abstract void onGetValue(String value);
+        protected void onPostExecute(Void result) {}
+    }
+
+
 }

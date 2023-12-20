@@ -9,6 +9,7 @@ public class ConfiguracionFTP {
         private Boolean capturapagos;
         private Boolean asistencia;
         private String claveconfiguracion;
+        private String serieclientes;
 
         public Boolean getModificarprecios() {
             return modificarprecios;
@@ -46,7 +47,14 @@ public class ConfiguracionFTP {
         return claveconfiguracion;
     }
 
-        public void setClaveconfiguracion(String claveconfiguracion) {this.claveconfiguracion = claveconfiguracion;}
+        public void setClaveconfiguracion(String claveconfiguracion) {
+            this.claveconfiguracion = claveconfiguracion;
+        }
 
+        public String getSerieclientes() {return serieclientes;}
+
+        public void setSerieclientes(String serieclientes) {
+            this.serieclientes = serieclientes;
+        }
     }
 

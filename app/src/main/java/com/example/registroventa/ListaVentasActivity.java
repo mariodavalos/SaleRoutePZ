@@ -14,6 +14,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Scroller;
 import android.widget.TextView;
@@ -25,16 +27,19 @@ import com.example.registroventa.models.VentaProducto;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
-public class ListaVentasActivity extends android.app.Activity {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class ListaVentasActivity extends AppCompatActivity {
     public static int Ventaseleccionada = 0;
     private static List<Venta> listaVentas = new ArrayList<Venta>();
-    private static Venta venta;
+    static Venta venta;
     private static List<String> arregloVentas = new ArrayList<String>();
-    private static ArrayAdapter<String> adapter;
+    private static CustomAdapterListaVentas adapter;
     private static TextView cantidad;
     private static TextView total;
     private static ListView my_listview;
@@ -187,9 +192,13 @@ public class ListaVentasActivity extends android.app.Activity {
         cantidad.setText("Productos: " + Numero);
         total.setText("Total: " + NumberFormat.getCurrencyInstance(Locale.US).format(Precio));
         my_listview = (ListView) findViewById(R.id.listaVentas);
+        my_listview.setTextAlignment(View.TEXT_ALIGNMENT_CENTER);
+
         //adapter.clear();
         //my_listview.
-        adapter = new ArrayAdapter<String>(this, R.layout.lista_item_layout, arregloVentas);
+//        adapter = new ArrayAdapter<String>(this, R.layout.lista_item_layout, arregloVentas);
+        adapter = new CustomAdapterListaVentas(ListaVentasActivity.this, R.layout.lista_item_layout, arregloVentas,getSupportFragmentManager());
+
         my_listview.setAdapter(adapter);
         my_listview.setOnItemClickListener(new OnItemClickListener() {
             @Override
@@ -206,6 +215,8 @@ public class ListaVentasActivity extends android.app.Activity {
                     ListaVentasActivity.this.startActivity(intent);
                 }
             }
+
+
         });
 
         //cargarVentasBD();
@@ -279,52 +290,51 @@ public class ListaVentasActivity extends android.app.Activity {
     }
 
     public void imprimirCortes(View view) {
-        String dataToPrint = "$intro$";
+        StringBuilder dataToPrint = new StringBuilder("$intro$");
         int cantidadTicket = 0;
         Double totalTicket = 0.0;
 
         /////////////ENCABEZADO INICIO/////////////////////
-        dataToPrint = dataToPrint + (InicioActivity.impresiones.getencabezado1().length() > 30 ? InicioActivity.impresiones.getencabezado1().substring(0, 30) : InicioActivity.impresiones.getencabezado1()) + "$intro$";
-        dataToPrint = dataToPrint + (InicioActivity.impresiones.getencabezado2().length() > 30 ? InicioActivity.impresiones.getencabezado2().substring(0, 30) : InicioActivity.impresiones.getencabezado2()) + "$intro$";
-        dataToPrint = dataToPrint + (InicioActivity.impresiones.getencabezado3().length() > 30 ? InicioActivity.impresiones.getencabezado3().substring(0, 30) : InicioActivity.impresiones.getencabezado3()) + "$intro$";
+        dataToPrint.append(InicioActivity.impresiones.getencabezado1().length() > 30 ? InicioActivity.impresiones.getencabezado1().substring(0, 30) : InicioActivity.impresiones.getencabezado1()).append("$intro$");
+        dataToPrint.append(InicioActivity.impresiones.getencabezado2().length() > 30 ? InicioActivity.impresiones.getencabezado2().substring(0, 30) : InicioActivity.impresiones.getencabezado2()).append("$intro$");
+        dataToPrint.append(InicioActivity.impresiones.getencabezado3().length() > 30 ? InicioActivity.impresiones.getencabezado3().substring(0, 30) : InicioActivity.impresiones.getencabezado3()).append("$intro$");
         /////////////ENCABEZADO FIN///////////////////////
-        dataToPrint = dataToPrint + "-----------------------------" + "$intro$";
+        dataToPrint.append("-----------------------------").append("$intro$");
         /////////////ENCABEZADO INICIO/////////////////////
-        dataToPrint = dataToPrint + "Vendedor: " + InicioActivity.getVendedorSeleccionado().getNombre() + "$intro$";
+        dataToPrint.append("Vendedor: ").append(InicioActivity.getVendedorSeleccionado().getNombre()).append("$intro$");
         Date fecha = new Date();
-        dataToPrint = dataToPrint + "Fecha: " + String.format("%02d/%02d/%02d %02d:%02d", fecha.getDate(), fecha.getMonth() + 1, fecha.getYear() + 1900, fecha.getHours(), fecha.getMinutes()) + "$intro$";
-                dataToPrint = dataToPrint + "-----------------------------" + "$intro$";
+        dataToPrint.append("Fecha: ").append(String.format("%02d/%02d/%02d %02d:%02d", fecha.getDate(), fecha.getMonth() + 1, fecha.getYear() + 1900, fecha.getHours(), fecha.getMinutes())).append("$intro$");
+                dataToPrint.append("-----------------------------").append("$intro$");
         /////////////ENCABEZADO FIN///////////////////////
         if ((InicioActivity.impresiones.getimprimirCorte() == 1 || InicioActivity.impresiones.getimprimirCorte() == 3)) {
             ////////////VENTAS INICIO///////////////////////////////
             if (listaVentas.size() > 0) {
-                dataToPrint = dataToPrint + "----------VENTAS-------------" + "$intro$";
-                dataToPrint = dataToPrint + "-----------------------------" + "$intro$";
+                dataToPrint.append("----------VENTAS-------------").append("$intro$");
+                dataToPrint.append("-----------------------------").append("$intro$");
                 for (Venta ticket_productos : listaVentas) {
                     int cantidad = 0;
                     Double total = 0.0;
-                    dataToPrint = dataToPrint + "Fecha: " + ticket_productos.getFecha().toLocaleString() + "$intro$";
-                    dataToPrint = dataToPrint + "-----------------------------" + "$intro$";
-                    dataToPrint = dataToPrint +"Cantidad     Precio     Total"+"$intro$";
-                    dataToPrint = dataToPrint + "-----------------------------" + "$intro$";
+                    dataToPrint.append("Fecha: ").append(ticket_productos.getFecha().toLocaleString()).append("$intro$");
+                    dataToPrint.append("-----------------------------").append("$intro$");
+                    dataToPrint.append("Cantidad     Precio     Total").append("$intro$");
+                    dataToPrint.append("-----------------------------").append("$intro$");
                     ///////////PRODUCTOS INICIO//////////////////////////
                     for (VentaProducto producto : ticket_productos.getVentaProductos()) {
                         if (producto.getProducto().toString().length() > 31) {
-                            dataToPrint = dataToPrint + producto.getProducto().toString().substring(0, 30) + "$intro$";
+                            dataToPrint.append(producto.getProducto().toString().substring(0, 30)).append("$intro$");
                             if (producto.getProducto().toString().length() > 61) {
-                                dataToPrint = dataToPrint + producto.getProducto().toString().substring(30, 60) + "$intro$";
-                                dataToPrint = dataToPrint + producto.getProducto().toString().substring(60) + "$intro$";
+                                dataToPrint.append(producto.getProducto().toString().substring(30, 60)).append("$intro$");
+                                dataToPrint.append(producto.getProducto().toString().substring(60)).append("$intro$");
                             } else {
-                                dataToPrint = dataToPrint + producto.getProducto().toString().substring(30) + "$intro$";
+                                dataToPrint.append(producto.getProducto().toString().substring(30)).append("$intro$");
                             }
                         } else {
-                            dataToPrint = dataToPrint + producto.getProducto().toString() + "$intro$";
+                            dataToPrint.append(producto.getProducto().toString()).append("$intro$");
                         }
                         String space = "                             ";
-                        dataToPrint = dataToPrint + String.format("%.2f", producto.getCantidad()) + space.substring(String.format("%.2f", producto.getCantidad()).length());
-                        dataToPrint = dataToPrint + NumberFormat.getCurrencyInstance(Locale.US).format(producto.getPrecioUnitario()) +
-                                space.substring(NumberFormat.getCurrencyInstance(Locale.US).format(producto.getPrecioUnitario()).length());
-                        dataToPrint = dataToPrint + NumberFormat.getCurrencyInstance(Locale.US).format(producto.getTotal()) + "$intro$";
+                        dataToPrint.append(String.format("%.2f", producto.getCantidad())).append(space.substring(String.format("%.2f", producto.getCantidad()).length()));
+                        dataToPrint.append(NumberFormat.getCurrencyInstance(Locale.US).format(producto.getPrecioUnitario())).append(space.substring(NumberFormat.getCurrencyInstance(Locale.US).format(producto.getPrecioUnitario()).length()));
+                        dataToPrint.append(NumberFormat.getCurrencyInstance(Locale.US).format(producto.getTotal())).append("$intro$");
 
                         cantidad += producto.getCantidad();
                         total += producto.getTotal();
@@ -332,28 +342,30 @@ public class ListaVentasActivity extends android.app.Activity {
                     cantidadTicket += cantidad;
                     totalTicket += total;
                     ////////////PRODUCTOS FIN///////////////////////////
-                    dataToPrint = dataToPrint + "-----------------------------" + "$intro$";
-                    dataToPrint = dataToPrint + "Productos:             ";
-                    dataToPrint = dataToPrint + Integer.toString(cantidad) + "$intro$";
-                    dataToPrint = dataToPrint + "Subtotal " + (ticket_productos.isMetodo() ? "Contado" : "Crédito") + ": " + NumberFormat.getCurrencyInstance(Locale.US).format(total) + "$intro$";
+                    dataToPrint.append("-----------------------------").append("$intro$");
+                    dataToPrint.append("Productos:             ");
+                    dataToPrint.append(Integer.toString(cantidad)).append("$intro$");
+                    dataToPrint.append(ticket_productos.getMetodosMultiples().isEmpty()?(ticket_productos.isMetodo() ? "Contado" : "Crédito"):
+                                   "Pagado con:$intro$"+ticket_productos.getMetodoPagos()).
+                            append("Subtotal: ").append(NumberFormat.getCurrencyInstance(Locale.US).format(total)).append("$intro$");
                     ////////////////VENTAS FIN///////////////////////////
                 }
-                dataToPrint = dataToPrint + "-----------------------------" + "$intro$";
-                dataToPrint = dataToPrint + "-----------------------------" + "$intro$";
-                dataToPrint = dataToPrint + "Productos:        ";
-                dataToPrint = dataToPrint + Integer.toString(cantidadTicket) + "$intro$";
-                dataToPrint = dataToPrint + "TOTAL:            " + NumberFormat.getCurrencyInstance(Locale.US).format(totalTicket) + "$intro$";
-                dataToPrint = dataToPrint + "-----------------------------" + "$intro$";
+                dataToPrint.append("-----------------------------").append("$intro$");
+                dataToPrint.append("-----------------------------").append("$intro$");
+                dataToPrint.append("Productos:        ");
+                dataToPrint.append(Integer.toString(cantidadTicket)).append("$intro$");
+                dataToPrint.append("TOTAL:            ").append(NumberFormat.getCurrencyInstance(Locale.US).format(totalTicket)).append("$intro$");
+                dataToPrint.append("-----------------------------").append("$intro$");
 
             } else {
-                dataToPrint = dataToPrint + "---------NO HAY VENTAS-------" + "$intro$";
-                dataToPrint = dataToPrint + "-----------------------------" + "$intro$";
+                dataToPrint.append("---------NO HAY VENTAS-------").append("$intro$");
+                dataToPrint.append("-----------------------------").append("$intro$");
             }
         }
-        dataToPrint = dataToPrint + "-----------------------------" + "$intro$";
-        dataToPrint = dataToPrint + "-----------------------------" + "$intro$";
+        dataToPrint.append("-----------------------------").append("$intro$");
+        dataToPrint.append("-----------------------------").append("$intro$");
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        final String finalDataToPrint = dataToPrint;
+        final String finalDataToPrint = dataToPrint.toString();
         builder
                 .setMessage("Selecciona una opcion para el corte.")
                 .setTitle("CORTE")

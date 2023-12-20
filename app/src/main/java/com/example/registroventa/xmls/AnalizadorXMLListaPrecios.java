@@ -26,11 +26,11 @@ import java.util.List;
 public class AnalizadorXMLListaPrecios {
     private String pagina;
     private ListaPrecios ListPrecio;
-    private Context Carpeta;
+    private Context context;
 
     public AnalizadorXMLListaPrecios(String pagina, Context Carpeta) {
         this.pagina = pagina;
-        this.Carpeta = Carpeta;
+        this.context = Carpeta;
     }
 
     public List<ListaPrecios> procesar(Boolean Internet) throws Exception {
@@ -89,10 +89,10 @@ public class AnalizadorXMLListaPrecios {
             File root1 = android.os.Environment.getExternalStorageDirectory();
             directorio = new File(root1.getAbsolutePath() + "/Android/data/com.ventaenruta");
         }else {
-            directorio = new File(Carpeta.getExternalFilesDir(null), "Android/data/com.ventaenruta");
+            directorio = new File(context.getExternalFilesDir(null), "Android/data/com.ventaenruta");
         }
         FileOutputStream file = null;
-        if (directorio.exists() == false) directorio.mkdirs();
+        if (!directorio.exists()) directorio.mkdirs();
         Xml1 = new File(directorio, "listadeprecios.xml");
 
         URL url;
@@ -116,6 +116,12 @@ public class AnalizadorXMLListaPrecios {
                 file = new FileOutputStream(Xml1);
 
                 buffer = new byte[bufferSize];
+                if((Bytes = entra.read(buffer))<=0){
+                    InicioActivity.mensajeErrorDB[5] ="Base de Precios Negociados no se encuentra o esta dañada";
+                    return ListaPrecio;
+                }else{
+                    file.write(buffer, 0, Bytes);
+                }
                 while ((Bytes = entra.read(buffer)) > 0) {
                     file.write(buffer, 0, Bytes);
                 }
@@ -124,24 +130,11 @@ public class AnalizadorXMLListaPrecios {
                 conn.disconnect();
             }
         } catch (Exception e) {
-            /*
-            AlertDialog.Builder builder = new AlertDialog.Builder(InicioActivity.InicioActividad);
-            builder.setMessage("Base de Precios Negociados no se encuentra o esta dañada")
-                    .setTitle("Error de conexion")
-                    .setCancelable(false);
-            builder.setPositiveButton("OK", null);
-            AlertDialog dialog = builder.create();
-            dialog.show();
-
-            Button possitive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-            possitive.setTextColor(Color.parseColor("#e18a33"));*/
-            //e.getMessage();
             InicioActivity.mensajeErrorDB[5] ="Base de Precios Negociados no se encuentra o esta dañada";
         }
         InputStream leerXml = new FileInputStream(Xml1);
         Xml.parse(leerXml, Xml.Encoding.ISO_8859_1, root.getContentHandler());
         leerXml.close();
-        ////////////////////////////////////////////////////////////////////////////////////////////
         return ListaPrecio;
     }
 

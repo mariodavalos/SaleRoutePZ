@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">Venta en Ruta 5.9.1</string>
+    <string name="app_name">Venta en Ruta 5.10.10</string>
     <string name="hello_world">Hello world!</string>
     <string name="title_activity_lista_ventas">ListaVentasActivity</string>
     <string name="title_activity_venta">VentaActivity</string>
@@ -45,6 +45,18 @@
     <string name="labelexisten">Existencia</string>
     <string name="titulovisual">Datos del cliente</string>
     <string name="Nombre">Nombre</string>
+    <string name="Atencion">Atención</string>
+    <string name="Telefono">Telefono</string>
+    <string name="Email">Email</string>
+    <string name="Calle">Calle</string>
+    <string name="Numero">Numero</string>
+    <string name="Colonia">Colonia</string>
+    <string name="Municipio">Municipio</string>
+    <string name="Estado">Estado</string>
+    <string name="Pais">Pais</string>
+    <string name="CP">CP</string>
+    <string name="diasCredito">Días credito</string>
+
     <string name="callecliente">Calle</string>
     <string name="Limite">Lineas por archivo (0 = sin limite)</string>
     <string name="LinkPage"><a href="http://www.puntozero.mx/">www.puntozero.mx</a></string>

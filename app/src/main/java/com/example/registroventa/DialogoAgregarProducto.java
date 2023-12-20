@@ -95,31 +95,12 @@ public class DialogoAgregarProducto extends DialogFragment {
                 .setPositiveButton(Boton, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
+                        try{
                                 actividad.addormod = true;
-                        Producto producto = null;
                         String mensajerro = "";
-
-                        posicionproducto = 0;
                         n = 0;
-                        String seleccionado = productos.getSelectedItem().toString();
-                        Boolean encontrado = true;
-
-                        for (Producto productoerror : InicioActivity.getListaProductos()) {
-                            String productoactual = productoerror.getDescripcion().replaceAll(" ","");
-                            if(claveproducto == 1)
-                                productoactual = productoerror.getClave().replaceAll(" ","")+"-"+productoactual;
-                            if (productoactual.length() > 25) productoactual = productoactual.substring(0, 25);
-                            if (productoactual.length() <= 0) productoactual = productoerror.getClave();
-                            seleccionado = seleccionado.replaceAll(" ","");
-                            seleccionado = seleccionado.replaceAll("\t","");
-
-                            int seleccion = seleccionado.indexOf(productoactual);
-                            if ((seleccion >= 0 && seleccionado.indexOf(productoerror.getClave().replaceAll(" ","")) == 0) || seleccion == 0)
-                                encontrado = false;
-                            else if (encontrado)
-                                posicionproducto++;
-                        }
-                        producto = InicioActivity.getListaProductos().get(posicionproducto);
+                        Producto producto = InicioActivity.getListaProductos().get(getIndexProducto(productos.getSelectedItem().toString()));
+                        if(producto == null) return;
                         Double precis = 0.0;
                         ventaProducto.setProducto(producto);
                         Cliente cliente = actividad.getCliente();
@@ -159,34 +140,37 @@ public class DialogoAgregarProducto extends DialogFragment {
                             ventaProducto.setPrecioUnitario(pclien);
                             mensajerro += "El precio a quedado en blanco ingresa un precio. ";
                         }
-                        if (productos.getSelectedItem().toString() == "NINGUNO") {
+                        if (productos.getSelectedItem().toString().equals("NINGUNO")) {
                             producto = InicioActivity.getListaProductos().get(0);
                             producto.setDescripcion("NINGUNO");
                             producto.setExistencias(0.0);
                             ventaProducto.setProducto(producto);
-                            mensajerro += "El producto seleccionado es incorrecto verificalo. ";
+                            mensajerro += "El producto seleccionado es incorrecto verificalo.";
                         }
-                        if (cantidad.getText().length() < 1)
+                        if (cantidad.getText().length() < 1) {
                             mensajerro += "Ingresa una cantidad del producto. ";
-                        else if (Double.parseDouble(cantidad.getText().toString()) > 0) ;
-                        else
+                        }
+                        else if (Double.parseDouble(cantidad.getText().toString()) == 0) {
                             mensajerro += "La cantidad no puede ser 0. ";
+                        }
                         if (mensajerro.length() < 1) {
-                            ventaProducto.setVenta(actividad.getVenta());
+                            ventaProducto.setVenta(actividad.getventas());
                             if (actividad.cambio)
                                 actividad.modificarProductoVenta(ventaProducto);
                             else
                                 actividad.agregarProductoVenta(ventaProducto);
-
-
-                        } else
+                        } else {
                             actividad.errorPrecio(ventaProducto, mensajerro);
+                        }
                         InputMethodManager imm = (InputMethodManager) actividad.getSystemService(Activity.INPUT_METHOD_SERVICE);
                         imm.toggleSoftInput(InputMethodManager.HIDE_NOT_ALWAYS, 0);
                         //InicioActivity.actualInventario();
-                        dismiss();
+                            dismiss();
+//                            view.dismiss();
+                    }catch(Exception e){
+                            InicioActivity.Toast(actividad, "Error: " + e.getMessage());
+                        }
                     }
-
                 })
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                     @Override
@@ -209,11 +193,11 @@ public class DialogoAgregarProducto extends DialogFragment {
             });
 
 
-        button = (Button) view.findViewById(R.id.botonproductos);
-        search = (Button) view.findViewById(R.id.buttonsearch);
-        precib = (Button) view.findViewById(R.id.desplegarPrecios);
-        precio = (EditText) view.findViewById(R.id.Precioproducto);
-        listPopUp = (ListView) view.findViewById(R.id.ListPopUp);
+        button = view.findViewById(R.id.botonproductos);
+        search = view.findViewById(R.id.buttonsearch);
+        precib = view.findViewById(R.id.desplegarPrecios);
+        precio = view.findViewById(R.id.Precioproducto);
+        listPopUp = view.findViewById(R.id.ListPopUp);
 
         //Permisos desde FTP XML Configuracion
         if(!InicioActivity.getListaConfiguracion().get(0).getModificarprecios())
@@ -283,7 +267,6 @@ public class DialogoAgregarProducto extends DialogFragment {
             ClaveLabel.setVisibility(View.GONE);
 
         if (actividad.cambio) {
-
             VentaProducto amodificar = actividad.venta.getVentaProductos().get(actividad.modificacion);
             button.setVisibility(View.GONE);
             search.setVisibility(View.GONE);
@@ -291,7 +274,7 @@ public class DialogoAgregarProducto extends DialogFragment {
             String[] producto = new String[1];
             producto[0] = amodificar.getProducto().toString();
             if(claveproducto == 1)
-                producto[0] = amodificar.getProducto().getClave().toString() + "\t- " + amodificar.getProducto().toString();
+                producto[0] = amodificar.getProducto().getClave() + " - " + amodificar.getProducto().toString();
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getActivity(),
                     android.R.layout.simple_dropdown_item_1line, producto);
             productos.setAdapter(adapter);
@@ -301,39 +284,22 @@ public class DialogoAgregarProducto extends DialogFragment {
         } else if (errorproducto != null) {
             try{
             if (errorproducto.getProducto().getDescripcion().length() > 0) {
-
                 precio.setText(Double.toString(errorproducto.getPrecioUnitario()));
-                precioUni = actividad.errorpro.getPrecioUnitario() + "";
+                precioUni = String.valueOf(actividad.errorpro.getPrecioUnitario());
                 if (errorproducto.getCantidad() > 0)
                     cantidad.setText(Double.toString(errorproducto.getCantidad()));
                 precionum = errorproducto.getPrecioNum();
 
                 int posicionproducto = 0;
-                Boolean encontro = true;
-
-                if (arregloProductos == null) ;
-                else {
-                    String seleccionado = errorproducto.getProducto().getDescripcion();
-                    Boolean encontrado = true;
-                    for (Producto productoerror : InicioActivity.getListaProductos()) {
-                        String productoactual = productoerror.getDescripcion().replaceAll(" ","");
-                        if (productoactual.length() > 25) productoactual = productoactual.substring(0, 25);
-                        if (productoactual.length() <= 0) productoactual = productoerror.getClave();
-                        seleccionado = seleccionado.replaceAll(" ","");
-                        seleccionado = seleccionado.replaceAll("\t","");
-
-                        int seleccion = seleccionado.indexOf(productoactual);
-                        if ((seleccion >= 0 && seleccionado.indexOf(productoerror.getClave()) >= 0) || seleccion == 0)
-                            encontrado = false;
-                        else if (encontrado)
-                            posicionproducto++;
-                    }
+                if (arregloProductos != null){
+                    posicionproducto = getIndexProducto(errorproducto.getProducto().getDescripcion().toString());
                 }
-                if(posicionproducto<productos.getCount())
+                if(posicionproducto<productos.getCount()) {
                     productos.setSelection(posicionproducto, true);
-
+                }
             }
-            errorproducto = null;
+                errorproducto = null;
+                actividad.errorpro = null;
             }catch(Exception e){
                 InicioActivity.Toast(actividad,"error:"+ e.getMessage());
             }
@@ -435,6 +401,7 @@ public class DialogoAgregarProducto extends DialogFragment {
     }
     String precioUni = "";
     String[] arreglofinal;
+    @SuppressLint("SuspiciousIndentation")
     public void onClickBusqueda() {
         String buscado = productoBuscado.getText().toString();
         if (buscado.length() > 0) {
@@ -445,44 +412,27 @@ public class DialogoAgregarProducto extends DialogFragment {
                 int palabraencontrada = 0;
                 for(String busca:buscador)
                 {
-                    if(prod.getDescripcion().indexOf(busca.toUpperCase()) >= 0 || prod.getClave().indexOf(busca.toUpperCase()) >= 0)
-                    palabraencontrada++;
+                    if(prod.getDescripcion().contains(busca.toUpperCase()) || prod.getClave().contains(busca.toUpperCase())) {
+                        palabraencontrada++;
+                    }
                 }
-
                 if (palabraencontrada == buscador.length) {
                     if (claveproducto == 1)
-                        arreglosBuscados[e] = prod.getClave() + "\t- " + prod.getDescripcion();
+                        arreglosBuscados[e] = prod.getClave() + " - " + prod.getDescripcion();
                     else if (claveproducto == 0)
                         arreglosBuscados[e] = prod.getDescripcion();
+
                     if (prod.getExistencia() == null)
                         arregloExistenci[e] = (double) -1000000;
                     else
                         arregloExistenci[e] = prod.getExistencia();
+
                     arregloDePrecios[e] = prod.getPrecios().get(cliente.getNumPrecio() - 1);
+
                     for (ListaPrecios preciosN: InicioActivity.getListaPreciosNegociados()) {
                         if (preciosN.getCliente().compareToIgnoreCase(actividad.getCliente().getClave()) == 0)
                             if (preciosN.getProducto().compareToIgnoreCase(prod.getClave()) == 0)
                                 arregloDePrecios[e] = preciosN.getPrecio();
-                    }
-                    if (existencias == 1 && prod.getExistencia() != null) {
-                        String cadenas = "                                                                     ";
-                        String tabulacion = " \t";
-
-                        if (arreglosBuscados[e].length() < 36) tabulacion += "\t";
-                        if (arreglosBuscados[e].length() < 30) tabulacion += "\t";
-                        if (arreglosBuscados[e].length() < 27) tabulacion += "\t";
-                        if (arreglosBuscados[e].length() < 24) tabulacion += "\t";
-                        if (arreglosBuscados[e].length() < 21) tabulacion += "\t";
-                        if (arreglosBuscados[e].length() < 18) tabulacion += "\t";
-                        if (arreglosBuscados[e].length() < 15) tabulacion += "\t";
-                        if (arreglosBuscados[e].length() < 12) tabulacion += "\t";
-                        if (arreglosBuscados[e].length() < 9) tabulacion += "\t";
-                        if (arreglosBuscados[e].length() < 6) tabulacion += "\t";
-                        if (arreglosBuscados[e].length() < 3) tabulacion += "\t";
-                        if (arreglosBuscados[e].length() < 1) tabulacion += "\t";
-                        arreglosBuscados[e] += cadenas;
-                        cadenas = arreglosBuscados[e].substring(0, 40) + tabulacion;
-                        arreglosBuscados[e] = cadenas + prod.getExistencia();
                     }
                     e++;
 
@@ -497,17 +447,6 @@ public class DialogoAgregarProducto extends DialogFragment {
                 arreglofinal[i] = arreglosBuscados[i];
             }
             if (e == 0) {
-                /*Builder build = new Builder(getActivity());
-                build.setMessage("No se encontraron coincidencias")
-                        .setTitle("Busqueda realizada")
-                        .setCancelable(false);
-                build.setNegativeButton("OK", null);
-                AlertDialog dialog = build.create();
-                dialog.show();
-                Button possitive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                possitive.setTextColor(Color.parseColor("#e18a33"));
-                Button negative = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-                negative.setTextColor(Color.parseColor("#e18a33"));*/
                 arreglofinal = arregloProductos;
 
                 InicioActivity.Toast(actividad, "No coincidencias");
@@ -536,14 +475,14 @@ public class DialogoAgregarProducto extends DialogFragment {
                     if (existencias == 1 && arregloExistenci[position] != null) {
                         if (arregloExistenci[position] == -1000000) {
                             existen.setText("SIN");
-                            InicioActivity.Toast(actividad, "Existencia no registrada");
+//                            InicioActivity.Toast(actividad, "Existencia no registrada");
                         } else {
                             existen.setText(Double.toString(arregloExistenci[position]));
                             existenciaCambian = arregloExistenci[position];
                         }
                     } else {
                         existen.setText("SIN");
-                        InicioActivity.Toast(actividad, "Existencia no registrada");
+//                        InicioActivity.Toast(actividad, "Existencia no registrada");
                     }
 
                 }
@@ -580,38 +519,23 @@ public class DialogoAgregarProducto extends DialogFragment {
         Cliente cliente;// = actividad.getCliente();
         for (int i = 0; i < InicioActivity.getListaProductos().size(); i++) {
             if (claveproducto == 1)
-                arregloProductos[i] = InicioActivity.getListaProductos().get(i).getClave() + "\t- " + InicioActivity.getListaProductos().get(i).toString();
+                arregloProductos[i] = InicioActivity.getListaProductos().get(i).getClave() + " - " + InicioActivity.getListaProductos().get(i).toString();
             else if (claveproducto == 0)
                 arregloProductos[i] = InicioActivity.getListaProductos().get(i).toString();
-            if (existencias == 1 && InicioActivity.getListaProductos().get(i).getExistencia() != null) {
-                String cadenas = "                                                                     ";
-                String tabulacion = " \t";
 
-                if (arregloProductos[i].length() < 36) tabulacion += "\t";
-                if (arregloProductos[i].length() < 30) tabulacion += "\t";
-                if (arregloProductos[i].length() < 27) tabulacion += "\t";
-                if (arregloProductos[i].length() < 24) tabulacion += "\t";
-                if (arregloProductos[i].length() < 21) tabulacion += "\t";
-                if (arregloProductos[i].length() < 18) tabulacion += "\t";
-                if (arregloProductos[i].length() < 15) tabulacion += "\t";
-                if (arregloProductos[i].length() < 12) tabulacion += "\t";
-                if (arregloProductos[i].length() < 9) tabulacion += "\t";
-                if (arregloProductos[i].length() < 6) tabulacion += "\t";
-                if (arregloProductos[i].length() < 3) tabulacion += "\t";
-                if (arregloProductos[i].length() < 1) tabulacion += "\t";
-                arregloProductos[i] += cadenas;
-                cadenas = arregloProductos[i].substring(0, 40) + tabulacion;
-                arregloProductos[i] = cadenas + InicioActivity.getListaProductos().get(i).getExistencia();
-            }
             cliente = actividad.getCliente();
             int numPrecio = 1;
+
             if((cliente.getNumPrecio())>0)
                 numPrecio = cliente.getNumPrecio();
+
             arregloDePrecios[i] = InicioActivity.getListaProductos().get(i).getPrecios().get((numPrecio)-1);
+
             if (InicioActivity.getListaProductos().get(i).getExistencia() == null)
                 arregloExistenci[i] = (double) -1000000;
             else
                 arregloExistenci[i] = InicioActivity.getListaProductos().get(i).getExistencia();
+
             for (ListaPrecios preciosN: InicioActivity.getListaPreciosNegociados()) {
                 if(preciosN.getCliente().compareToIgnoreCase(cliente.getClave())==0)
                     if(preciosN.getProducto().compareToIgnoreCase(InicioActivity.getListaProductos().get(i).getClave())==0)
@@ -674,66 +598,41 @@ public class DialogoAgregarProducto extends DialogFragment {
     public void cargarPrecios() {
         try {
 
-            posicionproducto = 0;
             n = 0;
-            String seleccionado = productos.getSelectedItem().toString();
-            Boolean encontrado = true;
-            List<Producto> products = InicioActivity.getListaProductos();
-
-            for (Producto productoerror : InicioActivity.getListaProductos()) {
-                String productoactual = productoerror.getDescripcion().replaceAll(" ","");
-                if(claveproducto == 1)
-                    productoactual = productoerror.getClave().replaceAll(" ","")+"-"+productoactual;
-                if (productoactual.length() > 25) productoactual = productoactual.substring(0, 25);
-                if (productoactual.length() <= 0) productoactual = productoerror.getClave();
-                seleccionado = seleccionado.replaceAll(" ","");
-                seleccionado = seleccionado.replaceAll("\t","");
-
-                int seleccion = seleccionado.indexOf(productoactual);
-                if ((seleccion >= 0 && seleccionado.indexOf(productoerror.getClave().replaceAll(" ","")+"-") >= 0) || seleccion == 0)
-                    encontrado = false;
-                else if (encontrado)
-                    posicionproducto++;
-            }
-            int sizeList = 6;
-            for (ListaPrecios preciosN: InicioActivity.getListaPreciosNegociados()) {
-                if(preciosN.getCliente().compareToIgnoreCase(actividad.getCliente().getClave())==0)
-                    if(preciosN.getProducto().compareToIgnoreCase(InicioActivity.getListaProductos().get(posicionproducto).getClave())==0)
-                        sizeList++;
-            }
+            Producto producto = InicioActivity.getListaProductos().get(getIndexProducto(productos.getSelectedItem().toString()));
+            if(producto == null) return;
             final List<String> ListaPreciosProducto = new ArrayList<String>();
             if (precio.getText().toString().length() > 0)
-                ListaPreciosProducto.add(n,precio.getText().toString());
+                ListaPreciosProducto.add(n, precio.getText().toString());
             else
-                ListaPreciosProducto.add(n,Double.toString(InicioActivity.getListaProductos().get(posicionproducto).getPrecios().get(actividad.getCliente().getNumPrecio() - 1)));
-
-            PrecioNegociado = 0.0;
-            for (ListaPrecios preciosN: InicioActivity.getListaPreciosNegociados()) {
-                if(preciosN.getCliente().compareToIgnoreCase(actividad.getCliente().getClave())==0)
-                    if(preciosN.getProducto().compareToIgnoreCase(InicioActivity.getListaProductos().get(posicionproducto).getClave())==0)
-                    {
-                        n++;
-                        ListaPreciosProducto.add(n,"N-" + NumberFormat.getCurrencyInstance(Locale.US).format(preciosN.getPrecio()));
-                        PrecioNegociado = preciosN.getPrecio();
-                        //precio.setText(preciosN.getPrecio()+"");
-                    }
+                ListaPreciosProducto.add(n, Double.toString(producto.getPrecios().get(actividad.getCliente().getNumPrecio() - 1)));
+            if(!(InicioActivity.getListaPreciosNegociados().isEmpty())) {
+                PrecioNegociado = 0.0;
+                for (ListaPrecios preciosN : InicioActivity.getListaPreciosNegociados()) {
+                    if (preciosN.getCliente().compareToIgnoreCase(actividad.getCliente().getClave()) == 0)
+                        if (preciosN.getProducto().compareToIgnoreCase(producto.getClave()) == 0) {
+                            n++;
+                            ListaPreciosProducto.add(n, "N-" + NumberFormat.getCurrencyInstance(Locale.US).format(preciosN.getPrecio()));
+                            PrecioNegociado = preciosN.getPrecio();
+                        }
+                }
             }
             n++;
-            ListaPreciosProducto.add(n,"1-" + NumberFormat.getCurrencyInstance(Locale.US).format(InicioActivity.getListaProductos().get(posicionproducto).getPrecios().get(0)));
+            ListaPreciosProducto.add(n,"1-" + NumberFormat.getCurrencyInstance(Locale.US).format(producto.getPrecios().get(0)));
             n++;
-            ListaPreciosProducto.add(n,"2-" + NumberFormat.getCurrencyInstance(Locale.US).format(InicioActivity.getListaProductos().get(posicionproducto).getPrecios().get(1)));
+            ListaPreciosProducto.add(n,"2-" + NumberFormat.getCurrencyInstance(Locale.US).format(producto.getPrecios().get(1)));
             n++;
-            ListaPreciosProducto.add(n,"3-" + NumberFormat.getCurrencyInstance(Locale.US).format(InicioActivity.getListaProductos().get(posicionproducto).getPrecios().get(2)));
+            ListaPreciosProducto.add(n,"3-" + NumberFormat.getCurrencyInstance(Locale.US).format(producto.getPrecios().get(2)));
             n++;
-            ListaPreciosProducto.add(n,"4-" + NumberFormat.getCurrencyInstance(Locale.US).format(InicioActivity.getListaProductos().get(posicionproducto).getPrecios().get(3)));
+            ListaPreciosProducto.add(n,"4-" + NumberFormat.getCurrencyInstance(Locale.US).format(producto.getPrecios().get(3)));
             n++;
-            ListaPreciosProducto.add(n,"5-" + NumberFormat.getCurrencyInstance(Locale.US).format(InicioActivity.getListaProductos().get(posicionproducto).getPrecios().get(4)));
+            ListaPreciosProducto.add(n,"5-" + NumberFormat.getCurrencyInstance(Locale.US).format(producto.getPrecios().get(4)));
 
             //******************************************************************//
             ////////////////PRECIOS ADICIONALES //////////////////////////////////
             //******************************************************************//
             for (PreciosAdicionales precioAdicional: InicioActivity.getListaPreciosAdicionales()) {
-                if(InicioActivity.getListaProductos().get(posicionproducto).getClave().compareToIgnoreCase(precioAdicional.getProducto())==0){
+                if(producto.getClave().compareToIgnoreCase(precioAdicional.getProducto())==0){
                     n++;
                     ListaPreciosProducto.add(n, precioAdicional.getNumPrecio() + "-" + NumberFormat.getCurrencyInstance(Locale.US).format(precioAdicional.getPrecio()));
                 }
@@ -753,16 +652,6 @@ public class DialogoAgregarProducto extends DialogFragment {
                     preciosto.setVisibility(despliegue);
                     precionum=position;
                     if (despliegue == 8) {
-                        /*if (n == 4)
-                            precio.setText(Double.toString(InicioActivity.getListaProductos().get(posicionproducto).getPrecios().get(position)));
-                        else if (n == 5&& position > 0)
-                            precio.setText(Double.toString(InicioActivity.getListaProductos().get(posicionproducto).getPrecios().get(position - 1)));
-                        else if (n==6 ) {
-                            if(position > 1)
-                                precio.setText(Double.toString(InicioActivity.getListaProductos().get(posicionproducto).getPrecios().get(position - 2)));
-                            if(position == 1)
-                                precio.setText(String.valueOf(PrecioNegociado));
-                        }*/
                         String precioSelecto = preciosto.getSelectedItem().toString();
                         precioSelecto = precioSelecto.substring(precioSelecto.indexOf("$")+1);
                         precio.setText(precioSelecto);
@@ -784,5 +673,31 @@ public class DialogoAgregarProducto extends DialogFragment {
             e.getMessage();
         }
     }
+    int getIndexProducto(String busqueda){
+        posicionproducto = -1;
 
+        String seleccionado = busqueda;
+        // Eliminamos las tabulaciones y espacios adicionales
+        seleccionado = seleccionado.replaceAll("\t", "").replaceAll(" ", "");
+
+        for (Producto productoSearch : InicioActivity.getListaProductos()) {
+            String cadenaBusqueda;
+            if (claveproducto == 1) {
+                cadenaBusqueda = productoSearch.getClave() + "-" + productoSearch.getDescripcion();
+            } else {
+                cadenaBusqueda = productoSearch.getDescripcion();
+            }
+            // Limpiamos la cadena de búsqueda similar a la cadena seleccionada
+            cadenaBusqueda = cadenaBusqueda.replaceAll(" ", "");
+            if (seleccionado.equals(cadenaBusqueda)) {
+                posicionproducto = InicioActivity.getListaProductos().indexOf(productoSearch);
+                break;  // Rompemos el ciclo si encontramos una coincidencia
+            }
+        }
+        if(posicionproducto < 0){
+            InicioActivity.Toast(actividad, "Hay un problema con el producto seleccionado, intentalo de nuevo");
+            return -1;
+        }
+        return posicionproducto;
+    }
 }

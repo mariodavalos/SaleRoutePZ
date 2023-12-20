@@ -3,6 +3,7 @@ package com.example.registroventa;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -11,8 +12,12 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.graphics.PorterDuffXfermode;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
+
+import androidx.core.content.FileProvider;
 import androidx.fragment.app.DialogFragment;
 import androidx.print.PrintHelper;
 import android.view.LayoutInflater;
@@ -33,11 +38,17 @@ import com.zebra.android.printer.ZebraPrinter;
 import com.zebra.android.printer.ZebraPrinterFactory;
 import com.zebra.android.printer.ZebraPrinterLanguageUnknownException;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Locale;
 
 @SuppressWarnings("deprecation")
 public class DialogoPrint extends DialogFragment {
+    DialogoPrint(Venta venta) {
+        ticket_productos = venta;
+    }
     public static String macAddress;
     public static Venta ticket_productos = null;
     private static DiscoveryHandler btDiscoveryHandler = null;
@@ -49,25 +60,31 @@ public class DialogoPrint extends DialogFragment {
     private int claveproducto = 0, existencias = 0;
     private Bitmap ticket;
     String dataToPrint="$intro$";
+
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 
         // Get the layout inflater
-        actividad = (VentaActivity) this.getActivity();
+        try {
+            actividad = (VentaActivity) this.getActivity();
+        } catch (Exception e) {}
         actividadlocal = this.getActivity();
         MacEncabezado = InicioActivity.impresiones;
         macAddress = MacEncabezado.getmacAdress();
         String[] impresorae = new String[1];
         impresorae[0] = MacEncabezado.getnombreImpresora();
-        ticket_productos = actividad.getventas();
+//        ticket_productos = ;
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View view = inflater.inflate(R.layout.dialog_printer, null);
         impresorasencon = (Spinner) view.findViewById(R.id.ImpresorasEncontradas);
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getActivity(),
                 android.R.layout.simple_dropdown_item_1line, impresorae);
         impresorasencon.setAdapter(adapter);
+        ImageView tickimagen = (ImageView) view.findViewById(R.id.imageView1);
+        Bitmap imagen = null;
+        Bitmap finalImagen = imagen;
         builder.setView(view)
                 .setPositiveButton("Imprimir", new DialogInterface.OnClickListener() {
                     @Override
@@ -95,14 +112,25 @@ public class DialogoPrint extends DialogFragment {
                         startActivity(intentPrint);
 
                         //printFile(ticket);
-
-                      actividad.cancelarOnClick(null);
+                      if(actividad!=null) {
+                          actividad.cancelarOnClick(null);
+                      }
                     }
                 })
                 .setNegativeButton("Cancelar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
-                        actividad.cancelarOnClick(null);
+                        if(actividad!=null) {
+                            actividad.cancelarOnClick(null);
+                        }
+                    }
+                })
+                .setNeutralButton("Compartir", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+
+                        shareBitmap(ticket, "filename.png", getActivity());
+
                     }
                 });
 
@@ -112,9 +140,16 @@ public class DialogoPrint extends DialogFragment {
             if (producto.getProducto().toString().length() > 38) Renglon += 20;
             Renglon += 50;
         }
+        if(!ticket_productos.getMetodosMultiples().isEmpty()){
+            Renglon += 50;
+            for (String s : ticket_productos.getMetodoPagos().split("\n")) {
+                Renglon += 50;
+            }
+        }
         Renglon += 250;
         Paint paint = new Paint();
         Bitmap b = Bitmap.createBitmap(600, Renglon, Bitmap.Config.RGB_565);
+
         Canvas c = new Canvas(b);
         paint.setColor(Color.WHITE);
         paint.setAlpha(255);
@@ -194,25 +229,36 @@ public class DialogoPrint extends DialogFragment {
         c.drawLine(Sangria + 40, Renglon + 7, 520, Renglon + 4, paint);
         c.drawLine(Sangria + 40, Renglon + 5, 520, Renglon + 5, paint);
         dataToPrint= dataToPrint+"-----------------------------"+"$intro$";
+        dataToPrint= ticket_productos.getMetodosMultiples().isEmpty()?"$intro$":
+                "Pagado con:$intro$"+ticket_productos.getMetodoPagos()+"$intro$";
         dataToPrint= dataToPrint+"Productos:        ";
-        dataToPrint= dataToPrint+Integer.toString(cantidad)+"$intro$";
-        dataToPrint= dataToPrint+"Total "+(ticket_productos.isMetodo()?"Contado":"Crédito")+": "+NumberFormat.getCurrencyInstance(Locale.US).format(total)+"$intro$";
+        dataToPrint= dataToPrint+ cantidad +"$intro$";
+        dataToPrint= dataToPrint+"Total "+(ticket_productos.getMetodosMultiples().isEmpty()?(ticket_productos.isMetodo()?"Contado":"Crédito"):"")+
+                ": "+NumberFormat.getCurrencyInstance(Locale.US).format(total)+"$intro$";
         dataToPrint= dataToPrint+"-----------------------------";
+        if(!ticket_productos.getMetodosMultiples().isEmpty()){
+            c.drawText("Pagado con:", Sangria + 45, Renglon + 45, paint);
+            Renglon += 25;
+            for (String s : ticket_productos.getMetodoPagos().split("\n")) {
+                c.drawText(s, Sangria + 45, Renglon + 45, paint);
+                Renglon += 25;
+            }
+            Renglon += 25;
+        }
         c.drawText("Productos", Sangria + 45, Renglon + 25, paint);
-        c.drawText("Total", Sangria + 360, Renglon + 25, paint);
+        c.drawText("Total "+(ticket_productos.isMetodo()?"Contado":"Crédito"), Sangria + 360, Renglon + 25, paint);
 
         dataToPrint= dataToPrint+"$intro$$intro$$intro$$cut$$intro$";
         c.drawText(Integer.toString(cantidad), Sangria + 45, Renglon + 45, paint);
         c.drawText(NumberFormat.getCurrencyInstance(Locale.US).format(total), Sangria + 360, Renglon + 45, paint);
         ticket = b;
-        ImageView tickimagen = (ImageView) view.findViewById(R.id.imageView1);
-        Bitmap imagen;
 
-        if (Renglon > 2040)
-            imagen = Bitmap.createScaledBitmap(ticket, 600, 2041, true);
-        else
-            imagen = Bitmap.createScaledBitmap(ticket, 600, Renglon, true);
-        ticket = Bitmap.createScaledBitmap(ticket, 1300, Renglon * 2, true);
+//        if (Renglon > 2040)
+//            imagen = Bitmap.createScaledBitmap(ticket, 600, 2041, true);
+//        else
+//            imagen = Bitmap.createScaledBitmap(ticket, 600, Renglon, true);
+//
+        ticket = Bitmap.createScaledBitmap(ticket, 1100, Renglon * 2, true);
         tickimagen.setImageBitmap(ticket);
 
         AlertDialog dialog = builder.create();
@@ -227,11 +273,51 @@ public class DialogoPrint extends DialogFragment {
                 Button negative = ((AlertDialog) dialog)
                         .getButton(AlertDialog.BUTTON_NEGATIVE);
                 negative.setTextColor(Color.parseColor("#e18a33"));
+                Button neutral = ((AlertDialog) dialog)
+                        .getButton(AlertDialog.BUTTON_NEUTRAL);
+                neutral.setTextColor(Color.parseColor("#e18a33"));
             }
         });
         return dialog;
 
     }
+    private Uri saveBitmapToFile(Bitmap bitmap, String filename, Context context) {
+        File directorio;
+        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+            File root1 = android.os.Environment.getExternalStorageDirectory();
+            directorio = new File(root1.getAbsolutePath() + "/Android/data/com.ventaenruta");
+        } else {
+            directorio = new File(context.getExternalFilesDir(null), "Android/data/com.ventaenruta");
+        }
+
+        if (!directorio.exists()) {
+            directorio.mkdirs();
+        }
+
+        File imagePath = new File(directorio, filename);
+        FileOutputStream stream;
+        try {
+            stream = new FileOutputStream(imagePath);
+            bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            stream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Usa FileProvider para obtener una URI, lo que permite compartir la imagen fuera de tu app
+        return FileProvider.getUriForFile(context, context.getPackageName() + ".fileprovider", imagePath);
+    }
+
+    private void shareBitmap(Bitmap bitmap, String filename, Context context) {
+        Uri uri = saveBitmapToFile(bitmap, filename, context);
+        Intent shareIntent = new Intent();
+        shareIntent.setAction(Intent.ACTION_SEND);
+        shareIntent.putExtra(Intent.EXTRA_STREAM, uri);
+        shareIntent.setType("image/png");
+        shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(Intent.createChooser(shareIntent, "Compartir imagen"));
+    }
+
     private void doPhotoPrint(Bitmap bitmap) {
         PrintHelper photoPrinter = new PrintHelper(getActivity());
         photoPrinter.setScaleMode(PrintHelper.SCALE_MODE_FIT);

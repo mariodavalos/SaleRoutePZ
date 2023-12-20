@@ -43,12 +43,11 @@ public class BaseDatosHelper extends SQLiteOpenHelper {
         try {
             //db.execSQL("DROP TABLE IF EXISTS CuentasXC");
             db.execSQL("CREATE TABLE CuentasXC (Archivo TEXT, Fecha TEXT, Cliente TEXT, Numero INTEGER, Serie TEXT, Id INTEGER, Cantidad TEXT, Return TEXT)");
-            db.execSQL("CREATE TABLE Venta (id INTEGER, fecha TEXT, idcliente TEXT, idvendedor TEXT, enviada INTEGER, metodo INTEGER, nota TEXT)");
+            db.execSQL("CREATE TABLE Venta (id INTEGER, fecha TEXT, idcliente TEXT, idvendedor TEXT, enviada INTEGER, metodo INTEGER, nota TEXT, metodosMultiples TEXT)");
             db.execSQL("CREATE TABLE VentaProducto (idventa INTEGER, idproducto TEXT, cantidad TEXT, precio TEXT, precionum TEXT)");
             db.execSQL("CREATE TABLE Configuracion (ftp_ip TEXT, botones INTEGER, clave INTEGER, existencia INTEGER)");
             db.execSQL("CREATE TABLE Impresioninfo (renglon1 TEXT, renglon2 TEXT, renglon3 TEXT,macAdress TEXT, nombre TEXT, impresion INTEGER)");
-        }catch (Exception e)
-        {
+        }catch (Exception e){
             e.toString();
         }
 //		agregarnuevaConfiguracion();
@@ -66,7 +65,7 @@ public class BaseDatosHelper extends SQLiteOpenHelper {
 //        db.execSQL("DROP TABLE IF EXISTS Configuracion");
 //        db.execSQL("DROP TABLE IF EXISTS Impresioninfo");
 //        db.execSQL("DROP TABLE IF EXISTS CuentasXC");
-        db.execSQL("ALTER TABLE Venta ADD COLUMN nota TEXT DEFAULT ''");
+        db.execSQL("ALTER TABLE Venta ADD COLUMN metodosMultiples TEXT DEFAULT ''");
         // Se crea la nueva versi�n de la tabla
 //        crearBD(db);
         //agregarnuevaConfiguracion();
@@ -168,19 +167,20 @@ public class BaseDatosHelper extends SQLiteOpenHelper {
     public void agregarVenta(Venta venta) {
         try {
             venta.setId(obtenerIDVenta());
-        Abrir();
+            Abrir();
 
-                    String fecha = String.format("%d-%d-%d %d:%d", venta.getFecha().getYear() + 1900, venta.getFecha().getMonth() + 1, venta.getFecha().getDate(), venta.getFecha().getHours(), venta.getFecha().getMinutes());
-                    String cadSQL = String
-                            .format("insert into Venta (id, fecha, idvendedor, idcliente, enviada, metodo, nota) values (%d, '%s', '%s', '%s', %d, %d, '%s')",
-                                    venta.getId(),
-                                    fecha,
-                                    venta.getVendedor().getClave(),
-                                    venta.getCliente().getClave(),
-                                    venta.isEnviada() ? 1 : 0,
-                                    venta.isMetodo() ? 1 : 0,
-                                    venta.getNota());
-                    db.execSQL(cadSQL);
+            String fecha = String.format("%d-%d-%d %d:%d", venta.getFecha().getYear() + 1900, venta.getFecha().getMonth() + 1, venta.getFecha().getDate(), venta.getFecha().getHours(), venta.getFecha().getMinutes());
+            String cadSQL = String
+                    .format("insert into Venta (id, fecha, idvendedor, idcliente, enviada, metodo, nota, metodosMultiples) values (%d, '%s', '%s', '%s', %d, %d,  '%s', '%s')",
+                            venta.getId(),
+                            fecha,
+                            venta.getVendedor().getClave(),
+                            venta.getCliente().getClave(),
+                            venta.isEnviada() ? 1 : 0,
+                            venta.isMetodo() ? 1 : 0,
+                            venta.getNota(),
+                            venta.getMetodosMultiples());
+            db.execSQL(cadSQL);
 //            Cursor cur = db
 //                    .rawQuery(
 //                            "SELECT id, fecha, idcliente, idvendedor, metodo, nota from Venta",
@@ -190,29 +190,30 @@ public class BaseDatosHelper extends SQLiteOpenHelper {
 //
 //            }
 
-                    for (VentaProducto vp : venta.getVentaProductos()) {
-try {
-    cadSQL = String
-            .format("insert into VentaProducto (idventa, idproducto, cantidad, precio, precionum) values ('%d', '%s', '%s', '%s', '%s')",
-                    venta.getId(),
-                    vp.getProducto().getClave(),
-                    vp.getCantidad(),
-                    vp.getPrecioUnitario(),
-                    vp.getPrecioNum());
-    db.execSQL(cadSQL);
-}catch (Exception e){
-    db.execSQL("ALTER TABLE VentaProducto ADD COLUMN precionum INTEGER DEFAULT 0");
-    cadSQL = String
-            .format("insert into VentaProducto (idventa, idproducto, cantidad, precio, precionum) values ('%d', '%s', '%s', '%s', '%s')",
-                    venta.getId(),
-                    vp.getProducto().getClave(),
-                    vp.getCantidad(),
-                    vp.getPrecioUnitario(),
-                    vp.getPrecioNum());
-    db.execSQL(cadSQL);
-}
-                    }
-                }catch (Exception e){}
+            for (VentaProducto vp : venta.getVentaProductos()) {
+                try {
+                    cadSQL = String
+                            .format("insert into VentaProducto (idventa, idproducto, cantidad, precio, precionum) values ('%d', '%s', '%s', '%s', '%s')",
+                                    venta.getId(),
+                                    vp.getProducto().getClave(),
+                                    vp.getCantidad(),
+                                    vp.getPrecioUnitario(),
+                                    vp.getPrecioNum());
+                    db.execSQL(cadSQL);
+                } catch (Exception e) {
+//    db.execSQL("ALTER TABLE VentaProducto ADD COLUMN precionum INTEGER DEFAULT 0");
+                    cadSQL = String
+                            .format("insert into VentaProducto (idventa, idproducto, cantidad, precio, precionum) values ('%d', '%s', '%s', '%s', '%s')",
+                                    venta.getId(),
+                                    vp.getProducto().getClave(),
+                                    vp.getCantidad(),
+                                    vp.getPrecioUnitario(),
+                                    vp.getPrecioNum());
+                    db.execSQL(cadSQL);
+                }
+            }
+        } catch (Exception e) {
+        }
         Cerrar();
     }
 
@@ -466,10 +467,11 @@ try {
         List<Venta> lista = new ArrayList<Venta>();
 
         db = this.getReadableDatabase();
+
         boolean agregametodo = true;
         while(agregametodo) {
             try {
-                Cursor cur = db.rawQuery("SELECT id, fecha, idcliente, idvendedor, metodo, nota from Venta",new String[]{});
+                Cursor cur = db.rawQuery("SELECT id, fecha, idcliente, idvendedor, metodo, nota, metodosMultiples from Venta",new String[]{});
                 agregametodo = false;
                 while (cur.moveToNext()) {
                     Venta venta = new Venta();
@@ -485,9 +487,11 @@ try {
                     venta.setNueva(false);
                     venta.setEnviada(false);
                     int metodo = cur.getInt(4);
-                    venta.setMetodo(metodo==1?true:false);
+                    venta.setMetodo(metodo == 1);
                     String nota = cur.getString(5);
                     venta.setNota(nota);
+                    String metodosMultiples = cur.getString(6);
+                    venta.setMetodosMultiples(metodosMultiples);
                     String idcliente = cur.getString(2);
                     for (Cliente cliente : clientes)
                         if (cliente.getClave().equals(idcliente)) {
@@ -527,15 +531,20 @@ try {
                 cur.close();
             } catch (Exception e) {
                 e.getMessage();
-                if (e.toString().indexOf("no such column: metodo (code 1): , while compiling: SELECT id, fecha, idcliente, idvendedor, metodo, nota from venta") > 0) {
+                if (e.toString().indexOf("no such column: metodo ") > 0) {
                     db.execSQL("ALTER TABLE venta ADD COLUMN metodo INTEGER DEFAULT 0");
                 }
-                if(e.toString().indexOf("no such column: precionum (code 1):") > 0) {
+                if(e.toString().indexOf("no such column: precionum ") > 0) {
                     db.execSQL("ALTER TABLE VentaProducto ADD COLUMN precionum INTEGER DEFAULT 0");
                 }
-                if (e.toString().indexOf("no such column: nota (code 1):") > 0) {
+                if (e.toString().indexOf("no such column: nota ") > 0) {
                     db.execSQL("ALTER TABLE venta ADD COLUMN nota TEXT DEFAULT ''");
                 }
+                if (e.toString().indexOf("no such column: metodosMultiples ") > 0) {
+                    db.execSQL("ALTER TABLE venta ADD COLUMN metodosMultiples TEXT DEFAULT ''");
+                }
+                db.close();
+                cargarVentas(clientes, vendedores, productos);
             }
         }
         db.close();

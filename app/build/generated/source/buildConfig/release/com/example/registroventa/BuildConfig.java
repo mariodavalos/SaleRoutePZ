@@ -7,6 +7,6 @@ public final class BuildConfig {
   public static final boolean DEBUG = false;
   public static final String APPLICATION_ID = "dinamica.ventaenruta";
   public static final String BUILD_TYPE = "release";
-  public static final int VERSION_CODE = 577;
-  public static final String VERSION_NAME = "5.7.7";
+  public static final int VERSION_CODE = 51007;
+  public static final String VERSION_NAME = "5.10.10";
 }

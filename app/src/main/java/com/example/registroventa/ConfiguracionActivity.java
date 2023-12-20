@@ -67,7 +67,7 @@ import java.util.List;
 public class ConfiguracionActivity extends FragmentActivity {
 
     public static Context ConfiguracionActividad;
-    public static String version = "Versionactual(5.9.1).apk";
+    public static String version = "Versionactual(5.10.10).apk";
     private static Configura configuracion;
     String mensajeError = "Version Actual";
     String oldFTP = "";
@@ -483,15 +483,15 @@ public class ConfiguracionActivity extends FragmentActivity {
         @Override
         protected Void doInBackground(Void... arg0) {
             try {
-                DownloadFile analizador = new DownloadFile("http://69.73.141.48/" + version ,getExternalFilesDir(null));
+                DownloadFile analizador = new DownloadFile("https://ventaenruta.site/" + version ,getExternalFilesDir(null));
                 analizador.procesar();
             } catch (Exception e) {
                 mensajeError = e.toString();
-                if (mensajeError.equalsIgnoreCase("java.net.ConnectException: failed to connect to /69.73.141.48 (port 80): connect failed: ENETUNREACH (Network is unreachable)")) {
+                if (mensajeError.equalsIgnoreCase("java.net.ConnectException: failed to connect to /ventaenruta.site (port 80): connect failed: ENETUNREACH (Network is unreachable)")) {
                     mensajeError = "Revise su conexion a internet";
                     Titulo = "Error de conexion";
                     error = true;
-                } else if (mensajeError.equalsIgnoreCase("java.io.FileNotFoundException: http://69.73.141.48/" + version)) {
+                } else if (mensajeError.equalsIgnoreCase("java.io.FileNotFoundException: https://ventaenruta.site/" + version)) {
                     mensajeError = "¿Desea actualizar la aplicacion \"Venta en Ruta\"?";
                     Titulo = "Actualizacion encontrada";
                     encontroactualizacion = true;
@@ -553,7 +553,7 @@ public class ConfiguracionActivity extends FragmentActivity {
                     directorio = new File(getExternalFilesDir(null), "Android/data/com.ventaenruta");
                 }
                 if (directorio.exists() == false) {
-                    version = "Versionactual(5.9.1).apk";
+                    version = "Versionactual(5.10.10).apk";
                     AlertDialog.Builder build = new AlertDialog.Builder(ConfiguracionActivity.this);
                     build.setMessage("No se pudo completar la descarga. Intente de nuevo por favor.")
                             .setTitle("Actualizacion no completada")
@@ -565,39 +565,24 @@ public class ConfiguracionActivity extends FragmentActivity {
                     possitive.setTextColor(Color.parseColor("#e18a33"));
                 } else {
                     try {
-                        Apk = new File(directorio, ConfiguracionActivity.version);/*
-                        String filepath = directorio + File.separator + Configuracion.version;
-                        Uri apkPath;
-                        if (Build.VERSION.SDK_INT >=  Build.VERSION_CODES.N) {
-                            apkPath = Uri.parse(filepath);
-                        } else{
-                            apkPath = Uri.fromFile(new File(filepath));
-                        }*/
-                        //Apk.setExecutable(true);
-/*
-                        Intent intent = new Intent(Intent.ACTION_VIEW);
-                        intent.setDataAndType(apkPath, "application/vnd.android.package-archive");
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); // without this flag android returned a intent error!
-                        ConfiguracionActividad.startActivity(intent);
-*/
-                        //File toInstall = new File(appDirectory, appName + ".apk");
-//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-//                            Uri apkUri = FileProvider.getUriForFile(ConfiguracionActivity.this, BuildConfig.APPLICATION_ID + ".fileprovider", Apk);
-//                            Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
-//                            intent.setData(apkUri);
-//                            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-//                            startActivity(intent);
-//                        } else {
-//                            Uri apkUri = Uri.fromFile(Apk);
-//                            Intent intent = new Intent(Intent.ACTION_VIEW);
-//                            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
-//                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                            startActivity(intent);
-//                        }
-                        /*Intent intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
-                        intent.setData(apkPath);
-                        intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                        startActivity(intent);*/
+                        Apk = new File(directorio, ConfiguracionActivity.version);
+                        Apk.setExecutable(true);
+
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                            Uri apkUri = FileProvider.getUriForFile(ConfiguracionActivity.this, BuildConfig.APPLICATION_ID + ".fileprovider", Apk);
+                            intent = new Intent(Intent.ACTION_INSTALL_PACKAGE);
+                            intent.setData(apkUri);
+                            intent.setFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                            startActivity(intent);
+                            return;
+                        } else {
+                            Uri apkUri = Uri.fromFile(Apk);
+                            intent = new Intent(Intent.ACTION_VIEW);
+                            intent.setDataAndType(apkUri, "application/vnd.android.package-archive");
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                            startActivity(intent);
+                            return;
+                        }
                     }catch(Exception e){
                         e.getMessage();
                     }

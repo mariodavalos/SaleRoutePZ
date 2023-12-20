@@ -15,13 +15,18 @@ public class Venta {
     private boolean enviada;
     private List<VentaProducto> ventaProductos;
     private boolean metodo;
+    private String metodosMultiples;
     private String nota;
 
     public Venta() {
+        id = -1;
+        cliente = new Cliente();
+        vendedor = new Vendedor();
         nueva = true;
         enviada = false;
         fecha = new Date();
         metodo = true;
+        metodosMultiples = "";
         nota = "";
         ventaProductos = new ArrayList<VentaProducto>();
     }
@@ -40,6 +45,15 @@ public class Venta {
 
     public void setMetodo(boolean metodo) {
         this.metodo = metodo;
+    }
+
+    public String getMetodosMultiples() {
+        if(metodosMultiples==null)return "";
+        return metodosMultiples;
+    }
+
+    public void setMetodosMultiples(String metodosMultiples) {
+        this.metodosMultiples = metodosMultiples;
     }
 
     public int getId() {
@@ -98,6 +112,17 @@ public class Venta {
         this.ventaProductos = ventaProductos;
     }
 
+    public String getMetodoPagos() {
+        StringBuilder metodosPagos = new StringBuilder();
+        for (String s : metodosMultiples.split(";")) {
+            String[] metodoPago = s.split(":");
+            if (metodoPago.length == 2) {
+                metodosPagos.append(metodoPago[0]).append(" ").append(NumberFormat.getCurrencyInstance(Locale.US).format(Double.parseDouble(metodoPago[1]))).append("\n");
+            }
+        }
+        return metodosPagos.toString();
+    }
+
 
     @SuppressWarnings("deprecation")
     public String toString() {
@@ -105,6 +130,12 @@ public class Venta {
         if (ventaProductos != null)
             for (VentaProducto vp : ventaProductos)
                 total += vp.getTotal();
-        return String.format("%02d/%02d/%02d %02d:%02d - %s - %s - %s", fecha.getDate(), fecha.getMonth() + 1, fecha.getYear() + 1900, fecha.getHours(), fecha.getMinutes(), cliente.getNombre(), NumberFormat.getCurrencyInstance(Locale.US).format(total), metodo? "Contado":"Credito");
+
+        return String.format("%02d/%02d/%02d %02d:%02d Cliente: %s\nSubtotal %s %s",
+                fecha.getDate(), fecha.getMonth() + 1, fecha.getYear() + 1900,
+                fecha.getHours(), fecha.getMinutes(),cliente.getNombre(),
+                NumberFormat.getCurrencyInstance(Locale.US).format(total),
+                metodosMultiples.isEmpty()?(metodo? "Pagado de contado":"Pagado a credito"):
+                "\nMetodos de pago:\n"+getMetodoPagos());
     }
 }

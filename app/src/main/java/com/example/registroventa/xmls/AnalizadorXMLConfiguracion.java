@@ -56,28 +56,32 @@ public class AnalizadorXMLConfiguracion {
 
         item.getChild("modificaprecios").setEndTextElementListener(new EndTextElementListener() {
             public void end(String contenido) {
-                Configura.setModificarprecios((contenido.compareTo("S")==0)?true:false);
+                Configura.setModificarprecios(contenido.compareTo("S") == 0);
             }
         });
         item.getChild("vercxc").setEndTextElementListener(new EndTextElementListener() {
             public void end(String contenido) {
-                Configura.setVercxc((contenido.compareTo("S")==0)?true:false);
+                Configura.setVercxc(contenido.compareTo("S") == 0);
             }
         });
         item.getChild("capturapagos").setEndTextElementListener(new EndTextElementListener() {
             public void end(String contenido) {
-                Configura.setCapturapagos((contenido.compareTo("S")==0)?true:false);
+                Configura.setCapturapagos(contenido.compareTo("S") == 0);
             }
         });
         item.getChild("asistencia").setEndTextElementListener(new EndTextElementListener() {
             public void end(String contenido) {
-                Configura.setAsistencia((contenido.compareTo("S")==0)?true:false);
+                Configura.setAsistencia(contenido.compareTo("S") == 0);
             }
         });
-
         item.getChild("claveconfiguracion").setEndTextElementListener(new EndTextElementListener() {
             public void end(String contenido) {
                 Configura.setClaveconfiguracion(contenido.replace("Ã\u0091","Ñ"));
+            }
+        });
+        item.getChild("serieclientes").setEndTextElementListener(new EndTextElementListener() {
+            public void end(String contenido) {
+                Configura.setSerieclientes(contenido.replace("Ã\u0091","Ñ"));
             }
         });
 
@@ -92,7 +96,7 @@ public class AnalizadorXMLConfiguracion {
             directorio = new File(Carpeta.getExternalFilesDir(null), "Android/data/com.ventaenruta");
         }
         FileOutputStream file;
-        if (directorio.exists() == false) directorio.mkdirs();
+        if (!directorio.exists()) directorio.mkdirs();
         Xml1 = new File(directorio, "configuracion.xml");
 
         URL url;

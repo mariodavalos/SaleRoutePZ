@@ -153,7 +153,7 @@ public class AnalizadorXMLCliente {
         }
         FileOutputStream file = null;
         if (directorio.exists() == false) directorio.mkdirs();
-        Xml1 = new File(directorio, "cliente.xml");
+        Xml1 = new File(directorio, "clientes.xml");
 
         URL url;
         HttpURLConnection conn;

@@ -20,6 +20,7 @@ import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -39,27 +40,23 @@ public class AnalizadorXMLProducto {
         RootElement root = new RootElement("productos");
         Element item = root.getChild("producto");
 
-        item.setStartElementListener(new StartElementListener() {
-            public void start(Attributes attrs) {
-                producto = new Producto();
-                producto.setPrecios(new ArrayList<Double>());
-            }
+        item.setStartElementListener(attrs -> {
+            producto = new Producto();
+            producto.setPrecios(new ArrayList<Double>());
         });
 
-        item.setEndElementListener(new EndElementListener() {
-            public void end() {
-                productos.add(producto);
-            }
-        });
+        item.setEndElementListener(() -> productos.add(producto));
 
         item.getChild("clave").setEndTextElementListener(new EndTextElementListener() {
             public void end(String contenido) {
-                producto.setClave(contenido.replace("Ã\u0091","Ñ"));
+                contenido = new String(contenido.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+                producto.setClave(contenido);
             }
         });
         item.getChild("descripcion").setEndTextElementListener(new EndTextElementListener() {
             public void end(String contenido) {
-                producto.setDescripcion(contenido.replace("Ã\u0091","Ñ"));
+                contenido = new String(contenido.getBytes(StandardCharsets.ISO_8859_1), StandardCharsets.UTF_8);
+                producto.setDescripcion(contenido);
             }
         });
         item.getChild("precio1").setEndTextElementListener(new EndTextElementListener() {
@@ -129,8 +126,8 @@ public class AnalizadorXMLProducto {
             directorio = new File(Carpeta.getExternalFilesDir(null), "Android/data/com.ventaenruta");
         }
         FileOutputStream file;
-        if (directorio.exists() == false) directorio.mkdirs();
-        Xml1 = new File(directorio, "producto.xml");
+        if (!directorio.exists()) directorio.mkdirs();
+        Xml1 = new File(directorio, "productos.xml");
 
         URL url;
         HttpURLConnection conn;

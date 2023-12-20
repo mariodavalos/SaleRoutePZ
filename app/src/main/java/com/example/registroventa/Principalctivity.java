@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.provider.Settings;
 import androidx.core.app.ActivityCompat;
 import android.telephony.TelephonyManager;
+import android.util.StringBuilderPrinter;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,6 +45,9 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
+import static android.os.Process.THREAD_PRIORITY_MORE_FAVORABLE;
 
 public class Principalctivity extends android.app.Activity {
     private static final Void params = null;
@@ -103,24 +107,6 @@ public class Principalctivity extends android.app.Activity {
     public void enviarInformacionOnClick(View view) {
         cargando.setVisibility(View.VISIBLE);
         try {
-            InicioActivity.Toast(Principalctivity.this,"Enviando existencias...");
-            EnviarExistenciasPOST envioExistencias = new EnviarExistenciasPOST() {
-                @Override
-                public void onGetValue(final String value) {
-                    Principalctivity.this.runOnUiThread(new Runnable() {
-                        public void run() {
-                            InicioActivity.Toast(Principalctivity.this,value);
-                            cargando.setVisibility(View.GONE);
-                            if(value.contains("error")){
-                                ReintentarEnvio(value);
-                            }else{
-                                InicioActivity.Toast(Principalctivity.this,"Envio correcto");
-                            }
-                        }
-                    });
-                }
-            };
-            envioExistencias.execute(params);
 
             InicioActivity.Toast(Principalctivity.this,"Enviando ventas...");
             EnviarVentasPOST envioVentas = new EnviarVentasPOST() {
@@ -139,7 +125,25 @@ public class Principalctivity extends android.app.Activity {
                     });
                 }
             };
-            envioVentas.execute(params);
+            envioVentas.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,params);
+//                                                                                  InicioActivity.Toast(Principalctivity.this,"Enviando metodos de pago de ventas...");
+//            EnviarVentasMetodosPagoPOST envioMetodosPago = new EnviarVentasMetodosPagoPOST() {
+//                @Override
+//                public void onGetValue(final String value) {
+//                    Principalctivity.this.runOnUiThread(new Runnable() {
+//                        public void run() {
+//                            InicioActivity.Toast(Principalctivity.this,value);
+//                            cargando.setVisibility(View.GONE);
+//                            if(value.contains("error")){
+//                                ReintentarEnvio(value);
+//                            }else{
+//                                InicioActivity.Toast(Principalctivity.this,"Envio correcto");
+//                            }
+//                        }
+//                    });
+//                }
+//            };
+//            envioMetodosPago.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,params);
 
             InicioActivity.Toast(Principalctivity.this,"Enviando cuentas...");
             EnviarCuentasPOST envioCuentas = new EnviarCuentasPOST() {
@@ -158,8 +162,25 @@ public class Principalctivity extends android.app.Activity {
                     });
                 }
             };
-            envioCuentas.execute(params);
-
+            envioCuentas.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,params);
+            InicioActivity.Toast(Principalctivity.this,"Enviando existencias...");
+            EnviarExistenciasPOST envioExistencias = new EnviarExistenciasPOST() {
+                @Override
+                public void onGetValue(final String value) {
+                    Principalctivity.this.runOnUiThread(new Runnable() {
+                        public void run() {
+                            InicioActivity.Toast(Principalctivity.this,value);
+                            cargando.setVisibility(View.GONE);
+                            if(value.contains("error")){
+                                ReintentarEnvio(value);
+                            }else{
+                                InicioActivity.Toast(Principalctivity.this,"Envio correcto");
+                            }
+                        }
+                    });
+                }
+            };
+            envioExistencias.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR,params);
         } catch (Exception e) {
             AlertDialog.Builder builder = new AlertDialog.Builder(Principalctivity.this);
             builder
@@ -287,7 +308,7 @@ public class Principalctivity extends android.app.Activity {
                 HttpPost httppost = new HttpPost(configuracion.getFTP().trim() + "recibirventas.php");
                 int Mostrar = configuracion.getBotones();
                 int Comentar = configuracion.getComentar();
-                String cadVentas = "";
+                StringBuilder cadVentas = new StringBuilder();
                 String cadSQL = "";
                 String[] meses = new String[13];meses[1] = "Ene";meses[2] = "Feb";meses[3] = "Mar";meses[4] = "Abr";meses[5] = "May";meses[6] = "Jun";meses[7] = "Jul";meses[8] = "Ago";meses[9] = "Sep";meses[10] = "Oct";meses[11] = "Nov";meses[12] = "Dic";
                 for (Venta venta : ListaVentasActivity.getListaVentas()) {
@@ -314,10 +335,30 @@ public class Principalctivity extends android.app.Activity {
                             }
                             corte++;
                         }
+                        double metodosPago[] = new double[8];
+
+                        for (int i = 0; i < 8; i++){
+//                            String cantidadMetodo = String.valueOf('0');
+                            if(venta.getMetodosMultiples().isEmpty()||
+                                    (!venta.getMetodosMultiples().contains(";"))||(!venta.getMetodosMultiples().contains(":"))){
+//                                metodosPago[i] = Integer.parseInt(cantidadMetodo);
+                            }else if(venta.getMetodosMultiples().split(";").length<=i){
+//                                metodosPago[i] = Integer.parseInt(cantidadMetodo);
+                            }else if(venta.getMetodosMultiples().split(";")[i].split(":")[1].equals("null")){
+//                                metodosPago[i] = Integer.parseInt(cantidadMetodo);
+                            }else {
+                                int indexMetodo = i;
+                                if(InicioActivity.getListaMetodos().size()>0){
+                                    String nombreMetodo = venta.getMetodosMultiples().split(";")[i].split(":")[0];
+                                    indexMetodo = InicioActivity.getListaMetodos().indexOf(InicioActivity.getListaMetodos().stream().filter(m -> m.getNombre().contains(nombreMetodo)).findFirst().get());
+                                }
+                                    metodosPago[indexMetodo] = Double.parseDouble(venta.getMetodosMultiples().split(";")[i].split(":")[1]);
+                            }
+                        }
                         if (Comentar == 0) {
                             if (Mostrar != 0) {
                                 cadSQL = String
-                                        .format("insert into Venta (fecha, idvendedor, idcliente, idproducto, cantidad, preciounitario, total, metodopago, numerodeprecio, nota) values ('%s', '%s', '%s', '%s', %s, %s, %s, %s, %s, '')\r\n",
+                                        .format("insert into Venta (fecha, idvendedor, idcliente, idproducto, cantidad, preciounitario, total, metodopago, numerodeprecio, nota, FormaDePago1, FormaDePago2, FormaDePago3, FormaDePago4, FormaDePago5, FormaDePago6, FormaDePago7, FormaDePago8) values ('%s', '%s', '%s', '%s', %s, %s, %s, %s, %s, '', %s, %s, %s, %s, %s, %s, %s, %s)\r\n",
                                                 fech,
                                                 venta.getVendedor().getClave(),
                                                 venta.getCliente().getClave(),
@@ -326,11 +367,11 @@ public class Principalctivity extends android.app.Activity {
                                                 String.format("%.2f",vp.getPrecioUnitario()).replace(",", "."),
                                                 String.format("%.2f",vp.getTotal()).replace(",", "."),
                                                 venta.isMetodo() ? "CO" : "CR",
-                                                vp.getPrecioNum()
+                                                vp.getPrecioNum(),metodosPago[0],metodosPago[1],metodosPago[2],metodosPago[3],metodosPago[4],metodosPago[5],metodosPago[6],metodosPago[7]
                                         );
                             } else {
                                 cadSQL = String
-                                        .format("insert into Venta (fecha, idvendedor, idcliente, idproducto, cantidad, preciounitario, total, metodopago, entrada, salida, numerodeprecio, nota) values ('%s', '%s', '%s', '%s',%s , %s, %s, '%s', '%s', '%s', %s, '')\r\n",
+                                        .format("insert into Venta (fecha, idvendedor, idcliente, idproducto, cantidad, preciounitario, total, metodopago, entrada, salida, numerodeprecio, nota, FormaDePago1, FormaDePago2, FormaDePago3, FormaDePago4, FormaDePago5, FormaDePago6, FormaDePago7, FormaDePago8) values ('%s', '%s', '%s', '%s',%s , %s, %s, '%s', '%s', '%s', %s, '', %s, %s, %s, %s, %s, %s, %s, %s)\r\n",
                                                 fech,
                                                 venta.getVendedor().getClave(),
                                                 venta.getCliente().getClave(),
@@ -341,13 +382,13 @@ public class Principalctivity extends android.app.Activity {
                                                 venta.isMetodo() ? "CO" : "CR",
                                                 VentaActivity.entrada,
                                                 VentaActivity.salida,
-                                                vp.getPrecioNum()
+                                                vp.getPrecioNum(),metodosPago[0],metodosPago[1],metodosPago[2],metodosPago[3],metodosPago[4],metodosPago[5],metodosPago[6],metodosPago[7]
                                         );
                             }
                         } else {
                             if (Mostrar != 0) {
                                 cadSQL = String
-                                        .format("insert into Venta (fecha, idvendedor, idcliente, idproducto, cantidad, preciounitario, total, metodopago, numerodeprecio, nota) values ('%s', '%s', '%s', '%s', %s, %s, %s, %s, %s, %s)\r\n",
+                                        .format("insert into Venta (fecha, idvendedor, idcliente, idproducto, cantidad, preciounitario, total, metodopago, numerodeprecio, nota, FormaDePago1, FormaDePago2, FormaDePago3, FormaDePago4, FormaDePago5, FormaDePago6, FormaDePago7, FormaDePago8) values ('%s', '%s', '%s', '%s', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)\r\n",
                                                 fech,
                                                 venta.getVendedor().getClave(),
                                                 venta.getCliente().getClave(),
@@ -357,11 +398,11 @@ public class Principalctivity extends android.app.Activity {
                                                 String.format("%.2f",vp.getTotal()).replace(",", "."),
                                                 venta.isMetodo() ? "CO" : "CR",
                                                 vp.getPrecioNum(),
-                                                "'" + venta.getNota() + "'"
+                                                "'" + venta.getNota() + "'",metodosPago[0],metodosPago[1],metodosPago[2],metodosPago[3],metodosPago[4],metodosPago[5],metodosPago[6],metodosPago[7]
                                         );
                             } else {
                                 cadSQL = String
-                                        .format("insert into Venta (fecha, idvendedor, idcliente, idproducto, cantidad, preciounitario, total, metodopago, entrada, salida, numerodeprecio, nota) values ('%s', '%s', '%s', '%s',%s , %s, %s, '%s', '%s', '%s', %s, %s)\r\n",
+                                        .format("insert into Venta (fecha, idvendedor, idcliente, idproducto, cantidad, preciounitario, total, metodopago, entrada, salida, numerodeprecio, nota, FormaDePago1, FormaDePago2, FormaDePago3, FormaDePago4, FormaDePago5, FormaDePago6, FormaDePago7, FormaDePago8) values ('%s', '%s', '%s', '%s',%s , %s, %s, '%s', '%s', '%s', %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)\r\n",
                                                 fech,
                                                 venta.getVendedor().getClave(),
                                                 venta.getCliente().getClave(),
@@ -373,32 +414,20 @@ public class Principalctivity extends android.app.Activity {
                                                 VentaActivity.entrada,
                                                 VentaActivity.salida,
                                                 vp.getPrecioNum(),
-                                                "'" + venta.getNota() + "'"
+                                                "'" + venta.getNota() + "'",metodosPago[0],metodosPago[1],metodosPago[2],metodosPago[3],metodosPago[4],metodosPago[5],metodosPago[6],metodosPago[7]
                                         );
                             }
                         }
-                        cadVentas += cadSQL;
+                        cadVentas.append(cadSQL);
                     }
+
                 }
                 if (cadVentas.length() > 1) {
-
                     List<BasicNameValuePair> nameValuePairs = new ArrayList<>(3);
                     Date fecha = new Date();
                     String DeviceKey = InicioActivity.SharedPref.getString("devicekey", "");
                     if(DeviceKey.length()<1) {
                         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
-                            try {
-                                if (ActivityCompat.checkSelfPermission(Principalctivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED)return null;
-                                DeviceKey = tm.getDeviceId();
-                                WifiManager manager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
-                                WifiInfo info = manager.getConnectionInfo();
-                                if(DeviceKey==null) DeviceKey = info.getMacAddress();
-                                else if (Integer.parseInt(DeviceKey)<1) DeviceKey = info.getMacAddress();
-                                else if (Integer.parseInt(DeviceKey)<1) DeviceKey = null;
-                                else if (DeviceKey.equals("020000000000")) DeviceKey = null;
-                            } catch (Exception e) {}
-                        }
                         if (DeviceKey == null || DeviceKey.length()<1) DeviceKey = (Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID));
                         InicioActivity.SharedPref.edit().putString("devicekey", DeviceKey).apply();
                     }
@@ -406,7 +435,7 @@ public class Principalctivity extends android.app.Activity {
                     String sfecha = String.format("%d_%d_%d_%d_%d", fecha.getDate(), fecha.getMonth() + 1, fecha.getYear() + 1900, fecha.getHours(), fecha.getMinutes());
                     //nameValuePairs.add(new BasicNameValuePair("archivo", String.format("ventas_%s_%s_%s.sql", "357743062597889", sfecha, InicioActivity.getVendedorSeleccionado().getClave())));
                     nameValuePairs.add(new BasicNameValuePair("archivo", String.format("ventas_%s_%s_%s.sql", DeviceKey, sfecha, InicioActivity.getVendedorSeleccionado().getClave())));
-                    nameValuePairs.add(new BasicNameValuePair("ventas", cadVentas));
+                    nameValuePairs.add(new BasicNameValuePair("ventas", cadVentas.toString()));
                     httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
                     // Execute HTTP Post Request
@@ -525,16 +554,18 @@ public class Principalctivity extends android.app.Activity {
     public abstract class EnviarExistenciasPOST extends AsyncTask<Void, Void, Void> {
         public EnviarExistenciasPOST() {}
         protected Void doInBackground(Void... progress) {
+            Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
             try {
                 InicioActivity.actualInventario();
                 HttpClient httpclient = new DefaultHttpClient();
                 HttpPost httppost = new HttpPost(Principalctivity.Configuracion(InicioActivity.InicioActividad.getExternalFilesDir(null)).getFTP().trim() + "recibirventas.php");
 
                     List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
-                    nameValuePairs.add(new BasicNameValuePair("archivo", "productos.xml"));
-                    String Datos = "<productos>";
+
+                    StringBuilder Datos = new StringBuilder("<productos>");
+                    int productosContador = 0;
                     for(Producto producto : InicioActivity.getListaProductos()){
-                        Datos += "<producto>"+
+                        String productoString = "<producto>"+
                                 "<clave>" + producto.getClave() + "</clave>"+
                                 "<descripcion>"+producto.getDescripcion()+"</descripcion>"+
                                 "<precio1>"+ producto.getPrecios().get(0)+"</precio1>"+
@@ -545,13 +576,17 @@ public class Principalctivity extends android.app.Activity {
                                 "<costo>"+producto.getCosto()+"</costo>"+
                                 "<existencia>"+producto.getExistencia()+"</existencia>"+
                                 "</producto>";
+                        productoString = productoString.
+                                replace("&","&amp;").
+                                replace("ï¿½","N").
+                                replace("Ñ","N").
+                                replace("ñ","n");
+                        Datos.append(productoString);
+                        productosContador++;
                     }
-                    Datos += "</productos>";
-                    Datos = Datos.replace("&","&amp;");
-                    Datos = Datos.replace("ï¿½","N");
-                    Datos = Datos.replace("Ñ","N");
-                    Datos = Datos.replace("ñ","n");
-                    nameValuePairs.add(new BasicNameValuePair("ventas", Datos));
+                    Datos.append("</productos>");
+                    nameValuePairs.add(new BasicNameValuePair("archivo", "productos.xml"));
+                    nameValuePairs.add(new BasicNameValuePair("ventas", Datos.toString()));
                     httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
                     // Execute HTTP Post Request
@@ -577,7 +612,98 @@ public class Principalctivity extends android.app.Activity {
         public abstract void onGetValue(String value);
         protected void onPostExecute(Void result) {}
     }
-
+//    public abstract class EnviarVentasMetodosPagoPOST extends AsyncTask<Void, Void, Void> {
+//        public EnviarVentasMetodosPagoPOST() {}
+//        protected Void doInBackground(Void... progress) {
+//            Thread.currentThread().setPriority(Thread.MAX_PRIORITY);
+//            try {
+//                HttpClient httpclient = new DefaultHttpClient();
+//                HttpPost httppost = new HttpPost(Principalctivity.Configuracion(InicioActivity.InicioActividad.getExternalFilesDir(null)).getFTP().trim() + "recibirventas.php");
+//
+//                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
+//
+//                StringBuilder Datos = new StringBuilder("<Ventas>");
+//                for(Venta venta : InicioActivity.listaVentas){
+//                    String productoString = "<venta>"+
+//                            "<id>" + venta.getId() + "</id>"+
+//                            "<metodos>";
+//                            if(venta.getMetodosMultiples().isEmpty()) {
+//                                productoString += "<metodo>";
+//                               productoString += "<id></id>";
+//                               productoString += "<nombre>" + (venta.isMetodo() ? "Contado" : "Credito") + "</nombre>";
+//                               double totalVenta = 0;
+//                                 for (VentaProducto vp : venta.getVentaProductos()) {
+//                                      totalVenta += vp.getTotal();
+//                                 }
+//                               productoString += "<monto>" + totalVenta + "</monto>";
+//                                 productoString += "</metodo>";
+//                            }else{
+//                                for(String metodo : venta.getMetodosMultiples().split(";")){
+//                                    productoString += "<metodo>";
+//                                    productoString += "<id>"+ metodo.split(":")[0] +"</id>";
+//                                    productoString += "<nombre>"+ metodo.split(":")[1] +"</nombre>";
+//                                    productoString += "<monto>"+ metodo.split(":")[2] +"</monto>";
+//                                    productoString += "</metodo>";
+//                                }
+//                            }
+//                    productoString +="</metodos>";
+//                    productoString += "</venta>";
+//                    productoString = productoString.
+//                            replace("&","&amp;").
+//                            replace("ï¿½","N").
+//                            replace("Ñ","N").
+//                            replace("ñ","n");
+//                    Datos.append(productoString);
+//                }
+//                Datos.append("</ventas>");
+//                Date fecha = new Date();
+//                String DeviceKey = InicioActivity.SharedPref.getString("devicekey", "");
+//                if(DeviceKey.length()<1) {
+//                    TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+//                    if (Build.VERSION.SDK_INT < Build.VERSION_CODES.P) {
+//                        try {
+//                            if (ActivityCompat.checkSelfPermission(Principalctivity.this, android.Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED)return null;
+//                            DeviceKey = tm.getDeviceId();
+//                            WifiManager manager = (WifiManager) getApplicationContext().getSystemService(Context.WIFI_SERVICE);
+//                            WifiInfo info = manager.getConnectionInfo();
+//                            if(DeviceKey==null) DeviceKey = info.getMacAddress();
+//                            else if (Integer.parseInt(DeviceKey)<1) DeviceKey = info.getMacAddress();
+//                            else if (Integer.parseInt(DeviceKey)<1) DeviceKey = null;
+//                            else if (DeviceKey.equals("020000000000")) DeviceKey = null;
+//                        } catch (Exception e) {}
+//                    }
+//                    if (DeviceKey == null || DeviceKey.length()<1) DeviceKey = (Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID));
+//                    InicioActivity.SharedPref.edit().putString("devicekey", DeviceKey).apply();
+//                }
+//
+//                String sfecha = String.format("%d_%d_%d_%d_%d", fecha.getDate(), fecha.getMonth() + 1, fecha.getYear() + 1900, fecha.getHours(), fecha.getMinutes());
+//                nameValuePairs.add(new BasicNameValuePair("archivo", String.format("ventas_%s_%s_%s.xml", DeviceKey, sfecha, InicioActivity.getVendedorSeleccionado().getClave())));
+//                nameValuePairs.add(new BasicNameValuePair("ventas", Datos.toString()));
+//                httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+//
+//                // Execute HTTP Post Request
+//                HttpResponse response = httpclient.execute(httppost);
+//                HttpEntity ent = response.getEntity();
+//                BufferedReader lector = new BufferedReader(new InputStreamReader(ent.getContent()));
+//                lector.close();
+//                if(response.getStatusLine().getStatusCode()==200){
+//                    onGetValue("Las ventas y sus metodos de pago se han sincronizado correctamente");
+//                }else{
+//                    onGetValue("Ocurrio un error al actualizar los metodos de pago de las ventas");
+//                }
+//            } catch (ClientProtocolException e) {
+//                onGetValue("Existencias \n error Client:"+ e.getMessage());
+//            } catch (IOException e) {
+//                onGetValue("error: Revisa tu conexion a internet.");
+//            } catch (Exception e) {
+//                onGetValue("Existencias \n error exception:"+ e.getMessage());
+//            }
+//            return null;
+//        }
+//        protected void onProgressUpdate(Void... progress) {}
+//        public abstract void onGetValue(String value);
+//        protected void onPostExecute(Void result) {}
+//    }
     int clicks = 0;
     public void onClickConfigHide(View view){
         clicks++;

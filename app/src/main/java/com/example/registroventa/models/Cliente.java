@@ -3,6 +3,7 @@ package com.example.registroventa.models;
 public class Cliente {
     private String clave;
     private String nombre;
+    private String atencion;
     private int numPrecio;
     private String Calle;
     private String NumEx;
@@ -15,6 +16,7 @@ public class Cliente {
     private String Telefono2;
     private String Telefono3;
     private String Telefono4;
+    private int diascredito;
 
     public String getClave() {
         return clave;
@@ -31,12 +33,18 @@ public class Cliente {
     public void setNombre(String nombre) {
         this.nombre = nombre;
     }
-
+    public String getAtencion() {
+        return atencion;
+    }
+    public void setAtencion(String atencion) {
+        this.atencion = atencion;
+    }
     public int getNumPrecio() {
         return numPrecio;
     }
 
     public void setNumPrecio(int numPrecio) {
+        if(numPrecio<1) numPrecio=1;
         this.numPrecio = numPrecio;
     }
 
@@ -128,6 +136,13 @@ public class Cliente {
         this.Telefono4 = Telefono4;
     }
 
+    public int getDiasCredito() {
+        return diascredito;
+    }
+
+    public void setDiasCredito(int diascredito) {
+        this.diascredito = diascredito;
+    }
 
     public String toString() {
         return nombre;

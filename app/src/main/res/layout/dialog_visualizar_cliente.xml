@@ -48,11 +48,36 @@
                     android:textColor="#FFFFFF" />
 
                 <TextView
+                    android:id="@+id/Atencioncliente"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/Nombretext"
+                    android:layout_alignParentLeft="true"
+                    android:layout_marginLeft="-4dp"
+                    android:text="@string/Atencion"
+                    android:textStyle="bold" />
+
+                <EditText
+                    android:id="@+id/Atenciontext"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/Atencioncliente"
+                    android:layout_alignParentLeft="true"
+                    android:clickable="false"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:longClickable="false"
+                    android:selectAllOnFocus="false"
+                    android:textColor="#FFFFFF" />
+
+                <TextView
                     android:id="@+id/callecliente"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:layout_below="@+id/Nombretext"
+                    android:layout_below="@+id/Atenciontext"
                     android:text="@string/callecliente"
                     android:textStyle="bold" />
 
@@ -176,13 +201,36 @@
                     android:layout_below="@+id/coloniatext"
                     android:text="Estado"
                     android:textStyle="bold" />
+                <TextView
+                    android:id="@+id/Diascredito"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_below="@+id/estadotext"
+                    android:text="Días credito"
+                    android:textStyle="bold" />
 
+                <EditText
+                    android:id="@+id/Diascreditotext"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentRight="true"
+                    android:layout_below="@+id/Diascredito"
+                    android:inputType="number"
+                    android:ems="10"
+                    android:enabled="false"
+                    android:focusable="false"
+                    android:focusableInTouchMode="false"
+                    android:longClickable="false"
+                    android:selectAllOnFocus="false"
+                    android:textColor="#FFFFFF" />
                 <TextView
                     android:id="@+id/textView7"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_alignParentLeft="true"
-                    android:layout_below="@+id/estadotext"
+                    android:layout_below="@+id/Diascreditotext"
                     android:text="Telefono 1"
                     android:textStyle="bold" />
 
@@ -277,8 +325,11 @@
                     android:id="@+id/ciudadtext"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_above="@+id/textView7"
+                    android:layout_alignBaseline="@+id/estadotext"
                     android:layout_alignParentRight="true"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginRight="0dp"
+                    android:layout_marginBottom="64dp"
                     android:layout_toRightOf="@+id/estadotext"
                     android:ems="10"
                     android:enabled="false"
@@ -308,6 +359,8 @@
                     android:layout_height="wrap_content"
                     android:layout_above="@+id/ciudadtext"
                     android:layout_alignLeft="@+id/ciudadtext"
+                    android:layout_marginLeft="0dp"
+                    android:layout_marginBottom="1dp"
                     android:text="Ciudad"
                     android:textStyle="bold" />
 
