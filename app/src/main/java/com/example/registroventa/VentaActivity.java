@@ -1,4 +1,5 @@
 package com.example.registroventa;
+
 import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -14,9 +15,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentActivity;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.InputType;
@@ -50,7 +48,6 @@ import com.example.registroventa.models.Cliente;
 import com.example.registroventa.models.Configura;
 import com.example.registroventa.models.Cuentas;
 import com.example.registroventa.models.Metodos;
-import com.example.registroventa.models.Producto;
 import com.example.registroventa.models.Venta;
 import com.example.registroventa.models.VentaProducto;
 import com.example.registroventa.services.IntentIntegrator;
@@ -82,6 +79,10 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
 
 public class VentaActivity extends FragmentActivity {
 
@@ -983,6 +984,7 @@ public class VentaActivity extends FragmentActivity {
                         public void onClick(DialogInterface dialog, int which, boolean isChecked) {
                             checkedItems[which] = isChecked;
                         }
+
                     });
                     builder.setPositiveButton("Continuar", new DialogInterface.OnClickListener() {
                         @Override
@@ -1004,6 +1006,8 @@ public class VentaActivity extends FragmentActivity {
                     });
                 }
                 levelDialog = builder.create();
+
+                levelDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.parseColor("#e18a33"));
                 levelDialog.show();
             }
             else{
@@ -1127,6 +1131,7 @@ public class VentaActivity extends FragmentActivity {
                 for (EditText input : amountInputs) {
                     String valueStr = input.getText().toString().trim();
                     if (!valueStr.isEmpty()) {
+                        valueStr = valueStr.replace(",", ".");
                         sum += Double.parseDouble(valueStr);
                     }
                 }
@@ -1136,7 +1141,7 @@ public class VentaActivity extends FragmentActivity {
                     metodosMultiples = "";
                     for (int i = 0; i < selectedMethods.size(); i++) {
                         metodosMultiples += selectedMethods.get(i).getNombre()
-                                + ":" + amountInputs.get(i).getText().toString() + ";";
+                                + ":" + amountInputs.get(i).getText().toString().replace(",",".") + ";";
                     }
                     confirmacionDialog();
                 } else {
@@ -1152,14 +1157,16 @@ public class VentaActivity extends FragmentActivity {
         alertDialog.show();
         // Inhabilitar el botón de confirmar hasta que las cantidades sean correctas
         alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(false);
-
-        for (EditText input : amountInputs) {
-            String valueStr = input.getText().toString().trim();
-            if (!valueStr.isEmpty()) {
-                sum += Double.parseDouble(valueStr);
-            }
-        }
-        totals.setText("Suma total: $" + String.format("%.2f", sum));
+//
+//        for (EditText input : amountInputs) {
+//            String valueStr = input.getText().toString().trim();
+//            if (!valueStr.isEmpty()) {
+//                valueStr = valueStr.replace(",", ".");
+//                sum += Double.parseDouble(valueStr);
+//            }
+//        }
+//        totals.setText("Suma total: $" + String.format("%.2f", sum));
+//
         if (Math.abs(totalAmount - sum) < 0.001) {
             totals.setTextColor(Color.rgb(20, 200, 20));
             alertDialog.getButton(AlertDialog.BUTTON_POSITIVE).setEnabled(true);
@@ -1183,6 +1190,7 @@ public class VentaActivity extends FragmentActivity {
                     for (EditText input : amountInputs) {
                         String valueStr = input.getText().toString().trim();
                         if (!valueStr.isEmpty()) {
+                            valueStr = valueStr.replace(",", ".");
                             sum += Double.parseDouble(valueStr);
                         }
                     }

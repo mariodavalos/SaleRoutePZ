@@ -183,7 +183,6 @@ public class ListaVentasActivity extends AppCompatActivity {
             }
         }
         for (Venta vents : listaVentas) {
-
             for (VentaProducto vent : vents.getVentaProductos()) {
                 Precio += vent.getTotal();
                 Numero += vent.getCantidad();

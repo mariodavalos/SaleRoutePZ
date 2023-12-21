@@ -127,10 +127,11 @@ public class Venta {
     @SuppressWarnings("deprecation")
     public String toString() {
         double total = 0;
-        if (ventaProductos != null)
-            for (VentaProducto vp : ventaProductos)
+        if (ventaProductos != null) {
+            for (VentaProducto vp : ventaProductos) {
                 total += vp.getTotal();
-
+            }
+        }
         return String.format("%02d/%02d/%02d %02d:%02d Cliente: %s\nSubtotal %s %s",
                 fecha.getDate(), fecha.getMonth() + 1, fecha.getYear() + 1900,
                 fecha.getHours(), fecha.getMinutes(),cliente.getNombre(),

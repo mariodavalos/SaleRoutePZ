@@ -1035,31 +1035,56 @@ public class InicioActivity extends android.app.Activity {
         return size.x+300;
     }
 
-    private static final int MY_PERMISSIONS_REQUEST_PHONE_STATE = 100;
     private static final int MY_PERMISSIONS_REQUEST_STORAGE_LEGACY = 101;
-    private static final int REQUEST_CODE_OPEN_DOCUMENT = 102;
-    private static final int REQUEST_CODE_OPEN_DOCUMENT_TREE = 103;
-    private final int MY_PERMISSIONS = 100;
+        private final int MY_PERMISSIONS = 100;
+        private boolean mayRequestStoragePermission() {
 
-    private boolean mayRequestStoragePermission() {
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            if (checkSelfPermission(WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+            if((checkSelfPermission(WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) &&
+                    (checkSelfPermission(READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED)) {
                 return true;
             }
-            if (shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE)) {
-                showStoragePermissionRationale();
-            } else {
-                requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE},
-                        MY_PERMISSIONS_REQUEST_PHONE_STATE);
-            }
+                AlertDialog.Builder confirmacion = new AlertDialog.Builder(InicioActivity.this);
+                confirmacion.setIcon(R.mipmap.ic_launcherpz);
+                confirmacion.setTitle("ACEPTAR PERMISOS");
+                confirmacion.setMessage("Necesitamos algunos permisos, por favor concede los permisos para utilizar optimamente nuestra app.");
+                confirmacion.setPositiveButton("PERMITIR", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        if ((shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE))
+                                || (shouldShowRequestPermissionRationale(READ_PHONE_STATE))) {
+                            showExplanation();
+                        } else {
+                            requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, ACCESS_WIFI_STATE, WRITE_SETTINGS, READ_PHONE_STATE, BLUETOOTH_ADMIN,BLUETOOTH_ADMIN}, MY_PERMISSIONS);
+                        }
+                    }
+                });
+                AlertDialog alert = confirmacion.create();
+                alert.show();
+                Button possitive = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+                possitive.setTextColor(Color.parseColor("#e18a33"));
             return false;
-        }else{
-            showStoragePermissionRationale();
-            return true;
         }
-    }
-
+        @Override
+       public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+            if(requestCode == MY_PERMISSIONS){
+                if(grantResults.length == 6 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                            Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
+                            Uri uri = Uri.fromParts("package", getPackageName(), null);
+                            intent.setData(uri);
+                            startActivityForResult(intent, MY_PERMISSIONS_REQUEST_STORAGE_LEGACY);
+                    }else {
+                        Toast(InicioActivity.this, "Permisos aceptados");
+                        this.finish();
+                        Intent intent2 = new Intent(InicioActivity.this, InicioActivity.class);
+                        intent2.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                        startActivity(intent2);
+                    }
+                }
+            }else{
+                showExplanation();
+            }
+        }
     private void showStoragePermissionRationale() {
         new AlertDialog.Builder(this)
                 .setTitle("Permiso necesario")
@@ -1067,10 +1092,7 @@ public class InicioActivity extends android.app.Activity {
                 .setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-                            requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE},
-                                    MY_PERMISSIONS_REQUEST_PHONE_STATE);
-                        }else{
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
                             Uri uri = Uri.fromParts("package", getPackageName(), null);
                             intent.setData(uri);
@@ -1082,25 +1104,17 @@ public class InicioActivity extends android.app.Activity {
                 .create()
                 .show();
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        if (requestCode == MY_PERMISSIONS_REQUEST_PHONE_STATE) {
-            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                // Permiso concedido
-            } else {
-                // Permiso denegado
-                showStoragePermissionRationale();
-            }
-        }
-    }
-
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == MY_PERMISSIONS_REQUEST_STORAGE_LEGACY) {
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 if (Environment.isExternalStorageManager()) {
+                    Toast(InicioActivity.this, "Permisos aceptados");
+                    this.finish();
+                    Intent intent2 = new Intent(InicioActivity.this, InicioActivity.class);
+                    intent2.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
+                    startActivity(intent2);
                     // Permiso concedido para Android 11 y superiores
                 } else {
                     // Permiso denegado
@@ -1109,92 +1123,34 @@ public class InicioActivity extends android.app.Activity {
             }
         }
     }
-
-    // Método para abrir un documento o directorio con SAF
-    private void openDocumentOrDirectory() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            // Android 10 y superiores
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT_TREE);
-            startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT_TREE);
-        } else {
-            // Android 9 y anteriores
-            Intent intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-            intent.addCategory(Intent.CATEGORY_OPENABLE);
-            intent.setType("*/*");
-            startActivityForResult(intent, REQUEST_CODE_OPEN_DOCUMENT);
+        private void showExplanation() {
+            AlertDialog.Builder builder = new AlertDialog.Builder(InicioActivity.this);
+            builder.setTitle("Permisos denegados").setIcon(R.mipmap.ic_launcherpz);
+            builder.setMessage("Denegaste los permisos anteriormente, activalos manualmente en Permisos de CONFIGURACIÓN.");
+            builder.setPositiveButton("CONFIGURACIÓN", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    Intent intent = new Intent();
+                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                    Uri uri = Uri.fromParts("package", getPackageName(), null);
+                    intent.setData(uri);
+                    startActivity(intent);
+                }
+            });
+            builder.setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    finish();
+                }
+            });
+            AlertDialog alert=builder.create();
+            alert.show();
+            Button possitive = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+            possitive.setTextColor(Color.parseColor("#e18a33"));
+            Button negative = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+            negative.setTextColor(Color.parseColor("#e18a33"));
         }
-    }
-//        private final int MY_PERMISSIONS = 100;
-//        private boolean mayRequestStoragePermission() {
-//
-//            if((checkSelfPermission(WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) &&
-//                    (checkSelfPermission(READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED)) {
-//                return true;
-//            }
-//                AlertDialog.Builder confirmacion = new AlertDialog.Builder(InicioActivity.this);
-//                confirmacion.setIcon(R.mipmap.ic_launcherpz);
-//                confirmacion.setTitle("ACEPTAR PERMISOS");
-//                confirmacion.setMessage("Necesitamos algunos permisos, por favor concede los permisos para utilizar optimamente nuestra app.");
-//                confirmacion.setPositiveButton("PERMITIR", new DialogInterface.OnClickListener() {
-//                    public void onClick(DialogInterface dialog, int id) {
-//                        if ((shouldShowRequestPermissionRationale(WRITE_EXTERNAL_STORAGE))
-//                                || (shouldShowRequestPermissionRationale(READ_PHONE_STATE))) {
-//                            showExplanation();
-//                        } else {
-//                            requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, ACCESS_WIFI_STATE, WRITE_SETTINGS, READ_PHONE_STATE, BLUETOOTH_ADMIN,BLUETOOTH_ADMIN}, MY_PERMISSIONS);
-//                        }
-//                    }
-//                });
-//                AlertDialog alert = confirmacion.create();
-//                alert.show();
-//                Button possitive = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-//                possitive.setTextColor(Color.parseColor("#e18a33"));
-//            return false;
-//        }
-//        @Override
-//       public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-//            super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-//            if(requestCode == MY_PERMISSIONS){
-//                if(grantResults.length == 6 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
-//
-//                    Toast(InicioActivity.this, "Permisos aceptados");
-//                    this.finish();
-//                    Intent intent2 = new Intent(InicioActivity.this, InicioActivity.class);
-//                    intent2.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
-//                    startActivity(intent2);
-//                }
-//            }else{
-//                showExplanation();
-//            }
-//        }
-//        private void showExplanation() {
-//            AlertDialog.Builder builder = new AlertDialog.Builder(InicioActivity.this);
-//            builder.setTitle("Permisos denegados").setIcon(R.mipmap.ic_launcherpz);
-//            builder.setMessage("Denegaste los permisos anteriormente, activalos manualmente en Permisos de CONFIGURACIÓN.");
-//            builder.setPositiveButton("CONFIGURACIÓN", new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which) {
-//                    Intent intent = new Intent();
-//                    intent.setAction(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-//                    Uri uri = Uri.fromParts("package", getPackageName(), null);
-//                    intent.setData(uri);
-//                    startActivity(intent);
-//                }
-//            });
-//            builder.setNegativeButton("CANCELAR", new DialogInterface.OnClickListener() {
-//                @Override
-//                public void onClick(DialogInterface dialog, int which) {
-//                    dialog.dismiss();
-//                    finish();
-//                }
-//            });
-//            AlertDialog alert=builder.create();
-//            alert.show();
-//            Button possitive = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-//            possitive.setTextColor(Color.parseColor("#e18a33"));
-//            Button negative = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-//            negative.setTextColor(Color.parseColor("#e18a33"));
-//        }
     int clicks = 0;
     public void onClickConfigHide(View view){
         clicks++;

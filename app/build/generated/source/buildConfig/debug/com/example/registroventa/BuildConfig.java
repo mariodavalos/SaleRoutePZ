@@ -8,5 +8,5 @@ public final class BuildConfig {
   public static final String APPLICATION_ID = "dinamica.ventaenruta";
   public static final String BUILD_TYPE = "debug";
   public static final int VERSION_CODE = 51007;
-  public static final String VERSION_NAME = "5.10.11";
+  public static final String VERSION_NAME = "5.10.12";
 }
