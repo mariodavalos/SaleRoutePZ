@@ -12,3 +12,5 @@ app/build/
 .gradle/buildOutputCleanup/buildOutputCleanup.lock
 .gradle/configuration-cache/9agymq0guwp0xy5yoq88f2xu9/buildfingerprint.bin
 .gradle/configuration-cache/9agymq0guwp0xy5yoq88f2xu9/work.bin
+.gradle/7.4/fileHashes/fileHashes.lock
+.idea/deploymentTargetDropDown.xml
