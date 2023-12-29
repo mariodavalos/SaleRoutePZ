@@ -64,6 +64,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static android.Manifest.permission.ACCESS_WIFI_STATE;
@@ -563,9 +564,7 @@ public class InicioActivity extends android.app.Activity {
         if (ubicacion == null) noFTP();
         else if (ubicacion.length() < 5) noFTP();
         else if (ubicacion == "null") noFTP();
-
-        if (!configurando)
-            cargarDatosBD();
+        else if (!configurando) cargarDatosBD();
         configurando = false;
 
         //Abonos Add
@@ -644,7 +643,6 @@ public class InicioActivity extends android.app.Activity {
                     .setCancelable(false);
             build.setNegativeButton("OK", new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-
                     startActivity(intent);
                 }
             });
@@ -669,8 +667,8 @@ public class InicioActivity extends android.app.Activity {
                     InicioActivity.getListaVendedores() == null ||
                     InicioActivity.getListaProductos() == null) {
                 AlertDialog.Builder build = new AlertDialog.Builder(this);
-                build.setMessage("Descargar base de datos de nuevo")
-                        .setTitle("Base de datos dañada o archivos no encontrados")
+                build.setTitle("Descargar base de datos de nuevo")
+                        .setMessage("Base de datos no encontrada o dañada")
                         .setCancelable(false);
                 build.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
@@ -1038,9 +1036,13 @@ public class InicioActivity extends android.app.Activity {
     private static final int MY_PERMISSIONS_REQUEST_STORAGE_LEGACY = 101;
         private final int MY_PERMISSIONS = 100;
         private boolean mayRequestStoragePermission() {
-
-            if((checkSelfPermission(WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) &&
-                    (checkSelfPermission(READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED)) {
+            boolean storagePermission = false;
+            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                storagePermission = (checkSelfPermission(WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED);
+            }else{
+                storagePermission = Environment.isExternalStorageManager();
+            }
+            if(storagePermission && (checkSelfPermission(READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED)) {
                 return true;
             }
                 AlertDialog.Builder confirmacion = new AlertDialog.Builder(InicioActivity.this);
@@ -1053,7 +1055,12 @@ public class InicioActivity extends android.app.Activity {
                                 || (shouldShowRequestPermissionRationale(READ_PHONE_STATE))) {
                             showExplanation();
                         } else {
-                            requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, ACCESS_WIFI_STATE, WRITE_SETTINGS, READ_PHONE_STATE, BLUETOOTH_ADMIN,BLUETOOTH_ADMIN}, MY_PERMISSIONS);
+                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                                requestPermissions(new String[]{WRITE_EXTERNAL_STORAGE, ACCESS_WIFI_STATE, READ_PHONE_STATE, BLUETOOTH_ADMIN,BLUETOOTH_ADMIN}, MY_PERMISSIONS);
+                            }else{
+                                requestPermissions(new String[]{ACCESS_WIFI_STATE, READ_PHONE_STATE, BLUETOOTH_ADMIN,BLUETOOTH_ADMIN}, MY_PERMISSIONS);
+                            }
+
                         }
                     }
                 });
@@ -1067,7 +1074,8 @@ public class InicioActivity extends android.app.Activity {
        public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
             super.onRequestPermissionsResult(requestCode, permissions, grantResults);
             if(requestCode == MY_PERMISSIONS){
-                if(grantResults.length == 6 && grantResults[0] == PackageManager.PERMISSION_GRANTED && grantResults[1] == PackageManager.PERMISSION_GRANTED){
+                int permission = Arrays.stream(grantResults).sum();
+                if(permission == PackageManager.PERMISSION_GRANTED){
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                             Intent intent = new Intent(Settings.ACTION_MANAGE_APP_ALL_FILES_ACCESS_PERMISSION);
                             Uri uri = Uri.fromParts("package", getPackageName(), null);
@@ -1080,6 +1088,8 @@ public class InicioActivity extends android.app.Activity {
                         intent2.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_ANIMATION);
                         startActivity(intent2);
                     }
+                } else {
+                    showExplanation();
                 }
             }else{
                 showExplanation();

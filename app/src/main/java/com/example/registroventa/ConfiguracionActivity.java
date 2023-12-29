@@ -14,10 +14,6 @@ import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import androidx.core.app.ActivityCompat;
-import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentActivity;
-import androidx.core.content.FileProvider;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.InputType;
@@ -63,11 +59,16 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.DialogFragment;
+import androidx.fragment.app.FragmentActivity;
+
 
 public class ConfiguracionActivity extends FragmentActivity {
 
     public static Context ConfiguracionActividad;
-    public static String version = "Versionactual(5.10.12).apk";
+    public static String version = "Versionactual(5.10.15).apk";
     private static Configura configuracion;
     String mensajeError = "Version Actual";
     String oldFTP = "";
@@ -553,7 +554,7 @@ public class ConfiguracionActivity extends FragmentActivity {
                     directorio = new File(getExternalFilesDir(null), "Android/data/com.ventaenruta");
                 }
                 if (directorio.exists() == false) {
-                    version = "Versionactual(5.10.12).apk";
+                    version = "Versionactual(5.10.15).apk";
                     AlertDialog.Builder build = new AlertDialog.Builder(ConfiguracionActivity.this);
                     build.setMessage("No se pudo completar la descarga. Intente de nuevo por favor.")
                             .setTitle("Actualizacion no completada")

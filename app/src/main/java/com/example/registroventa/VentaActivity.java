@@ -39,6 +39,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -139,6 +140,7 @@ public class VentaActivity extends FragmentActivity {
     Boolean cxcadd = false;
 
     private Button Aceptar;
+    private Button Reimprimir;
     private Button Cancelar;
 
     private ImageButton AbonosButton;
@@ -166,7 +168,6 @@ public class VentaActivity extends FragmentActivity {
                 if (cliente.equals(ListaVentasActivity.getVenta().getCliente()))
                     clientes.setSelection(i);
             }
-
             tfecha = (EditText) this.findViewById(R.id.fecha);
             totalVenta = (TextView) this.findViewById(R.id.totalVenta);
             agregapv = (ImageButton) this.findViewById(R.id.Agregaproducto);
@@ -179,6 +180,7 @@ public class VentaActivity extends FragmentActivity {
                 CuentasButton.setVisibility(View.GONE);
 
             Aceptar = (Button) this.findViewById(R.id.Aceptarventa);
+            Reimprimir = (Button) this.findViewById(R.id.Reimprimir);
             Cancelar = (Button) this.findViewById(R.id.CanccelarVenta);
 
             AbonosButton = (ImageButton) this.findViewById(R.id.ButtonAbonos);
@@ -193,19 +195,19 @@ public class VentaActivity extends FragmentActivity {
             listaProductosVenta = (ListView) this.findViewById(R.id.listaProductos);
             arregloProductosVentas = new ArrayList<String>();
             adapterProductosVentas = new ArrayAdapter<String>(this,
-                    R.layout.lista_item_layout, arregloProductosVentas);
+                    R.layout.lista_item_layout2, arregloProductosVentas);
             listaProductosVenta.setAdapter(adapterProductosVentas);
 
             listaCuentasVenta = (ListView) this.findViewById(R.id.listaCuentas);
             arregloCuentasVentas = new ArrayList<String>();
             adapterCuentasVentas = new ArrayAdapter<String>(this,
-                    R.layout.lista_item_layout, arregloCuentasVentas);
+                    R.layout.lista_item_layout2, arregloCuentasVentas);
             listaCuentasVenta.setAdapter(adapterCuentasVentas);
 
             listaAbonosVenta = (ListView) this.findViewById(R.id.AbonosLista);
             arregloAbonosVentas = new ArrayList<String>();
             adapterAbonosVentas = new ArrayAdapter<String>(this,
-                    R.layout.lista_item_layout, arregloAbonosVentas);
+                    R.layout.lista_item_layout2, arregloAbonosVentas);
             listaAbonosVenta.setAdapter(adapterAbonosVentas);
 
             listaCuentasVenta.setVisibility(View.INVISIBLE);
@@ -263,10 +265,10 @@ public class VentaActivity extends FragmentActivity {
                 }
             });
 
-            adapterAbonosVentas = new ArrayAdapter<String>(this, R.layout.lista_item_layout, arregloAbonosVentas);
+            adapterAbonosVentas = new ArrayAdapter<String>(this, R.layout.lista_item_layout2, arregloAbonosVentas);
             listaAbonosVenta.setAdapter(adapterAbonosVentas);
 
-            adapterCuentasVentas = new ArrayAdapter<String>(this, R.layout.lista_item_layout, arregloCuentasVentas);
+            adapterCuentasVentas = new ArrayAdapter<String>(this, R.layout.lista_item_layout2, arregloCuentasVentas);
             listaCuentasVenta.setAdapter(adapterCuentasVentas);
             if (InicioActivity.getListaConfiguracion().get(0).getCapturapagos())
                 listaCuentasVenta.setOnItemClickListener(new OnItemClickListener() {
@@ -357,10 +359,12 @@ public class VentaActivity extends FragmentActivity {
                 public void afterTextChanged(Editable s) {
                     try {
                         try {
-                            if (AbonoText.getText().toString().compareTo(nuevo.getText().toString()) != 0)
+                            if (AbonoText.getText().toString().compareTo(nuevo.getText().toString()) != 0) {
                                 totalVenta.setText(NumberFormat.getCurrencyInstance(Locale.US).format(((totalaPagar - SumaARestar) + APagar) + Double.parseDouble(AbonoText.getText().toString())));
-                                cxcadd = true;
+                            }
+                            cxcadd = true;
                         } catch (Exception e) {
+
                         }
                         nuevo.setText(AbonoText.getText());
                         /*
@@ -440,209 +444,175 @@ public class VentaActivity extends FragmentActivity {
     Double SumaARestar = 0.0;
     private List<Cuentas> cuentas = new ArrayList<Cuentas>();
     public void cuentasPagar(View view) {
-
-        AbonoText.setVisibility(View.INVISIBLE);
-        if (!CuentasPay) {
-            ventaTextView5.setText("Total de abonos: ");
-            //AbonosButton.setVisibility(View.VISIBLE);
-            listaProductosVenta.setVisibility(View.INVISIBLE);
-            Aceptar.setVisibility(View.GONE);
-            Cancelar.setVisibility(View.GONE);
+        try {
+            AbonoText.setVisibility(View.INVISIBLE);
+            if (!CuentasPay) {
+                ventaTextView5.setText("Total de abonos: ");
+                //AbonosButton.setVisibility(View.VISIBLE);
+                listaProductosVenta.setVisibility(View.INVISIBLE);
+                Aceptar.setVisibility(View.GONE);
+                Cancelar.setVisibility(View.GONE);
+                Reimprimir.setVisibility(View.GONE);
 //            add.setVisibility(View.INVISIBLE);
 
-            //if (seleccionarcliente != null)
+                //if (seleccionarcliente != null)
                 //if (!(seleccionarcliente.toString().compareTo(clientes.getSelectedItem().toString()) == 0))
-                    Agregar.removeAllViews();
-                    SumaARestar = 0.0;
-            APagar=0.0;
-            Agregar.setVisibility(View.VISIBLE);
-            seleccionarcliente = new Cliente();
-            adapterCuentasVentas.clear();
-            for (Cliente seleccionar : InicioActivity.getListaClientes())
-                if (seleccionar.toString().indexOf(clientes.getSelectedItem().toString()) >= 0)
-                    seleccionarcliente = seleccionar;
-
-            List<Cuentas> cuentasComparar = InicioActivity.getDB().ObtenerCuentas();
-            for (Cuentas cu : InicioActivity.getListaCuentas())
-                if (cu.getCliente() != null & seleccionarcliente.getClave() != null)
-                    if (cu.getCliente().toString().compareTo(seleccionarcliente.getClave().toString()) == 0) {
-                        adapterCuentasVentas.add(cu.toString());
-                        int position = adapterCuentasVentas.getPosition(cu.toString());
-                        try {
-                            //region Crear Input
-                            if (findViewById(position) != null)
-                                nuevo = (EditText) findViewById(position);
-                            else
-                                nuevo = new EditText(getApplicationContext());
-                            //endregion
-
-                            //TextView vieew = (TextView) listaCuentasVenta.getChildAt(position);
+                Agregar.removeAllViews();
+                SumaARestar = 0.0;
+                APagar = 0.0;
+                Agregar.setVisibility(View.VISIBLE);
+                seleccionarcliente = new Cliente();
+                adapterCuentasVentas.clear();
+                for (Cliente seleccionar : InicioActivity.getListaClientes()) {
+                    if (seleccionar.toString().indexOf(clientes.getSelectedItem().toString()) >= 0) {
+                        seleccionarcliente = seleccionar;
+                    }
+                }
+                List<Cuentas> cuentasComparar = InicioActivity.getDB().ObtenerCuentas();
+                for (Cuentas cu : InicioActivity.getListaCuentas()) {
+                    if (cu.getCliente() != null & seleccionarcliente.getClave() != null) {
+                        if (cu.getCliente().toString().compareTo(seleccionarcliente.getClave().toString()) == 0) {
+                            adapterCuentasVentas.add(cu.toString());
+                            int position = adapterCuentasVentas.getPosition(cu.toString());
                             try {
-                                for (Cuentas compareCXC : cuentasComparar) {
-                                    if (compareCXC.toString().indexOf(cu.toString()) >= 0) {
-                                        nuevo.setText(compareCXC.toString().replace(cu.toString() , ""));
-                                        if(nuevo.getText().length()<1) nuevo.setText("No");
-                                        APagar += Double.parseDouble(nuevo.getText().toString().trim());
-                                    }
-                                }
-                            }catch (Exception ex){
-                                Log.v("Exception", ex.getLocalizedMessage());
-                            }
-
-                            //region Colocar Input
-                            if(!(nuevo.getText().toString().indexOf("No")>=0)) {
-                                nuevo.setLayoutParams(AbonoText.getLayoutParams());
-                                //new ViewGroup.MarginLayoutParams()
-                                Point size = new Point();
-                                VentaActivity.this.getWindowManager().getDefaultDisplay().getSize(size);
-
-
-                                nuevo.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f);
-                                nuevo.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
-
-                                //nuevo.back.setColorFilter(ContextCompat.getColor(esta, R.color.darkgrey), PorterDuff.Mode.SRC_ATOP);
-
-
-                                nuevo.setPadding(0, (64) * position, 30, 0);
-
-                                //nuevo.setPadding(0, (AbonoText.getHeight()+1) * position, 30, 0);
-//                            if(position%2==0)nuevo.setBackgroundColor(Color.parseColor("#ffffff"));
-//                            else             nuevo.setBackgroundColor(Color.parseColor("#dbdbdb"));
-                                nuevo.setBackgroundColor(Color.TRANSPARENT);
-//                            Drawable drawable = nuevo.getBackground(); // get current EditText drawable
-//                            drawable.setColorFilter(Color.GREEN, PorterDuff.Mode.XOR); // change the drawable color
-//
-//                            if(Build.VERSION.SDK_INT > 16) {
-//                                nuevo.setBackground(drawable); // set the new drawable to EditText
-//                            }else{
-//                                nuevo.setBackgroundDrawable(drawable); // use setBackgroundDrawable because setBackground required API 16
-//                            }
-                                nuevo.setTextColor(Color.parseColor("#FF9800"));
-                                nuevo.setFocusable(false);
-                                nuevo.setClickable(false);
-                                nuevo.setEms(10);
-                                nuevo.setId(position);
-
-                                //nuevo.bringToFront();
+                                //region Crear Input
+                                if (findViewById(position) != null)
+                                    nuevo = (EditText) findViewById(position);
+                                else
+                                    nuevo = new EditText(VentaActivity.this);
                                 //endregion
-                                Agregar.addView(nuevo);
-                            }else{
-                                adapterCuentasVentas.remove(cu.toString());
+
+                                //TextView vieew = (TextView) listaCuentasVenta.getChildAt(position);
+                                try {
+                                    for (Cuentas compareCXC : cuentasComparar) {
+                                        if (compareCXC.toString().indexOf(cu.toString()) >= 0) {
+                                            nuevo.setText(compareCXC.toString().replace(cu.toString(), ""));
+                                            if (nuevo.getText().length() < 1) nuevo.setText("No");
+                                            APagar += Double.parseDouble(nuevo.getText().toString().trim());
+                                        }
+                                    }
+                                } catch (Exception ex) {
+                                    Log.v("Exception", ex.getLocalizedMessage());
+                                }
+                                //region Colocar Input
+                                if (!(nuevo.getText().toString().indexOf("No") >= 0)) {
+                                    nuevo.setLayoutParams(AbonoText.getLayoutParams());
+//                                    Point size = new Point();
+//                                    VentaActivity.this.getWindowManager().getDefaultDisplay().getSize(size);
+                                    nuevo.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f);
+                                    nuevo.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
+                                    nuevo.setPadding(0, (64) * position, 30, 0);
+                                    nuevo.setBackgroundColor(Color.TRANSPARENT);
+                                    nuevo.setTextColor(Color.parseColor("#FF9800"));
+                                    nuevo.setFocusable(false);
+                                    nuevo.setClickable(false);
+                                    nuevo.setEms(10);
+                                    nuevo.setId(position);
+                                    Agregar.addView(nuevo);
+                                } else {
+                                    adapterCuentasVentas.remove(cu.toString());
+                                }
+                            } catch (Exception e) {
+                                InicioActivity.Toast(VentaActivity.this, "Error:" + e.toString());
                             }
-                        } catch (Exception e) {
-                            InicioActivity.Toast(VentaActivity.this, "Error:" + e.toString());
                         }
                     }
+                }
+                listaCuentasVenta.setVisibility(View.VISIBLE);
+                CuentasButton.setBackgroundResource(R.drawable.comprar);
+                CuentasPay = true;
+                OcultarCuentas.setVisibility(View.VISIBLE);
+                listaCuentasVenta.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 75 * adapterCuentasVentas.getCount(), 8));
 
-            listaCuentasVenta.setVisibility(View.VISIBLE);
-            CuentasButton.setBackgroundResource(R.drawable.comprar);
-            CuentasPay = true;
-            OcultarCuentas.setVisibility(View.VISIBLE);
-            listaCuentasVenta.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 75 * adapterCuentasVentas.getCount(), 8));
-
-            if (adapterCuentasVentas.getCount() < 1) {
-                //InicioActivity.Toast(VentaActivity.this,"El cliente no tiene adeudos");
-//                AlertDialog.Builder builder = new AlertDialog.Builder(this);
-//                builder
-//                        .setMessage("El cliente no tiene cuentas por pagar.")
-//                        .setPositiveButton("Ok", null);
-//                AlertDialog dialog = builder.create();
-//                dialog.show();
-//                Button possitive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-//                possitive.setTextColor(Color.parseColor("#e18a33"));
-//                listaCuentasVenta.setVisibility(View.INVISIBLE);
-//                listaAbonosVenta.setVisibility(View.INVISIBLE);
-//                CuentasButton.setBackgroundResource(R.drawable.pagar);
-//                CuentasPay = false;
-//                ventaTextView5.setText("Total de la venta: ");
-//                totalVenta.setText(NumberFormat.getCurrencyInstance(Locale.US).format(0.0));
-//                Aceptar.setVisibility(View.VISIBLE);
-//                Cancelar.setVisibility(View.VISIBLE);
-//                add.setVisibility(View.VISIBLE);
-//                AbonosButton.setVisibility(View.INVISIBLE);
-//                4621
-                InicioActivity.Toast(VentaActivity.this,
-                        "El cliente no tiene cuentas por pagar.\nAgrega un nuevo abono.");
-                totalVenta.setText(NumberFormat.getCurrencyInstance(Locale.US).format(0.0));
-            } else {
-                //totalaPagar = InicioActivity.getDB().ObtenerTotalAbonos();
-                totalVenta.setText(NumberFormat.getCurrencyInstance(Locale.US).format(APagar));
-            }
-        } else if (InicioActivity.getListaConfiguracion().get(0).getCapturapagos() && cxcadd && !mostrarAbonos) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-            builder
-                    .setMessage("Se han agregado pagos a sus cuentas, ¿Desea guardarlos?")
-                    .setTitle("Guardar pagos")
-                    .setIcon(android.R.drawable.ic_menu_save)
-                    .setPositiveButton("Si", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            try {
-                                ///////////////////
-                                SaveVentas();
+                if (adapterCuentasVentas.getCount() < 1) {
+                    InicioActivity.Toast(VentaActivity.this,
+                            "El cliente no tiene cuentas por pagar.\nAgrega un nuevo abono.");
+                    totalVenta.setText(NumberFormat.getCurrencyInstance(Locale.US).format(0.0));
+                } else {
+                    //totalaPagar = InicioActivity.getDB().ObtenerTotalAbonos();
+                String total = NumberFormat.getCurrencyInstance(Locale.US).format(totalaPagar);
+                totalVenta.setText(total);
+                }
+            } else if (InicioActivity.getListaConfiguracion().get(0).getCapturapagos() && cxcadd && !mostrarAbonos) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder
+                        .setMessage("Se han agregado pagos a sus cuentas, ¿Desea guardarlos?")
+                        .setTitle("Guardar pagos")
+                        .setIcon(android.R.drawable.ic_menu_save)
+                        .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                try {
+                                    ///////////////////
+                                    SaveVentas();
 //                                List<Cuentas> nuevas = InicioActivity.getListaCuentas();
 //                                nuevas.removeAll(cuentas);
 //                                nuevas.addAll(cuentas);
 //                                cuentas = nuevas;
-                              //  InicioActivity.setListaCuentas(cuentas);
-                                InicioActivity.getDB().agregarCuentas(cuentas);
-                                cxcadd = false;
-                                ///////////////////
-                                ///////////////////
-                                AlertDialog.Builder builder = new AlertDialog.Builder(VentaActivity.this);
-                                builder
-                                        .setTitle("Cuentas guardadas")
-                                        .setMessage("Se han guardado los pagos y abonos")
-                                        .setIcon(android.R.drawable.stat_sys_upload_done)
-                                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                                            public void onClick(DialogInterface dialog, int which) {
-                                                imprimirCXC();
-                                                Agregar.removeAllViews();
-                                                cuentas.clear();
-                                            }
-                                        });
-                                AlertDialog dialog2 = builder.create();
-                                dialog2.show();
-                                Button possitive = dialog2.getButton(DialogInterface.BUTTON_POSITIVE);
-                                possitive.setTextColor(Color.parseColor("#e18a33"));
+                                    //  InicioActivity.setListaCuentas(cuentas);
+                                    InicioActivity.getDB().agregarCuentas(cuentas);
+                                    cxcadd = false;
+                                    ///////////////////
+                                    ///////////////////
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(VentaActivity.this);
+                                    builder
+                                            .setTitle("Cuentas guardadas")
+                                            .setMessage("Se han guardado los pagos y abonos")
+                                            .setIcon(android.R.drawable.stat_sys_upload_done)
+                                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                                public void onClick(DialogInterface dialog, int which) {
+                                                    imprimirCXC();
+                                                    Agregar.removeAllViews();
+                                                    cuentas.clear();
+                                                }
+                                            });
+                                    AlertDialog dialog2 = builder.create();
+                                    dialog2.show();
+                                    Button possitive = dialog2.getButton(DialogInterface.BUTTON_POSITIVE);
+                                    possitive.setTextColor(Color.parseColor("#e18a33"));
 
 
-                            } catch (Exception e) {
-                                AlertDialog.Builder builder = new AlertDialog.Builder(VentaActivity.this);
-                                builder
-                                        .setTitle("Envio erroneo")
-                                        .setMessage("Error: " + e.toString())
-                                        .setPositiveButton("OK", null);
-                                AlertDialog dialog2 = builder.create();
-                                dialog2.show();
-                                Button possitive = dialog2.getButton(DialogInterface.BUTTON_POSITIVE);
-                                possitive.setTextColor(Color.parseColor("#e18a33"));
+                                } catch (Exception e) {
+                                    AlertDialog.Builder builder = new AlertDialog.Builder(VentaActivity.this);
+                                    builder
+                                            .setTitle("Envio erroneo")
+                                            .setMessage("Error: " + e.toString())
+                                            .setPositiveButton("OK", null);
+                                    AlertDialog dialog2 = builder.create();
+                                    dialog2.show();
+                                    Button possitive = dialog2.getButton(DialogInterface.BUTTON_POSITIVE);
+                                    possitive.setTextColor(Color.parseColor("#e18a33"));
+                                }
                             }
-                        }
-                    })
-                    .setNegativeButton("No", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            SaveVentas();
-                            InicioActivity.Toast(VentaActivity.this,
-                                    "Continuar con la venta actual");
-                            cxcadd = false;
-                            cuentas.clear();
-                        }
-                    });
-            AlertDialog dialog = builder.create();
-            dialog.show();
-            Button possitive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-            possitive.setTextColor(Color.parseColor("#e18a33"));
-            Button negative = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
-            negative.setTextColor(Color.parseColor("#e18a33"));
-        } else if (!cxcadd) {
-            SaveVentas();
-            cuentas.clear();
+                        })
+                        .setNegativeButton("No", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                SaveVentas();
+                                InicioActivity.Toast(VentaActivity.this,
+                                        "Continuar con la venta actual");
+                                cxcadd = false;
+                                cuentas.clear();
+                            }
+                        });
+                AlertDialog dialog = builder.create();
+                dialog.show();
+                Button possitive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                possitive.setTextColor(Color.parseColor("#e18a33"));
+                Button negative = dialog.getButton(DialogInterface.BUTTON_NEGATIVE);
+                negative.setTextColor(Color.parseColor("#e18a33"));
+            } else if (!cxcadd) {
+                SaveVentas();
+                cuentas.clear();
+            }
+        } catch (Exception e) {
+            InicioActivity.Toast(VentaActivity.this, "Error:" + e.toString());
+            e.printStackTrace();
         }
     }
     int abonos=0;
     public void SaveVentas(){
         Aceptar.setVisibility(View.VISIBLE);
         Cancelar.setVisibility(View.VISIBLE);
+        add.setVisibility(View.VISIBLE);
         listaProductosVenta.setVisibility(View.VISIBLE);
         AbonosButton.setVisibility(View.INVISIBLE);
         CuentasButton.hasFocus();
@@ -685,7 +655,6 @@ public class VentaActivity extends FragmentActivity {
 
             Date fecha = new Date();
             String sfecha = String.format("%d_%d_%d_%d_%d", fecha.getDate(), fecha.getMonth() + 1, fecha.getYear() + 1900, fecha.getHours(), fecha.getMinutes());
-
 
             List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
             String nombreArchivo = String.format("cxcs_%s_%s_%s.sql", DeviceKey,venta.getVendedor().getClave(),sfecha);
@@ -779,11 +748,12 @@ public class VentaActivity extends FragmentActivity {
                 .setView(NotaText)
                 .setPositiveButton("Agregar", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int which) {
+                        try{
                         cxcadd = true;
                         AbonoID = NotaText.getText().toString();
                         adapterCuentasVentas.add(NotaText.getText().toString());
                         listaCuentasVenta.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 75 * adapterCuentasVentas.getCount(), 8));
-                        nuevo = new EditText(getApplicationContext());
+                        nuevo = new EditText(VentaActivity.this);
                         nuevo.setText("0.0");
                         nuevo.setLayoutParams(AbonoText.getLayoutParams());
 
@@ -802,8 +772,11 @@ public class VentaActivity extends FragmentActivity {
                         nuevo.setFocusable(false);
                         nuevo.setClickable(false);
                         nuevo.setEms(10);
-                        nuevo.setId(0);
+                        nuevo.setId(View.generateViewId());
                         Agregar.addView(nuevo);
+                        }catch(Exception e){
+                            InicioActivity.Toast(VentaActivity.this,"Error: "+ e.toString());
+                        }
                     }
                 });
         AlertDialog dialog = builder.create();
@@ -1006,8 +979,7 @@ public class VentaActivity extends FragmentActivity {
                     });
                 }
                 levelDialog = builder.create();
-
-                levelDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.parseColor("#e18a33"));
+//                levelDialog.getButton(DialogInterface.BUTTON_POSITIVE).setTextColor(Color.parseColor("#e18a33"));
                 levelDialog.show();
             }
             else{
@@ -1656,13 +1628,14 @@ public void Buttons(){
         Iniciar = this.findViewById(R.id.Iniciaventa);
         Terminar = this.findViewById(R.id.Terminaventa);
         add = this.findViewById(R.id.multiple_actions);
+        Reimprimir.setVisibility(View.GONE);
+        if (InicioActivity.impresiones.getmostrarImpresion() == 1 && !venta.isNueva()) {
+            Reimprimir.setVisibility(View.VISIBLE);
+        }
         if(Configuracionleer().getEditarVenta()==0 && !venta.isNueva())
         {
             add.setVisibility(View.INVISIBLE);
-            if (InicioActivity.impresiones.getmostrarImpresion() == 1)
-                Aceptar.setText("Reimprimir");
-            else
-                Aceptar.setVisibility(View.INVISIBLE);
+            Aceptar.setVisibility(View.GONE);
             Cancelar.setVisibility(View.GONE);
         }
         Vista.setOnClickListener(new View.OnClickListener() {
@@ -1693,15 +1666,21 @@ public void Buttons(){
                 }
             }
         });
+        Reimprimir.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                DialogFragment dialogoimprimir = new DialogoPrint(getVenta());
+                dialogoimprimir.show(getSupportFragmentManager(), "Imprimir ventas");
+            }
+        });
         Aceptar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                if(Configuracionleer().getEditarVenta()==0 && !venta.isNueva() && InicioActivity.impresiones.getmostrarImpresion() == 1 && (InicioActivity.getListaMetodos().size() == 0)){
-                    DialogFragment dialogoimprimir = new DialogoPrint(getVenta());
-                    dialogoimprimir.show(getSupportFragmentManager(), "Imprimir ventas");
-                }else{
+//                if(Configuracionleer().getEditarVenta()==0 && !venta.isNueva() && InicioActivity.impresiones.getmostrarImpresion() == 1 && (InicioActivity.getListaMetodos().size() == 0)){
+//
+//                }else{
                     aceptarOnClick(v);
-                }
+//                }
             }
         });
         Cancelar.setOnClickListener(new View.OnClickListener() {

@@ -190,7 +190,12 @@
         android:onClick="agregarProductoOnClick"
         android:scaleType="fitXY"
         android:visibility="gone" />
-
+    <LinearLayout
+        android:id="@+id/BottomButtonsPlus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:orientation="vertical">
     <LinearLayout
         android:id="@+id/BottomButtons"
         android:layout_width="match_parent"
@@ -220,6 +225,17 @@
             android:theme="@style/AppTheme" />
     </LinearLayout>
 
+        <Button
+            android:id="@+id/Reimprimir"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="REIMPRIMIR"
+            android:textSize="18sp"
+            android:theme="@style/AppTheme"
+            android:visibility="visible" />
+    </LinearLayout>
     <LinearLayout
         android:id="@+id/clienteLayout"
         android:layout_width="match_parent"
@@ -353,10 +369,8 @@
         android:id="@+id/multiple_actions"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_alignParentRight="true"
-        android:layout_marginBottom="40dp"
+        android:layout_above="@+id/BottomButtonsPlus"
         fab:fab_colorNormal="@color/orange"
         fab:fab_colorPressed="@android:color/holo_orange_dark"
         fab:fab_icon="@drawable/plus">
