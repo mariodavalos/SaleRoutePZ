@@ -5,17 +5,12 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.pm.PackageManager;
 import android.graphics.Color;
-import android.net.wifi.WifiInfo;
-import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import androidx.core.app.ActivityCompat;
 import android.telephony.TelephonyManager;
-import android.util.StringBuilderPrinter;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -45,9 +40,6 @@ import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-
-import static android.os.Process.THREAD_PRIORITY_BACKGROUND;
-import static android.os.Process.THREAD_PRIORITY_MORE_FAVORABLE;
 
 public class Principalctivity extends android.app.Activity {
     private static final Void params = null;
@@ -573,6 +565,7 @@ public class Principalctivity extends android.app.Activity {
                                 "<precio3>"+ producto.getPrecios().get(2)+"</precio3>"+
                                 "<precio4>"+ producto.getPrecios().get(3)+"</precio4>"+
                                 "<precio5>"+ producto.getPrecios().get(4)+"</precio5>"+
+                                "<precioS>"+ (producto.getPrecios().size()<5?0:producto.getPrecios().get(5))+"</precioS>"+
                                 "<costo>"+producto.getCosto()+"</costo>"+
                                 "<existencia>"+producto.getExistencia()+"</existencia>"+
                                 "</producto>";

@@ -68,7 +68,7 @@
 
     <EditText
         android:id="@+id/cantidad"
-        android:layout_width="80dp"
+        android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_below="@+id/TextView01"
         android:layout_alignParentLeft="true"
@@ -90,7 +90,7 @@
 
     <EditText
         android:id="@+id/Precioproducto"
-        android:layout_width="80dp"
+        android:layout_width="100dp"
         android:layout_height="50dp"
         android:layout_below="@+id/VersionC"
         android:layout_toLeftOf="@+id/desplegarPrecios"
@@ -99,14 +99,53 @@
         android:inputType="numberSigned|numberDecimal"
         android:textColor="@android:color/black" />
 
+    <EditText
+        android:id="@+id/EditText01"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/TextView03"
+        android:clickable="false"
+        android:ems="10"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:imeOptions="actionNone"
+        android:inputType="numberSigned|numberDecimal" />
+
     <TextView
         android:id="@+id/TextView03"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/cantidad"
-        android:layout_centerHorizontal="false"
-        android:layout_marginLeft="85dp"
+        android:layout_below="@+id/cantidad"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="-1dp"
         android:text="@string/ExistenciaLabel"
+        android:textColor="@color/orange"
+        android:textSize="12sp" />
+
+    <EditText
+        android:id="@+id/psugerido"
+        android:layout_width="100dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/textView6"
+        android:layout_alignParentEnd="true"
+        android:layout_marginLeft="50dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="30dp"
+        android:ems="10"
+        android:enabled="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:imeOptions="actionNone"
+        android:inputType="numberSigned|numberDecimal" />
+
+    <TextView
+        android:id="@+id/textView6"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/Precioproducto"
+        android:layout_alignLeft="@id/psugerido"
+        android:layout_marginLeft="0dp"
+        android:text="Sugerido"
         android:textColor="@color/orange"
         android:textSize="12sp" />
 
@@ -120,28 +159,18 @@
         android:textColor="@color/orange"
         android:textSize="12sp" />
 
-    <EditText
-        android:id="@+id/EditText01"
-        android:layout_width="90dp"
-        android:layout_height="50dp"
-        android:layout_alignStart="@+id/TextView03"
-        android:layout_alignTop="@+id/cantidad"
-        android:clickable="false"
-        android:ems="10"
-        android:focusable="false"
-        android:focusableInTouchMode="false"
-        android:imeOptions="actionNone"
-        android:inputType="numberSigned|numberDecimal" />
-
     <Spinner
         android:id="@+id/todoslosprecios"
-        android:layout_width="wrap_content"
+        android:layout_width="100dp"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/Precioproducto"
         android:layout_alignTop="@+id/cantidad"
         android:layout_alignBottom="@+id/Precioproducto"
         android:layout_alignParentRight="true"
-        android:layout_marginRight="-35dp"
+        android:layout_marginLeft="3dp"
+        android:layout_marginTop="0dp"
+        android:layout_marginRight="-37dp"
+        android:layout_marginBottom="0dp"
         android:elevation="4dp" />
 
     <Button
@@ -153,13 +182,13 @@
         android:layout_alignBottom="@+id/Precioproducto"
         android:layout_alignParentRight="true"
         android:layout_marginTop="7dp"
-        android:layout_marginRight="5dp"
+        android:layout_marginRight="3dp"
         android:layout_marginBottom="7dp"
         android:background="@android:drawable/radiobutton_off_background"
         android:elevation="1dp"
         android:text="$"
         android:textColor="@color/darkgrey"
-        android:textSize="26sp"
+        android:textSize="24sp"
         android:textStyle="bold"
         android:typeface="serif" />
 
@@ -199,5 +228,7 @@
         android:layout_margin="5dp"
         android:background="?android:attr/actionModeWebSearchDrawable"
         android:elevation="3dp" />
+
+
 
 </RelativeLayout>

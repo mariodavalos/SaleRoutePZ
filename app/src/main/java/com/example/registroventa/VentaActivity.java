@@ -211,7 +211,7 @@ public class VentaActivity extends FragmentActivity {
             listaAbonosVenta.setAdapter(adapterAbonosVentas);
 
             listaCuentasVenta.setVisibility(View.INVISIBLE);
-            OcultarCuentas.setVisibility(View.INVISIBLE);
+            OcultarCuentas.setVisibility(View.GONE);
 
             Agregar = (FrameLayout) findViewById(R.id.Agregar);
             nuevo = new EditText(getApplicationContext());
@@ -270,79 +270,24 @@ public class VentaActivity extends FragmentActivity {
 
             adapterCuentasVentas = new ArrayAdapter<String>(this, R.layout.lista_item_layout2, arregloCuentasVentas);
             listaCuentasVenta.setAdapter(adapterCuentasVentas);
-            if (InicioActivity.getListaConfiguracion().get(0).getCapturapagos())
+
                 listaCuentasVenta.setOnItemClickListener(new OnItemClickListener() {
                     @Override
                     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                        String item = ((TextView) view).getText().toString();
-                        APagar = 0.0;
-                        int posicion = 0;
-                        if(nuevo != null) nuevo.setVisibility(View.VISIBLE);
-                        for (String cuenta : arregloCuentasVentas) {
-                            if (item.equals(cuenta.toString())) cuentate = position;
-                            if (Agregar.getChildAt(posicion) != null) try {
-                                APagar += Double.parseDouble((((EditText) Agregar.getChildAt(posicion)).getText()).toString());
-                            } catch (Exception e) {}
-
-                            posicion++;
-
-                            if (Agregar.getChildAt(cuentate) != null)
-                                nuevo = (EditText) Agregar.getChildAt(cuentate);
-                            else
-                                nuevo = new EditText(getApplicationContext());
-                            nuevo.setVisibility(View.VISIBLE);
+                        if (InicioActivity.getListaConfiguracion().get(0).getCapturapagos()) {
+                            CuentasClick(parent, view, position, id);
+                            return;
                         }
-
-                        if (cuentate >= 0) try {
-                            if (Agregar.getChildAt(cuentate) != null)
-                                nuevo = (EditText) Agregar.getChildAt(cuentate);
-                            else
-                                nuevo = new EditText(getApplicationContext());
-                            nuevo.setVisibility(View.INVISIBLE);
-                            AbonoText.setVisibility(View.VISIBLE);
-
-                            Editarlayout.setPadding(0, (((TextView) view).getHeight() + 1) * position, 0, 0);
-                            Editarlayout.setVisibility(View.VISIBLE);
-                            Editarlayout.bringToFront();
-                            AbonoText.requestFocus();
-                            InputMethodManager keyboard = (InputMethodManager)
-                                    getSystemService(Context.INPUT_METHOD_SERVICE);
-                            keyboard.showSoftInput(AbonoText, 0);
-                            AbonoText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-                                @Override
-                                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                                    if (actionId == EditorInfo.IME_ACTION_DONE) {
-                                        nuevo.setVisibility(View.VISIBLE);
-                                        Editarlayout.setVisibility(View.INVISIBLE);
-                                        InputMethodManager keyboard = (InputMethodManager)
-                                                getSystemService(Context.INPUT_METHOD_SERVICE);
-                                        keyboard.hideSoftInputFromWindow(AbonoText.getWindowToken(), 0);
-
-                                        return true;
-                                    }
-                                    return false;
-                                }
-                            });
-                            totalVenta.setText(NumberFormat.getCurrencyInstance(Locale.US).format(((totalaPagar - SumaARestar) + APagar)));
-
-                            if (findViewById(cuentate) != null) {
-                                try {
-                                    APagar -= Double.parseDouble(nuevo.getText().toString());
-                                  //  totalVenta.setText(NumberFormat.getCurrencyInstance(Locale.US).format((totalaPagar-APagar)));
-                                } catch (Exception e) {
-                                }
-                                AbonoText.setText(nuevo.getText());
-                            } else
-                                AbonoText.setText("");
-
-                            AbonoText.isSelected();
-                            AbonoText.isFocused();
-                            AbonoText.setSelection(AbonoText.getText().length());
-                        } catch (Exception e) {
-
-                        }
+                        InicioActivity.Toast(VentaActivity.this, "Tu no puedes registrar pagos. Comuniquese con el administrador.");
                     }
                 });
+//                listaAbonosVenta.setOnItemClickListener(new OnItemClickListener() {
+//                    @Override
+//                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+//                        CuentasClick(parent, view, position, id);
+//                    }
+//                });
+
             AbonoText.addTextChangedListener(new TextWatcher() {
 
                 @Override
@@ -396,6 +341,7 @@ public class VentaActivity extends FragmentActivity {
         }
         Buttons();
     }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         super.onCreateOptionsMenu(menu);
@@ -518,10 +464,10 @@ public class VentaActivity extends FragmentActivity {
                         }
                     }
                 }
+                OcultarCuentas.setVisibility(View.VISIBLE);
                 listaCuentasVenta.setVisibility(View.VISIBLE);
                 CuentasButton.setBackgroundResource(R.drawable.comprar);
                 CuentasPay = true;
-                OcultarCuentas.setVisibility(View.VISIBLE);
                 listaCuentasVenta.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 75 * adapterCuentasVentas.getCount(), 8));
 
                 if (adapterCuentasVentas.getCount() < 1) {
@@ -606,6 +552,74 @@ public class VentaActivity extends FragmentActivity {
         } catch (Exception e) {
             InicioActivity.Toast(VentaActivity.this, "Error:" + e.toString());
             e.printStackTrace();
+        }
+    }
+    void CuentasClick(AdapterView<?> parent, View view, int position, long id) {
+        String item = ((TextView) view).getText().toString();
+        APagar = 0.0;
+        int posicion = 0;
+        if (nuevo != null) nuevo.setVisibility(View.VISIBLE);
+        for (String cuenta : arregloCuentasVentas) {
+            if (item.equals(cuenta.toString())) cuentate = position;
+            if (Agregar.getChildAt(posicion) != null) try {
+                APagar += Double.parseDouble((((EditText) Agregar.getChildAt(posicion)).getText()).toString());
+            } catch (Exception e) {
+            }
+            posicion++;
+            if (Agregar.getChildAt(cuentate) != null)
+                nuevo = (EditText) Agregar.getChildAt(cuentate);
+            else
+                nuevo = new EditText(getApplicationContext());
+            nuevo.setVisibility(View.VISIBLE);
+        }
+
+        if (cuentate >= 0) try {
+            if (Agregar.getChildAt(cuentate) != null)
+                nuevo = (EditText) Agregar.getChildAt(cuentate);
+            else
+                nuevo = new EditText(getApplicationContext());
+            nuevo.setVisibility(View.INVISIBLE);
+            AbonoText.setVisibility(View.VISIBLE);
+
+            Editarlayout.setPadding(0, (((TextView) view).getHeight() + 1) * position, 0, 0);
+            Editarlayout.setVisibility(View.VISIBLE);
+            Editarlayout.bringToFront();
+            AbonoText.requestFocus();
+            InputMethodManager keyboard = (InputMethodManager)
+                    getSystemService(Context.INPUT_METHOD_SERVICE);
+            keyboard.showSoftInput(AbonoText, 0);
+            AbonoText.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+                @Override
+                public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                    if (actionId == EditorInfo.IME_ACTION_DONE) {
+                        nuevo.setVisibility(View.VISIBLE);
+                        Editarlayout.setVisibility(View.INVISIBLE);
+                        InputMethodManager keyboard = (InputMethodManager)
+                                getSystemService(Context.INPUT_METHOD_SERVICE);
+                        keyboard.hideSoftInputFromWindow(AbonoText.getWindowToken(), 0);
+
+                        return true;
+                    }
+                    return false;
+                }
+            });
+            totalVenta.setText(NumberFormat.getCurrencyInstance(Locale.US).format(((totalaPagar - SumaARestar) + APagar)));
+
+            if (findViewById(cuentate) != null) {
+                try {
+                    APagar -= Double.parseDouble(nuevo.getText().toString());
+                    //  totalVenta.setText(NumberFormat.getCurrencyInstance(Locale.US).format((totalaPagar-APagar)));
+                } catch (Exception e) {
+                }
+                AbonoText.setText(nuevo.getText());
+            } else
+                AbonoText.setText("");
+
+            AbonoText.isSelected();
+            AbonoText.isFocused();
+            AbonoText.setSelection(AbonoText.getText().length());
+        } catch (Exception e) {
+
         }
     }
     int abonos=0;
@@ -741,6 +755,10 @@ public class VentaActivity extends FragmentActivity {
         LinearLayout.LayoutParams Style = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
+        if (!(InicioActivity.getListaConfiguracion().get(0).getCapturapagos())){
+            InicioActivity.Toast(VentaActivity.this, "Tu no puedes registrar abonos. Comuniquese con el administrador.");
+            return;
+        }
         NotaText.setLayoutParams(Style);
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setCancelable(false)
@@ -759,7 +777,7 @@ public class VentaActivity extends FragmentActivity {
 
                         Point size = new Point();
                         VentaActivity.this.getWindowManager().getDefaultDisplay().getSize(size);
-                        nuevo.setPadding(0, (64) * (adapterCuentasVentas.getCount()-1), 30, 0);
+                        nuevo.setPadding(0, (64) * (adapterCuentasVentas.getCount()-1), 20, 0);
                         nuevo.setTextSize(TypedValue.COMPLEX_UNIT_SP, 17f);
                         nuevo.setTextAlignment(View.TEXT_ALIGNMENT_TEXT_END);
                         //nuevo.setPadding(0, (84) * position, 30, 0);

@@ -3,16 +3,12 @@ package com.example.registroventa.xmls;
 import android.content.Context;
 import android.os.Build;
 import android.sax.Element;
-import android.sax.EndElementListener;
 import android.sax.EndTextElementListener;
 import android.sax.RootElement;
-import android.sax.StartElementListener;
 import android.util.Xml;
 
 import com.example.registroventa.InicioActivity;
 import com.example.registroventa.models.Producto;
-
-import org.xml.sax.Attributes;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -80,6 +76,11 @@ public class AnalizadorXMLProducto {
             }
         });
         item.getChild("precio5").setEndTextElementListener(new EndTextElementListener() {
+            public void end(String contenido) {
+                producto.getPrecios().add(Double.parseDouble(contenido));
+            }
+        });
+        item.getChild("precioS").setEndTextElementListener(new EndTextElementListener() {
             public void end(String contenido) {
                 producto.getPrecios().add(Double.parseDouble(contenido));
             }

@@ -7,7 +7,6 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
-import androidx.fragment.app.DialogFragment;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -34,6 +33,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import androidx.fragment.app.DialogFragment;
+
 
 public class DialogoAgregarProducto extends DialogFragment {
     public static VentaProducto errorproducto;
@@ -42,6 +43,7 @@ public class DialogoAgregarProducto extends DialogFragment {
     Button search;
     VentaProducto ventaProducto = new VentaProducto();
     int numero_de_productos = InicioActivity.getListaProductos().size();
+    final Double arregloDePSugerido[] = new Double[numero_de_productos];
     final Double arregloDePrecios[] = new Double[numero_de_productos];
     final Double arregloExistenci[] = new Double[numero_de_productos];
     String arregloProductos[] = new String[numero_de_productos];
@@ -53,11 +55,13 @@ public class DialogoAgregarProducto extends DialogFragment {
     android.widget.ListPopupWindow popupWindow;
     ListView  listPopUp;
     private EditText cantidad;
+    private EditText psugerido;
     private EditText precio;
     private EditText existen;
     Double existenciaCambian;
     private EditText productoBuscado;
     private TextView ClaveLabel;
+    private TextView SugeridoLabel;
     private TextView ExistenciaLabel;
     private TextView ExistenciaLabel2;
     private VentaActivity actividad;
@@ -107,7 +111,7 @@ public class DialogoAgregarProducto extends DialogFragment {
                         if (cantidad.getText().length() > 0)
                             ventaProducto.setCantidad(Double.parseDouble((cantidad.getText().toString())));
 
-                        if (precio.getText().toString().length() > 0) {
+                        if (!precio.getText().toString().isEmpty()) {
                             precis = Double.parseDouble(precio.getText().toString().replaceAll(",",""));
                         }
                         Double costos = producto.getCosto();
@@ -153,7 +157,7 @@ public class DialogoAgregarProducto extends DialogFragment {
                         else if (Double.parseDouble(cantidad.getText().toString()) == 0) {
                             mensajerro += "La cantidad no puede ser 0. ";
                         }
-                        if (mensajerro.length() < 1) {
+                        if (mensajerro.isEmpty()) {
                             ventaProducto.setVenta(actividad.getventas());
                             if (actividad.cambio)
                                 actividad.modificarProductoVenta(ventaProducto);
@@ -196,6 +200,8 @@ public class DialogoAgregarProducto extends DialogFragment {
         button = view.findViewById(R.id.botonproductos);
         search = view.findViewById(R.id.buttonsearch);
         precib = view.findViewById(R.id.desplegarPrecios);
+        SugeridoLabel = (TextView) view.findViewById(R.id.textView6);
+        psugerido = view.findViewById(R.id.psugerido);
         precio = view.findViewById(R.id.Precioproducto);
         listPopUp = view.findViewById(R.id.ListPopUp);
 
@@ -203,6 +209,8 @@ public class DialogoAgregarProducto extends DialogFragment {
         if(!InicioActivity.getListaConfiguracion().get(0).getModificarprecios())
         {
             precib.setVisibility(View.INVISIBLE);
+            psugerido.setVisibility(View.INVISIBLE);
+            SugeridoLabel.setVisibility(View.INVISIBLE);
             precio.setEnabled(false);
         }
 
@@ -212,6 +220,8 @@ public class DialogoAgregarProducto extends DialogFragment {
         }
         if(VentaActivity.config.getSeleccionar()==0){
             precib.setVisibility(View.INVISIBLE);
+            psugerido.setVisibility(View.INVISIBLE);
+            SugeridoLabel.setVisibility(View.INVISIBLE);
         }
 
 
@@ -226,7 +236,7 @@ public class DialogoAgregarProducto extends DialogFragment {
             @Override
             public boolean onKey(View view, int i, KeyEvent keyEvent) {
                 try {
-                    Double cantidadCambian = (cantidad.getText().toString().length()>0)? Double.parseDouble(cantidad.getText().toString()): 0.0;
+                    Double cantidadCambian = (!cantidad.getText().toString().isEmpty())? Double.parseDouble(cantidad.getText().toString()): 0.0;
                     existen.setText(""+(existenciaCambian - cantidadCambian));
                 }catch (Exception e){
                     e.getMessage();
@@ -283,7 +293,7 @@ public class DialogoAgregarProducto extends DialogFragment {
             precio.setText(String.valueOf(amodificar.getPrecioUnitario()));
         } else if (errorproducto != null) {
             try{
-            if (errorproducto.getProducto().getDescripcion().length() > 0) {
+            if (!errorproducto.getProducto().getDescripcion().isEmpty()) {
                 precio.setText(Double.toString(errorproducto.getPrecioUnitario()));
                 precioUni = String.valueOf(actividad.errorpro.getPrecioUnitario());
                 if (errorproducto.getCantidad() > 0)
@@ -427,12 +437,17 @@ public class DialogoAgregarProducto extends DialogFragment {
                     else
                         arregloExistenci[e] = prod.getExistencia();
 
-                    arregloDePrecios[e] = prod.getPrecios().get(cliente.getNumPrecio() - 1);
 
+                    arregloDePrecios[e] = prod.getPrecios().get(cliente.getNumPrecio() - 1);
                     for (ListaPrecios preciosN: InicioActivity.getListaPreciosNegociados()) {
                         if (preciosN.getCliente().compareToIgnoreCase(actividad.getCliente().getClave()) == 0)
                             if (preciosN.getProducto().compareToIgnoreCase(prod.getClave()) == 0)
                                 arregloDePrecios[e] = preciosN.getPrecio();
+                    }
+                    if(prod.getPrecios().size()>5) {
+                        arregloDePSugerido[e] = prod.getPrecios().get(5);
+                    }else{
+                        arregloDePSugerido[e] = arregloDePrecios[e];
                     }
                     e++;
 
@@ -450,8 +465,9 @@ public class DialogoAgregarProducto extends DialogFragment {
                 arreglofinal = arregloProductos;
 
                 InicioActivity.Toast(actividad, "No coincidencias");
-            } else if (buscado.length() < 1)
-                InicioActivity.Toast(actividad, "Ingrese busqueda");
+            } else {
+                buscado.length();
+            }
             ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getActivity(),
                     android.R.layout.simple_dropdown_item_1line, arreglofinal);
             adapter.setDropDownViewResource(android.R.layout.simple_dropdown_item_1line);
@@ -470,6 +486,7 @@ public class DialogoAgregarProducto extends DialogFragment {
                         preciosto.setVisibility(View.GONE);
 
                         precio.setText(arregloDePrecios[position].toString());
+                        psugerido.setText(arregloDePSugerido[position].toString());
 
                     }
                     if (existencias == 1 && arregloExistenci[position] != null) {
@@ -543,6 +560,11 @@ public class DialogoAgregarProducto extends DialogFragment {
                         arregloDePrecios[i] = preciosN.getPrecio();
                     }
             }
+            if(InicioActivity.getListaProductos().get(i).getPrecios().size()>5) {
+                arregloDePSugerido[i] = InicioActivity.getListaProductos().get(i).getPrecios().get(5);
+            }else{
+                arregloDePSugerido[i] = arregloDePrecios[i];
+            }
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this.getActivity(),
                 android.R.layout.simple_dropdown_item_1line, arregloProductos);
@@ -556,6 +578,8 @@ public class DialogoAgregarProducto extends DialogFragment {
                     precib.setEnabled(true);
                     preciosto.setVisibility(View.GONE);
                     precio.setText(arregloDePrecios[position].toString());
+                    psugerido.setText(arregloDePSugerido[position].toString());
+
                     if(precioUni.length()>1)
                         precio.setText(precioUni);
                 }
@@ -602,7 +626,7 @@ public class DialogoAgregarProducto extends DialogFragment {
             Producto producto = InicioActivity.getListaProductos().get(getIndexProducto(productos.getSelectedItem().toString()));
             if(producto == null) return;
             final List<String> ListaPreciosProducto = new ArrayList<String>();
-            if (precio.getText().toString().length() > 0)
+            if (!precio.getText().toString().isEmpty())
                 ListaPreciosProducto.add(n, precio.getText().toString());
             else
                 ListaPreciosProducto.add(n, Double.toString(producto.getPrecios().get(actividad.getCliente().getNumPrecio() - 1)));
@@ -627,7 +651,10 @@ public class DialogoAgregarProducto extends DialogFragment {
             ListaPreciosProducto.add(n,"4-" + NumberFormat.getCurrencyInstance(Locale.US).format(producto.getPrecios().get(3)));
             n++;
             ListaPreciosProducto.add(n,"5-" + NumberFormat.getCurrencyInstance(Locale.US).format(producto.getPrecios().get(4)));
-
+            if(producto.getPrecios().size()>5) {
+                n++;
+                ListaPreciosProducto.add(n, "S-" + NumberFormat.getCurrencyInstance(Locale.US).format(producto.getPrecios().get(5)));
+            }
             //******************************************************************//
             ////////////////PRECIOS ADICIONALES //////////////////////////////////
             //******************************************************************//
