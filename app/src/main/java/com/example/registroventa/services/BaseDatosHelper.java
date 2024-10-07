@@ -512,12 +512,12 @@ public class BaseDatosHelper extends SQLiteOpenHelper {
                     while (cur2.moveToNext()) {
                         VentaProducto vp = new VentaProducto();
                         String idproducto = cur2.getString(0);
-                        for (Producto producto : productos)
+                        for (Producto producto : productos) {
                             if (producto.getClave().equals(idproducto)) {
                                 vp.setProducto(producto);
                                 break;
                             }
-
+                        }
                         vp.setCantidad(Double.parseDouble(cur2.getString(1)));
                         vp.setPrecioUnitario(Double.parseDouble(cur2.getString(2)));
                         vp.setTotal(vp.getPrecioUnitario() * vp.getCantidad());

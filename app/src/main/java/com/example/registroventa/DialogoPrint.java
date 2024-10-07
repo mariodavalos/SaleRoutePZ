@@ -16,10 +16,6 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Looper;
-
-import androidx.core.content.FileProvider;
-import androidx.fragment.app.DialogFragment;
-import androidx.print.PrintHelper;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -43,6 +39,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.text.NumberFormat;
 import java.util.Locale;
+import java.util.Objects;
+
+import androidx.core.content.FileProvider;
+import androidx.fragment.app.DialogFragment;
+import androidx.print.PrintHelper;
 
 @SuppressWarnings("deprecation")
 public class DialogoPrint extends DialogFragment {
@@ -84,7 +85,6 @@ public class DialogoPrint extends DialogFragment {
         impresorasencon.setAdapter(adapter);
         ImageView tickimagen = (ImageView) view.findViewById(R.id.imageView1);
         Bitmap imagen = null;
-        Bitmap finalImagen = imagen;
         builder.setView(view)
                 .setPositiveButton("Imprimir", new DialogInterface.OnClickListener() {
                     @Override
@@ -173,24 +173,24 @@ public class DialogoPrint extends DialogFragment {
         c.drawText(MacEncabezado.getencabezado2(), Sangria + 35, Renglon - 130, paint);
         c.drawText(MacEncabezado.getencabezado3(), Sangria + 35, Renglon - 100, paint);
         /////////////ENCABEZADO FIN///////////////////////
-        dataToPrint= dataToPrint+"-----------------------------"+"$intro$";
+        dataToPrint= dataToPrint+"------------------------------------"+"$intro$";
         /////////////ENCABEZADO INICIO/////////////////////
         dataToPrint= dataToPrint+"Cliente: "+ticket_productos.getCliente()+"$intro$";
         dataToPrint= dataToPrint+"Vendedor: "+ticket_productos.getVendedor().getNombre()+"$intro$";
-        dataToPrint= dataToPrint+"-----------------------------"+"$intro$";
+        dataToPrint= dataToPrint+"------------------------------------"+"$intro$";
         c.drawText("Cliente: "+ticket_productos.getCliente(), Sangria + 35, Renglon - 60, paint);
         c.drawText("Vendedor: "+ticket_productos.getVendedor().getNombre(), Sangria + 35, Renglon - 30, paint);
         /////////////ENCABEZADO FIN///////////////////////
         c.drawText("Fecha: ", Sangria + 210, Renglon , paint);
         c.drawText(ticket_productos.getFecha().toLocaleString(), Sangria + 290, Renglon, paint);
-        c.drawText("Cantidad", Sangria + 45, Renglon + 40, paint);
-        c.drawText("Precio", Sangria + 190, Renglon + 40, paint);
-        c.drawText("Total", Sangria + 360, Renglon + 40, paint);
-
+        c.drawText("Cantidad", Sangria + 40, Renglon + 40, paint);
+        c.drawText("Precio", Sangria + 150, Renglon + 40, paint);
+        c.drawText("Total", Sangria + 290, Renglon + 40, paint);
+        c.drawText("Sugerido", Sangria + 420, Renglon + 40, paint);
         dataToPrint= dataToPrint+"Fecha: "+ticket_productos.getFecha().toLocaleString()+"$intro$";
-        dataToPrint= dataToPrint+"-----------------------------"+"$intro$";
-        dataToPrint= dataToPrint+"Cantidad     Precio     Total"+"$intro$";
-        dataToPrint= dataToPrint+"-----------------------------"+"$intro$";
+        dataToPrint= dataToPrint+"------------------------------------"+"$intro$";
+        dataToPrint= dataToPrint+"Cantidad   Precio   Total   Sugerido"+"$intro$";
+        dataToPrint= dataToPrint+"------------------------------------"+"$intro$";
         ///////////PRODUCTOS INICIO//////////////////////////
         Renglon+=90;
         for (VentaProducto producto : ticket_productos.getVentaProductos()) {
@@ -209,15 +209,22 @@ public class DialogoPrint extends DialogFragment {
                 c.drawText(producto.getProducto().toString(), Sangria + 45, Renglon, paint);
                 dataToPrint = dataToPrint + producto.getProducto().toString() + "$intro$";
             }
-            String space = "          ";
-            dataToPrint= dataToPrint+String.format("%.2f",producto.getCantidad())+space.substring(String.format("%.2f",producto.getCantidad()).length());
+            String space = "           ";
+            dataToPrint= dataToPrint+String.format("%.2f",producto.getCantidad())+space.substring((String.format("%.2f",producto.getCantidad()).length()+2));
             dataToPrint= dataToPrint+NumberFormat.getCurrencyInstance(Locale.US).format(producto.getPrecioUnitario())+
                     space.substring(NumberFormat.getCurrencyInstance(Locale.US).format(producto.getPrecioUnitario()).length());
-            dataToPrint= dataToPrint+NumberFormat.getCurrencyInstance(Locale.US).format(producto.getTotal())+"$intro$";
-            c.drawText(Double.toString(producto.getCantidad()), Sangria + 45, Renglon + 20, paint);
-            c.drawText(NumberFormat.getCurrencyInstance(Locale.US).format(producto.getPrecioUnitario()), Sangria + 190, Renglon + 20, paint);
-            c.drawText(NumberFormat.getCurrencyInstance(Locale.US).format(producto.getTotal()), Sangria + 360, Renglon + 20, paint);
-
+            dataToPrint= dataToPrint+NumberFormat.getCurrencyInstance(Locale.US).format(producto.getTotal())+
+                    space.substring(NumberFormat.getCurrencyInstance(Locale.US).format(producto.getTotal()).length());
+            c.drawText(Double.toString(producto.getCantidad()), Sangria + 40, Renglon + 20, paint);
+            c.drawText(NumberFormat.getCurrencyInstance(Locale.US).format(producto.getPrecioUnitario()), Sangria + 150, Renglon + 20, paint);
+            c.drawText(NumberFormat.getCurrencyInstance(Locale.US).format(producto.getTotal()), Sangria + 290, Renglon + 20, paint);
+            if(!Objects.equals(producto.getProducto().getPrecio(5), "0")){
+                dataToPrint= dataToPrint+
+                        NumberFormat.getCurrencyInstance(Locale.US).format(Double.parseDouble(producto.getProducto().getPrecio(5)))+ "$intro$";
+                c.drawText(NumberFormat.getCurrencyInstance(Locale.US).format(Double.parseDouble(producto.getProducto().getPrecio(5))), Sangria + 420, Renglon + 20, paint);
+            }else {
+                dataToPrint= dataToPrint+"$intro$";
+            }
             Renglon += 50;
             cantidad += producto.getCantidad();
             total += producto.getTotal();
@@ -227,14 +234,14 @@ public class DialogoPrint extends DialogFragment {
         c.drawLine(Sangria + 40, Renglon + 6, 520, Renglon + 3, paint);
         c.drawLine(Sangria + 40, Renglon + 7, 520, Renglon + 4, paint);
         c.drawLine(Sangria + 40, Renglon + 5, 520, Renglon + 5, paint);
-        dataToPrint= dataToPrint+"-----------------------------"+"$intro$";
-        dataToPrint= ticket_productos.getMetodosMultiples().isEmpty()?"$intro$":
-                "Pagado con:$intro$"+ticket_productos.getMetodoPagos()+"$intro$";
+        dataToPrint= dataToPrint+"------------------------------------"+"$intro$";
+        dataToPrint= dataToPrint+(ticket_productos.getMetodosMultiples().isEmpty()?"$intro$":
+                "Pagado con:$intro$"+ticket_productos.getMetodoPagos()+"$intro$");
         dataToPrint= dataToPrint+"Productos:        ";
         dataToPrint= dataToPrint+ cantidad +"$intro$";
         dataToPrint= dataToPrint+"Total "+(ticket_productos.getMetodosMultiples().isEmpty()?(ticket_productos.isMetodo()?"Contado":"Crédito"):"")+
                 ": "+NumberFormat.getCurrencyInstance(Locale.US).format(total)+"$intro$";
-        dataToPrint= dataToPrint+"-----------------------------";
+        dataToPrint= dataToPrint+"------------------------------------";
         if(!ticket_productos.getMetodosMultiples().isEmpty()){
             c.drawText("Pagado con:", Sangria + 45, Renglon + 45, paint);
             Renglon += 25;

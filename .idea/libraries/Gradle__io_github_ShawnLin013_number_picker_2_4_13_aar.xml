@@ -1,18 +1,18 @@
 <component name="libraryTable">
   <library name="Gradle: io.github.ShawnLin013:number-picker:2.4.13@aar" external-system-id="GRADLE">
     <ANNOTATIONS>
-      <root url="jar://$USER_HOME$/.jdks/corretto-11.0.19/caches/transforms-3/1e0ad24228ed1bf5077426ee7f6c28bf/transformed/jetified-number-picker-2.4.13/annotations.zip!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/1e0ad24228ed1bf5077426ee7f6c28bf/transformed/jetified-number-picker-2.4.13/annotations.zip!/" />
     </ANNOTATIONS>
     <CLASSES>
-      <root url="file://$USER_HOME$/.jdks/corretto-11.0.19/caches/transforms-3/1e0ad24228ed1bf5077426ee7f6c28bf/transformed/jetified-number-picker-2.4.13/res" />
-      <root url="file://$USER_HOME$/.jdks/corretto-11.0.19/caches/transforms-3/1e0ad24228ed1bf5077426ee7f6c28bf/transformed/jetified-number-picker-2.4.13/AndroidManifest.xml" />
-      <root url="jar://$USER_HOME$/.jdks/corretto-11.0.19/caches/transforms-3/1e0ad24228ed1bf5077426ee7f6c28bf/transformed/jetified-number-picker-2.4.13/jars/classes.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/transforms-3/1e0ad24228ed1bf5077426ee7f6c28bf/transformed/jetified-number-picker-2.4.13/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/1e0ad24228ed1bf5077426ee7f6c28bf/transformed/jetified-number-picker-2.4.13/AndroidManifest.xml" />
+      <root url="file://$USER_HOME$/.gradle/caches/transforms-3/1e0ad24228ed1bf5077426ee7f6c28bf/transformed/jetified-number-picker-2.4.13/res" />
     </CLASSES>
     <JAVADOC>
-      <root url="jar://$USER_HOME$/.jdks/corretto-11.0.19/caches/modules-2/files-2.1/io.github.ShawnLin013/number-picker/2.4.13/d3b3759bb4586cff8ad7c4084f78b17b0821e32c/number-picker-2.4.13-javadoc.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.github.ShawnLin013/number-picker/2.4.13/d3b3759bb4586cff8ad7c4084f78b17b0821e32c/number-picker-2.4.13-javadoc.jar!/" />
     </JAVADOC>
     <SOURCES>
-      <root url="jar://$USER_HOME$/.jdks/corretto-11.0.19/caches/modules-2/files-2.1/io.github.ShawnLin013/number-picker/2.4.13/63dc3389540008c08fd38308b400905345f3b1ff/number-picker-2.4.13-sources.jar!/" />
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.github.ShawnLin013/number-picker/2.4.13/63dc3389540008c08fd38308b400905345f3b1ff/number-picker-2.4.13-sources.jar!/" />
     </SOURCES>
   </library>
 </component>

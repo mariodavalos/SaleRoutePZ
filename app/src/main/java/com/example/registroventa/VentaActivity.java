@@ -1790,7 +1790,7 @@ public void Buttons(){
                 lector.close();
                 if(response.getStatusLine().getStatusCode()==200){
                     onGetValue("El cliente se actualizado correctamente");
-                    InicioActivity.cargarClientes(true);
+                    InicioActivity.cargarClientesAsincrono(true);
                 }else{
                     onGetValue("Ocurrio un error al actualizar el cliente");
                 }

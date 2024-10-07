@@ -31,6 +31,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import android.os.Handler;
+import android.os.Looper;
+
 import com.example.registroventa.models.Cliente;
 import com.example.registroventa.models.Configura;
 import com.example.registroventa.models.ConfiguracionFTP;
@@ -84,6 +87,7 @@ public class InicioActivity extends android.app.Activity {
     public static Impresorayencabezado impresiones = new Impresorayencabezado();
     private static List<Cliente> listaClientes;
     private static List<Producto> listaProductos;
+    private static boolean isProductosPostCarga = false;
     private static List<Vendedor> listaVendedores;
     private static List<Cuentas> listaCuentas;
     private static List<ListaPrecios> listaPrecios;
@@ -92,7 +96,7 @@ public class InicioActivity extends android.app.Activity {
     private static List<Metodos> listaMetodos;
     private static List<String> listaVendedoresString;
     private static Vendedor vendedorSeleccionado;
-    private static BaseDatosHelper db = null;
+    public static BaseDatosHelper db = null;
     private Spinner Vendedores;
     private Button ingresar;
     private Button cargarinfo;
@@ -101,21 +105,76 @@ public class InicioActivity extends android.app.Activity {
     private Intent intent;
     private TextView ProcesoMensaje;
 
-    public static void cargarClientes(Boolean Internet) throws Exception {
-        AnalizadorXMLCliente analizador = new AnalizadorXMLCliente(ubicacion
-                + "clientes.xml",InicioActividad);
-        List<Cliente> listaClientes2 = analizador.procesar(Internet);
-        if ((listaClientes2 != null) && (listaClientes2.size() > 0))
-            listaClientes = listaClientes2;
+    public static void cargarClientesAsincrono(Boolean internet) {
+        new CargarClientesTask().execute(internet);
     }
-    public static void cargarProductos(Boolean Internet) throws Exception {
-        AnalizadorXMLProducto analizador = new AnalizadorXMLProducto(ubicacion
-                + "productos.xml",InicioActividad);
-        List<Producto> listaProductos2 = analizador.procesar(Internet);
-        if ((listaProductos2 != null) && (listaProductos2.size() > 0))
-             listaProductos = listaProductos2;
 
+    public static class CargarClientesTask extends AsyncTask<Boolean, Void, List<Cliente>> {
+        @Override
+        protected List<Cliente> doInBackground(Boolean... params) {
+            Boolean internet = params[0];
+            List<Cliente> listaClientes2 = null;
+            try {
+                AnalizadorXMLCliente analizador = new AnalizadorXMLCliente(ubicacion + "clientes.xml", InicioActividad);
+                listaClientes2 = analizador.procesar(internet);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return listaClientes2;
+        }
+
+        @Override
+        protected void onPostExecute(List<Cliente> result) {
+            if (result != null && !result.isEmpty()) {
+                listaClientes = result;
+            }
+            // Actualizar UI aquí si es necesario
+        }
     }
+//    public static void cargarClientes(Boolean Internet) throws Exception {
+//        AnalizadorXMLCliente analizador = new AnalizadorXMLCliente(ubicacion
+//                + "clientes.xml",InicioActividad);
+//        List<Cliente> listaClientes2 = analizador.procesar(Internet);
+//        if ((listaClientes2 != null) && (listaClientes2.size() > 0))
+//            listaClientes = listaClientes2;
+//    }
+    public static void cargarProductosAsincrono(Boolean internet) {
+        new CargarProductosTask().execute(internet);
+    }
+private static class CargarProductosTask extends AsyncTask<Boolean, Void, List<Producto>> {
+    @Override
+    protected List<Producto> doInBackground(Boolean... params) {
+        Boolean internet = params[0];
+        List<Producto> listaProductos2 = null;
+        try {
+            AnalizadorXMLProducto analizador = new AnalizadorXMLProducto(ubicacion + "productos.xml", InicioActividad);
+            listaProductos2 = analizador.procesar(internet);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        listaProductos = listaProductos2;
+        isProductosPostCarga = true;
+        return listaProductos2;
+    }
+
+    @Override
+    protected void onPostExecute(List<Producto> result) {
+        if (result != null && !result.isEmpty()) {
+            listaProductos = result;
+            isProductosPostCarga = true;
+        }
+        // Actualizar UI aquí si es necesario
+    }
+}
+
+    //    public static void cargarProductos(Boolean Internet) throws Exception {
+//        AnalizadorXMLProducto analizador = new AnalizadorXMLProducto(ubicacion
+//                + "productos.xml",InicioActividad);
+//        List<Producto> listaProductos2 = analizador.procesar(Internet);
+//        if ((listaProductos2 != null) && (listaProductos2.size() > 0))
+//             listaProductos = listaProductos2;
+//
+//    }
     public static void cargarVendedores(Boolean Internet) throws Exception {
         AnalizadorXMLVendedor analizador = new AnalizadorXMLVendedor(ubicacion
                 + "vendedores.xml",InicioActividad);
@@ -128,7 +187,6 @@ public class InicioActivity extends android.app.Activity {
                 listaVendedores = listaVendedores2;
             else
                 listaVendedores.add(vendedorvacio);
-
     }
     public static void cargarCuentas(Boolean Internet) throws Exception {
         AnalizadorXMLCuentas analizador = new AnalizadorXMLCuentas(ubicacion
@@ -170,42 +228,42 @@ public class InicioActivity extends android.app.Activity {
     public static Configura cargarConfiguracion() {
         return config;
     }
-
-    public static void cargarDatos() throws Exception {
-        //ubicacion = InicioActivity.cargarConfiguracion().getFTP();
-        cargarClientes(true);
-        cargarProductos(true);
-        cargarVendedores(true);
-        cargarCuentas(true);
-        cargarListaPrecios(true);
-        cargarConfiguracion(true);
-        cargarPreciosAdicionales(true);
-        cargarMetodos(true);
-    }
-
-    public static Configura cargarConfiguracionvieja() {
-        Configura nuevo = new Configura();
-        try {
-            nuevo = db.obtenerConfiguracion();
-        } catch (Exception e) {
-            db.agregarnuevaConfiguracion();
-        }
-        return nuevo;
-    }
-    public static Impresorayencabezado cargarImpresion() {
-        Impresorayencabezado nuevo = new Impresorayencabezado();
-        try {
-            nuevo = db.obtenerImpresion();
-        } catch (Exception e) {
-        }
-        return nuevo;
-    }
-    public static void guardarBase(Configura configuracion) {
-        db.agregarConfiguracion(configuracion);
-    }
-    public static void guardarDatos(Impresorayencabezado ImpresionDatos) {
-        db.agregarImpresion(ImpresionDatos);
-    }
+//
+//    public static void cargarDatos(boolean isInternet) throws Exception {
+//        //ubicacion = InicioActivity.cargarConfiguracion().getFTP();
+//        try {cargarClientes(isInternet);}catch (Exception e) {}
+//        try {cargarProductos(isInternet);}catch (Exception e) {}
+//        try {cargarVendedores(isInternet);}catch (Exception e) {}
+//        try {cargarCuentas(isInternet);}catch (Exception e) {}
+//        try {cargarListaPrecios(isInternet);}catch (Exception e) {}
+//        try {cargarConfiguracion(isInternet);}catch (Exception e) {}
+//        try {cargarPreciosAdicionales(isInternet);}catch (Exception e) {}
+//        try {cargarMetodos(isInternet);}catch (Exception e) {}
+//    }
+//
+//    public static Configura cargarConfiguracionvieja() {
+//        Configura nuevo = new Configura();
+//        try {
+//            nuevo = db.obtenerConfiguracion();
+//        } catch (Exception e) {
+//            db.agregarnuevaConfiguracion();
+//        }
+//        return nuevo;
+//    }
+//    public static Impresorayencabezado cargarImpresion() {
+//        Impresorayencabezado nuevo = new Impresorayencabezado();
+//        try {
+//            nuevo = db.obtenerImpresion();
+//        } catch (Exception e) {
+//        }
+//        return nuevo;
+//    }
+//    public static void guardarBase(Configura configuracion) {
+//        db.agregarConfiguracion(configuracion);
+//    }
+//    public static void guardarDatos(Impresorayencabezado ImpresionDatos) {
+//        db.agregarImpresion(ImpresionDatos);
+//    }
     public static BaseDatosHelper getDB() {
         return db;
     }
@@ -213,28 +271,15 @@ public class InicioActivity extends android.app.Activity {
         if(listaClientes==null)listaClientes = new ArrayList<Cliente>();
         return listaClientes;
     }
-    public static void setListaClientes(List<Cliente> xlistaClientes) {
-        listaClientes = xlistaClientes;
-    }
     public static List<Producto> getListaProductos() {
-
         return listaProductos;
-    }
-    public static void setListaProductos(List<Producto> xlistaProductos) {
-        listaProductos = xlistaProductos;
     }
     public static List<Vendedor> getListaVendedores() {
         return listaVendedores;
     }
-    public static void setListaVendedores(List<Vendedor> xlistaVendedores) {
-        listaVendedores = xlistaVendedores;
-    }
     public static List<Cuentas> getListaCuentas() {
         if(listaCuentas==null)listaCuentas = new ArrayList<Cuentas>();
         return listaCuentas;
-    }
-    public static void setListaCuentas(List<Cuentas> xlistaCuentas) {
-        listaCuentas = xlistaCuentas;
     }
     public static List<ListaPrecios> getListaPreciosNegociados() {
         if(listaPrecios==null)listaPrecios = new ArrayList<ListaPrecios>();
@@ -280,11 +325,12 @@ public class InicioActivity extends android.app.Activity {
         view = getLayoutInflater().inflate(R.layout.activity_inicio, null);
         //TextView tv = (TextView) view.findViewById(R.id.sample);
         db = new BaseDatosHelper(InicioActividad,
-                "BDRegistroVentas", null, 10);
+                "BDRegistroVentas", null, 11);
 
         InicioActividad = this;
         SharedPref = this.getPreferences(Context.MODE_PRIVATE);
         CargaInfo = (ProgressBar) this.findViewById(R.id.Cargandoinfo);
+        Vendedores = (Spinner) this.findViewById(R.id.Vendedores);
         ProcesoMensaje = (TextView) this.findViewById(R.id.ProgressMensaje);
         CargaInfo.setVisibility(View.GONE);
         ProcesoMensaje.setVisibility(View.GONE);
@@ -305,9 +351,9 @@ public class InicioActivity extends android.app.Activity {
                     if (vendedorSeleccionado != null) {
 
                         final Intent principalActivity = new Intent(InicioActividad, Principalctivity.class);
-                        if(InicioActivity.getVendedorSeleccionado().getNip()==null)
+                        if (InicioActivity.getVendedorSeleccionado().getNip() == null)
                             startActivity(principalActivity);
-                        else if(InicioActivity.getVendedorSeleccionado().getNip().length()<0)
+                        else if (InicioActivity.getVendedorSeleccionado().getNip().length() < 0)
                             startActivity(principalActivity);
                         else {
                             final EditText NipText = new EditText(InicioActivity.this);
@@ -359,8 +405,9 @@ public class InicioActivity extends android.app.Activity {
                 leyendaIngresar.setText("Cargando Información, espere por favor...");
 
                 listaVendedoresString = new ArrayList<String>();
-
-                CargarDatos cargar = new CargarDatos(InicioActividad, db);
+                cargarProductosAsincrono(true);
+                cargarClientesAsincrono(true);
+                CargarDatos cargar = new CargarDatos(InicioActividad, db, true);
                 cargar.execute(params);
 
                 try {
@@ -386,7 +433,9 @@ public class InicioActivity extends android.app.Activity {
                 }
                 db = new BaseDatosHelper(InicioActividad,
                         "BDRegistroVentas", null, 11);
-                cargar = new CargarDatos(InicioActividad, db);
+                cargarProductosAsincrono(true);
+                cargarClientesAsincrono(true);
+                cargar = new CargarDatos(InicioActividad, db, true);
                 cargar.execute(params);
                 //db.limpiarClientes(listaClientes);
                 //db.limpiarProductos(listaProductos);
@@ -396,192 +445,219 @@ public class InicioActivity extends android.app.Activity {
         if (!mayRequestStoragePermission()) {
             return;
         }
-        cargaPrincipal();
-        if (!configurando) {
-            try {
-                db = new BaseDatosHelper(this, "BDRegistroVentas", null, 11);
+        db = new BaseDatosHelper(this, "BDRegistroVentas", null, 11);
+        try {
+            cargaPrincipal();
+            if(ubicacion.length()>5) {
+                cargarVendedores(false);
+                cargarConfiguracion(false);
 
-                List<Venta> listaVentas = new ArrayList<Venta>();
-                listaVentas = InicioActivity.getDB().cargarVentas(
-                        InicioActivity.getListaClientes(),
-                        InicioActivity.getListaVendedores(),
-                        InicioActivity.getListaProductos());
-                Impresorayencabezado impresion = db.obtenerImpresion();
-                Configura configuracionguardada = db.obtenerConfiguracion();
-
-
-
-                if (configuracionguardada.getFTP().length() > 5) {
-                    OutputStreamWriter escritor = null;
-                    try {
-                        File f;
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-                            File root1 = android.os.Environment.getExternalStorageDirectory();
-                            f = new File(root1.getAbsolutePath() + "/Android/data/com.ventaenruta/configuracion.txt");
-                        }else {
-                            f = new File(getExternalFilesDir(null), "Android/data/com.ventaenruta/configuracion.txt");
-                        }
-                        escritor = new OutputStreamWriter(new FileOutputStream(f));
-                        escritor.write(configuracionguardada.getFTP() + "\n");
-                        escritor.write(configuracionguardada.getBotones() + "\n");
-                        escritor.write(configuracionguardada.getClave() + "\n");
-                        escritor.write(configuracionguardada.getExistencia() + "\n");
-                        escritor.write(configuracionguardada.getLimite() + "\n");
-                        escritor.write(configuracionguardada.getModificar() + "\n");
-                    } catch (Exception ex) {
-                    } finally {
-                        try {
-                            if (escritor != null) escritor.close();
-                        } catch (IOException e) {
-                        }
-                    }
-                } else {
-                    OutputStreamWriter escritor = null;
-                    if (leerConfiguracion().getFTP() == null) {
-                        try {
-                            File f;
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-                                File root1 = android.os.Environment.getExternalStorageDirectory();
-                                f = new File(root1.getAbsolutePath() + "/Android/data/com.ventaenruta/configuracion.txt");
-                            }else {
-                                f = new File(getExternalFilesDir(null), "Android/data/com.ventaenruta/configuracion.txt");
-                            }
-                            escritor = new OutputStreamWriter(new FileOutputStream(f));
-                            escritor.write(" \n");
-                            escritor.write("8\n");
-                            escritor.write("0\n");
-                            escritor.write("0\n");
-                            escritor.write("0\n");
-                            escritor.write("0\n");
-                        } catch (FileNotFoundException e1) {
-                        } catch (IOException e1) {
-                        } finally {
-                            try {
-                                if (escritor != null) escritor.close();
-                            } catch (IOException ea) {
-                            }
-                        }
-                    }
-                }
-                if (impresion.getencabezado1().length() > 2) {
-                    OutputStreamWriter escritor = null;
-                    try {
-                        File f;
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-                            File root1 = android.os.Environment.getExternalStorageDirectory();
-                            f = new File(root1.getAbsolutePath() + "/Android/data/com.ventaenruta/impresoras.txt");
-                        }else {
-                            f = new File(getExternalFilesDir(null), "Android/data/com.ventaenruta/impresoras.txt");
-                        }
-                        escritor = new OutputStreamWriter(new FileOutputStream(f));
-                        escritor.write(impresion.getencabezado1() + "\n");
-                        escritor.write(impresion.getencabezado2() + "\n");
-                        escritor.write(impresion.getencabezado3() + "\n");
-                        escritor.write(impresion.getmacAdress() + "\n");
-                        escritor.write(impresion.getmostrarImpresion() + "\n");
-                        escritor.write(impresion.getnombreImpresora() + "\n");
-                    } catch (Exception ex) {
-                    } finally {
-                        try {
-                            if (escritor != null) escritor.close();
-                        } catch (IOException e) {
-                        }
-                    }
-                } else {
-                    OutputStreamWriter escritor = null;
-                    if (leerImpresion().getencabezado1() == null) {
-                        try {
-                            File f;
-                            if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-                                File root1 = android.os.Environment.getExternalStorageDirectory();
-                                f = new File(root1.getAbsolutePath() + "/Android/data/com.ventaenruta/impresoras.txt");
-                            }else {
-                                f = new File(getExternalFilesDir(null), "Android/data/com.ventaenruta/impresoras.txt");
-                            }
-                            escritor = new OutputStreamWriter(new FileOutputStream(f));
-                            escritor.write(" \n \n \n \n 0\n \n");
-                        } catch (FileNotFoundException e1) {
-                        } catch (IOException e1) {
-                        } finally {
-                            try {
-                                if (escritor != null) escritor.close();
-                            } catch (IOException ea) {
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                OutputStreamWriter escritor = null;
-                if (leerConfiguracion().getFTP() == null) {
-                    try {
-                        File f;
-                        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-                            File root1 = android.os.Environment.getExternalStorageDirectory();
-                            f = new File(root1.getAbsolutePath() + "/Android/data/com.ventaenruta/configuracion.txt");
-                        }else {
-                            f = new File(getExternalFilesDir(null), "Android/data/com.ventaenruta/configuracion.txt");
-                        }
-                        escritor = new OutputStreamWriter(new FileOutputStream(f));
-                        escritor.write(" \n");
-                        escritor.write("8\n");
-                        escritor.write("0\n");
-                        escritor.write("0\n");
-                        escritor.write("0\n");
-                        escritor.write("0\n");
-                    } catch (FileNotFoundException e1) {
-                    } catch (IOException e1) {
-                    } finally {
-                        try {
-                            if (escritor != null) escritor.close();
-                        } catch (IOException ea) {
-                        }
-                    }
-                }
-            }
-            if (listaVendedores != null) {
                 listaVendedoresString = new ArrayList<String>();
                 for (Vendedor vendedor : listaVendedores) {
                     String Vendedor = (vendedor.getClave() + " - " + vendedor.getNombre());
                     listaVendedoresString.add(Vendedor);
                 }
-            } else {
-                listaVendedoresString = new ArrayList<String>();
-                //listaVendedoresString.add("NINGUNO");
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>(InicioActividad, android.R.layout.simple_dropdown_item_1line, listaVendedoresString);
+                Vendedores.setAdapter(adapter);
+                Vendedores.setVisibility(View.VISIBLE);
             }
-        }
-        Vendedores = (Spinner) this.findViewById(R.id.Vendedores);
-        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_dropdown_item_1line, 0, listaVendedoresString);
-        Vendedores.setAdapter(adapter);
-
-        try {
-            leerConfiguracion();
-            leerImpresion();
-            ubicacion = InicioActivity.cargarConfiguracion().getFTP();
-            Configura vacia = new Configura();
-            db.agregarConfiguracion(vacia);
         } catch (Exception e) {
+            e.printStackTrace();
         }
-        if (ubicacion == null) noFTP();
-        else if (ubicacion.length() < 5) noFTP();
-        else if (ubicacion == "null") noFTP();
-        else if (!configurando) cargarDatosBD();
-        configurando = false;
-
-        //Abonos Add
-        List<Cuentas> abonos = InicioActivity.getDB().ObtenerCuentas();
-        if(listaCuentas == null)
-            listaCuentas = new ArrayList<Cuentas>();
-        listaCuentas.addAll(abonos);
+        // Cargar datos en segundo plano después de que la UI inicial se haya mostrado
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    if(ubicacion.length()>5) {
+                        cargarProductosAsincrono(false);
+                        cargarClientesAsincrono(false);
+                        CargarDatos cargar = new CargarDatos(InicioActividad, db, false);
+                        cargar.execute(params);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, 100);
     }
-    public void cargaPrincipal() {
-        try {cargarClientes(false);} catch (Exception e) {}
-        try {cargarProductos(false);} catch (Exception e) {}
-        try {cargarVendedores(false);} catch (Exception e) {}
-        try {cargarCuentas(false);} catch (Exception e) {}
-        try {cargarListaPrecios(false);} catch (Exception e) {}
-        try {cargarPreciosAdicionales(false);} catch (Exception e) {}
-        try {cargarConfiguracion(false);} catch (Exception e) {}
-        try {cargarMetodos(false);} catch (Exception e) {}
+   public void cargaPrincipal() {
+//        try {cargarClientes(false);} catch (Exception e) {}
+//        try {cargarProductos(false);} catch (Exception e) {}
+//        try {cargarVendedores(false);} catch (Exception e) {}
+//        try {cargarCuentas(false);} catch (Exception e) {}
+//        try {cargarListaPrecios(false);} catch (Exception e) {}
+//        try {cargarPreciosAdicionales(false);} catch (Exception e) {}
+//        try {cargarConfiguracion(false);} catch (Exception e) {}
+//        try {cargarMetodos(false);} catch (Exception e) {}
+       if (!configurando) {
+           try {
+               Impresorayencabezado impresion = db.obtenerImpresion();
+               Configura configuracionguardada = db.obtenerConfiguracion();
+               String FTP = configuracionguardada.getFTP();
+               if(FTP ==null)FTP = "";
+               if (FTP.length() > 5) {
+                   OutputStreamWriter escritor = null;
+                   try {
+                       File f;
+                       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                           File root1 = android.os.Environment.getExternalStorageDirectory();
+                           f = new File(root1.getAbsolutePath() + "/Android/data/com.ventaenruta/configuracion.txt");
+                       } else {
+                           f = new File(getExternalFilesDir(null), "Android/data/com.ventaenruta/configuracion.txt");
+                       }
+                       escritor = new OutputStreamWriter(new FileOutputStream(f));
+                       escritor.write(configuracionguardada.getFTP() + "\n");
+                       escritor.write(configuracionguardada.getBotones() + "\n");
+                       escritor.write(configuracionguardada.getClave() + "\n");
+                       escritor.write(configuracionguardada.getExistencia() + "\n");
+                       escritor.write(configuracionguardada.getLimite() + "\n");
+                       escritor.write(configuracionguardada.getModificar() + "\n");
+                   } catch (Exception ex) {
+                   } finally {
+                       try {
+                           if (escritor != null) escritor.close();
+                       } catch (IOException e) {
+                       }
+                   }
+               } else {
+                   OutputStreamWriter escritor = null;
+                   if (leerConfiguracion().getFTP() == null) {
+                       try {
+                           File f;
+                           if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                               File root1 = android.os.Environment.getExternalStorageDirectory();
+                               f = new File(root1.getAbsolutePath() + "/Android/data/com.ventaenruta/configuracion.txt");
+                           } else {
+                               f = new File(getExternalFilesDir(null), "Android/data/com.ventaenruta/configuracion.txt");
+                           }
+                           escritor = new OutputStreamWriter(new FileOutputStream(f));
+                           escritor.write(" \n");
+                           escritor.write("8\n");
+                           escritor.write("0\n");
+                           escritor.write("0\n");
+                           escritor.write("0\n");
+                           escritor.write("0\n");
+                       } catch (FileNotFoundException e1) {
+                           e1.toString();
+                       } catch (IOException e1) {
+                           e1.toString();
+                       } finally {
+                           try {
+                               if (escritor != null) escritor.close();
+                           } catch (IOException ea) {
+                           }
+                       }
+                   }
+               }
+               if (impresion.getencabezado1().length() > 2) {
+                   OutputStreamWriter escritor = null;
+                   try {
+                       File f;
+                       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                           File root1 = android.os.Environment.getExternalStorageDirectory();
+                           f = new File(root1.getAbsolutePath() + "/Android/data/com.ventaenruta/impresoras.txt");
+                       } else {
+                           f = new File(getExternalFilesDir(null), "Android/data/com.ventaenruta/impresoras.txt");
+                       }
+                       escritor = new OutputStreamWriter(new FileOutputStream(f));
+                       escritor.write(impresion.getencabezado1() + "\n");
+                       escritor.write(impresion.getencabezado2() + "\n");
+                       escritor.write(impresion.getencabezado3() + "\n");
+                       escritor.write(impresion.getmacAdress() + "\n");
+                       escritor.write(impresion.getmostrarImpresion() + "\n");
+                       escritor.write(impresion.getnombreImpresora() + "\n");
+                   } catch (Exception ex) {
+                   } finally {
+                       try {
+                           if (escritor != null) escritor.close();
+                       } catch (IOException e) {
+                       }
+                   }
+               } else {
+                   OutputStreamWriter escritor = null;
+                   if (leerImpresion().getencabezado1() == null) {
+                       try {
+                           File f;
+                           if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                               File root1 = android.os.Environment.getExternalStorageDirectory();
+                               f = new File(root1.getAbsolutePath() + "/Android/data/com.ventaenruta/impresoras.txt");
+                           } else {
+                               f = new File(getExternalFilesDir(null), "Android/data/com.ventaenruta/impresoras.txt");
+                           }
+                           escritor = new OutputStreamWriter(new FileOutputStream(f));
+                           escritor.write(" \n \n \n \n 0\n \n");
+                       } catch (FileNotFoundException e1) {
+                           e1.toString();
+                       } catch (IOException e1) {
+                           e1.toString();
+                       } finally {
+                           try {
+                               if (escritor != null) escritor.close();
+                           } catch (IOException ea) {
+                           }
+                       }
+                   }
+               }
+           } catch (Exception e) {
+               OutputStreamWriter escritor = null;
+               if (leerConfiguracion().getFTP() == null) {
+                   try {
+                       File f;
+                       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
+                           File root1 = android.os.Environment.getExternalStorageDirectory();
+                           f = new File(root1.getAbsolutePath() + "/Android/data/com.ventaenruta/configuracion.txt");
+                       } else {
+                           f = new File(getExternalFilesDir(null), "Android/data/com.ventaenruta/configuracion.txt");
+                       }
+                       escritor = new OutputStreamWriter(new FileOutputStream(f));
+                       escritor.write(" \n");
+                       escritor.write("8\n");
+                       escritor.write("0\n");
+                       escritor.write("0\n");
+                       escritor.write("0\n");
+                       escritor.write("0\n");
+                   } catch (FileNotFoundException e1) {
+                       e1.toString();
+                   } catch (IOException e1) {
+                       e1.toString();
+                   } finally {
+                       try {
+                           if (escritor != null) escritor.close();
+                       } catch (IOException ea) {
+                       }
+                   }
+               }
+           }
+           if (listaVendedores != null) {
+               listaVendedoresString = new ArrayList<String>();
+               for (Vendedor vendedor : listaVendedores) {
+                   String Vendedor = (vendedor.getClave() + " - " + vendedor.getNombre());
+                   listaVendedoresString.add(Vendedor);
+               }
+           } else {
+               listaVendedoresString = new ArrayList<String>();
+               //listaVendedoresString.add("NINGUNO");
+           }
+       }
+
+       ArrayAdapter<String> adapter = new ArrayAdapter<String>(InicioActividad, android.R.layout.simple_dropdown_item_1line, 0, listaVendedoresString);
+       Vendedores.setAdapter(adapter);
+
+       try {
+           leerConfiguracion();
+           leerImpresion();
+           ubicacion = InicioActivity.cargarConfiguracion().getFTP();
+           Configura vacia = new Configura();
+           db.agregarConfiguracion(vacia);
+       } catch (Exception e) {
+
+       }
+       if (ubicacion == null) {
+           noFTP();
+       } else if (ubicacion == "null" || ubicacion.length() < 5) {
+           noFTP();
+       }
     }
     public void cargarOnClick(View view) {
         Vendedores = (Spinner) this.findViewById(R.id.Vendedores);
@@ -599,7 +675,9 @@ public class InicioActivity extends android.app.Activity {
         listaVendedoresString = new ArrayList<String>();
         db = new BaseDatosHelper((android.content.Context) this,
                 "BDRegistroVentas", null, 10);
-        CargarDatos cargar = new CargarDatos(this, db);
+        cargarProductosAsincrono(true);
+        cargarClientesAsincrono(true);
+        CargarDatos cargar = new CargarDatos(this, db, true);
         cargar.execute(params);
 
         try {
@@ -625,7 +703,9 @@ public class InicioActivity extends android.app.Activity {
         }
         db = new BaseDatosHelper((android.content.Context) this,
                 "BDRegistroVentas", null, 10);
-        cargar = new CargarDatos(this, db);
+        cargarProductosAsincrono(true);
+        cargarClientesAsincrono(true);
+        cargar = new CargarDatos(this, db, true);
         cargar.execute(params);
         //db.limpiarClientes(listaClientes);
         //db.limpiarProductos(listaProductos);
@@ -654,8 +734,27 @@ public class InicioActivity extends android.app.Activity {
         }
     }
     static List<Venta> listaVentas = new ArrayList<Venta>();
+    int esperaMaxima = 150;
     private void cargarDatosBD() {
         try {
+            while ((listaClientes == null || listaProductos == null || listaVendedores == null) && esperaMaxima > 0) {
+                Thread.sleep(100);
+                esperaMaxima--;
+            }if (esperaMaxima <= 0) {
+                Toast.makeText(this, "Error al cargar la base de datos", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Revisa las bases de datos desde PuntoZero", Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Se requiere de CLIENTES, PRODUCTOS Y VENDEDORES", Toast.LENGTH_LONG).show();
+                if(listaClientes== null) {
+                    Toast.makeText(this, "Fallo en CLIENTES", Toast.LENGTH_LONG).show();
+                }
+                if(listaProductos== null) {
+                    Toast.makeText(this, "Fallo en PRODUCTOS", Toast.LENGTH_LONG).show();
+                }
+                if(listaVendedores== null) {
+                    Toast.makeText(this, "Fallo en VENDEDORES", Toast.LENGTH_LONG).show();
+                }
+                return;
+            }
             listaVentas = InicioActivity.getDB().cargarVentas(
                     InicioActivity.getListaClientes(),
                     InicioActivity.getListaVendedores(),
@@ -670,12 +769,13 @@ public class InicioActivity extends android.app.Activity {
                 build.setTitle("Descargar base de datos de nuevo")
                         .setMessage("Base de datos no encontrada o dañada")
                         .setCancelable(false);
-                build.setPositiveButton("Aceptar", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int which) {
-                        cargarOnClick(null);
+                build.setPositiveButton("Ok, enterado", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which)
+                    {
+//                        cargarOnClick(null);
                     }
                 });
-                build.setNegativeButton("Cancelar", null);
+//                build.setNegativeButton("Cancelar", null);
                 AlertDialog dialog = build.create();
                 dialog.show();
 
@@ -870,34 +970,54 @@ public class InicioActivity extends android.app.Activity {
         private android.content.Context context;
         private boolean error = false;
         private String mensajeError = "";
+        private boolean isInternet = false;
 
-        public CargarDatos(android.content.Context context, BaseDatosHelper db) {
+        public CargarDatos(android.content.Context context, BaseDatosHelper db, boolean isInternet) {
             this.context = context;
             this.db = db;
+            this.isInternet = isInternet;
         }
 
         @Override
         protected Void doInBackground(Void... arg0) {
-            //cargarDatosBD();
             String base="Vendedores.xml";
             try {
-                publishProgress("Procesando Vendedores...");
-                cargarVendedores(true);base="Clientes.xml";
-                publishProgress("Procesando Clientes...");
-                cargarClientes(true);base="Productos.xml";
-                publishProgress("Procesando Productos...");
-                cargarProductos(true);base="Cuentas.xml";
-                publishProgress("Procesando Cuentas por pagar...");
-                cargarCuentas(true);base="Configuracion.xml";
-                publishProgress("Procesando Configuracion...");
-                cargarConfiguracion(true);base="ListadePrecios.xml";
-                publishProgress("Procesando Precios Negociados...");
-                cargarListaPrecios(true);base="PreciosAdicionales.xml";
-                publishProgress("Procesando Precios Adicionales...");
-                cargarPreciosAdicionales(true);base="MetodosPago.xml";
-                publishProgress("Procesando Metodos de Pago...");
-                cargarMetodos(true);
-                publishProgress(" ");
+                try {
+                    publishProgress("Procesando Vendedores...");
+                    cargarVendedores(isInternet);
+                    base = "Clientes.xml";
+                }catch (Exception e) {mensajeErrorDB[0] = e.toString();}
+                try {
+                    publishProgress("Procesando Clientes...");
+
+                    base="Productos.xml";
+                }catch (Exception e) {mensajeErrorDB[0] = e.toString();}
+                try {
+                    publishProgress("Procesando Productos...");
+
+                    base="Cuentas.xml";
+                }catch (Exception e) {mensajeErrorDB[0] = e.toString();}
+                try {
+                    publishProgress("Procesando Cuentas por pagar...");
+                    cargarCuentas(isInternet);base="Configuracion.xml";
+                }catch (Exception e) {mensajeErrorDB[0] = e.toString();}
+                try {
+                    publishProgress("Procesando Configuracion...");
+                    cargarConfiguracion(isInternet);base="ListadePrecios.xml";
+                }catch (Exception e) {mensajeErrorDB[0] = e.toString();}
+                try {
+                    publishProgress("Procesando Precios Negociados...");
+                    cargarListaPrecios(isInternet);base="PreciosAdicionales.xml";
+                }catch (Exception e) {mensajeErrorDB[0] = e.toString();}
+                try {
+                    publishProgress("Procesando Precios Adicionales...");
+                    cargarPreciosAdicionales(isInternet);base="MetodosPago.xml";
+                }catch (Exception e) {mensajeErrorDB[0] = e.toString();}
+                try {
+                    publishProgress("Procesando Metodos de Pago...");
+                    cargarMetodos(isInternet);
+                    publishProgress(" ");
+                }catch (Exception e) {mensajeErrorDB[0] = e.toString();}
             } catch (Exception e) {
                 publishProgress(" ");
                 error = true;
@@ -932,6 +1052,14 @@ public class InicioActivity extends android.app.Activity {
             } else if (ubicacion == "null" || ubicacion.length() < 5) {
                 noFTP();
             }
+            configurando = false;
+
+            //Abonos Add
+            List<Cuentas> abonos = InicioActivity.getDB().ObtenerCuentas();
+            if (listaCuentas == null)
+                listaCuentas = new ArrayList<Cuentas>();
+            listaCuentas.addAll(abonos);
+
             menuConfiguracion.clear();
             if(listaConfiguracion == null)
             {
@@ -945,27 +1073,25 @@ public class InicioActivity extends android.app.Activity {
             }
             getMenuInflater().inflate(R.menu.inicio, menuConfiguracion);
             if (error) {
-//                AlertDialog.Builder builder = new AlertDialog.Builder(
-//                        InicioActivity.this);
-//                builder.setMessage(mensajeError)
-//                        .setTitle("Error BD Cargando Datos")
-//                        .setCancelable(false);
-//                builder.setPositiveButton("OK", null);
-//                AlertDialog dialog = builder.create();
-//
-//
-//                if (ubicacion != null || ubicacion.length() < 5 || mensajeError == "No se crearon los archivos. Revise su conexion a internet") {
-//                    dialog.show();
-//                    Button possitive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-//                    possitive.setTextColor(Color.parseColor("#e18a33"));
-//                    Button negative = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
-//                    negative.setTextColor(Color.parseColor("#e18a33"));
-//                }
-            } else {
-                Toast(InicioActivity.this,"Base de datos actualizada");
+                AlertDialog.Builder builder = new AlertDialog.Builder(
+                        InicioActivity.this);
+                builder.setMessage(mensajeError)
+                        .setTitle("Error BD Cargando Datos")
+                        .setCancelable(false);
+                builder.setPositiveButton("OK", null);
+                AlertDialog dialog = builder.create();
+                if (ubicacion != null || ubicacion.length() < 5 || mensajeError == "No se crearon los archivos. Revise su conexion a internet") {
+                    dialog.show();
+                    Button possitive = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                    possitive.setTextColor(Color.parseColor("#e18a33"));
+                    Button negative = dialog.getButton(DialogInterface.BUTTON_POSITIVE);
+                    negative.setTextColor(Color.parseColor("#e18a33"));
+                }
+            } else if (listaVendedores != null) {
+//                Toast(InicioActivity.this,"Base de datos actualizada");
                 for(String errorDB:mensajeErrorDB) {
                     if (errorDB.length() > 0) {
-                      //  Toast(InicioActivity.this, "Error: ");
+//                        Toast(InicioActivity.this, "Error: ");
                         Toast(InicioActivity.this, errorDB);
                        // Toast(InicioActivity.this, "Revise sus bases de datos en PuntoZero");
                     }
@@ -981,18 +1107,18 @@ public class InicioActivity extends android.app.Activity {
 
             }
 
-            if ((mensajeError != "No se crearon los archivos. Revise su conexion a internet")
-                    && (mensajeError != "Revise su conexion a internet")
-                    && (mensajeError != "No se encontraron vendedores en la base de datos. Favor de verificar")
-                    ) {
-                listaVendedoresString = new ArrayList<String>();
-                for (Vendedor vendedor : listaVendedores) {
-                    String Vendedor = (vendedor.getClave() + " - " + vendedor.getNombre());
-                    listaVendedoresString.add(Vendedor);
-                }
-                ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, listaVendedoresString);
-                Vendedores.setAdapter(adapter);
-            }
+//            if ((mensajeError != "No se crearon los archivos. Revise su conexion a internet")
+//                    && (mensajeError != "Revise su conexion a internet")
+//                    && (mensajeError != "No se encontraron vendedores en la base de datos. Favor de verificar")
+//                    ) {
+//                listaVendedoresString = new ArrayList<String>();
+//                for (Vendedor vendedor : listaVendedores) {
+//                    String Vendedor = (vendedor.getClave() + " - " + vendedor.getNombre());
+//                    listaVendedoresString.add(Vendedor);
+//                }
+//                ArrayAdapter<String> adapter = new ArrayAdapter<String>(context, android.R.layout.simple_dropdown_item_1line, listaVendedoresString);
+//                Vendedores.setAdapter(adapter);
+//            }
             CargaInfo.setVisibility(View.GONE);
             Vendedores.setVisibility(View.VISIBLE);
             //ingresar.setVisibility(View.VISIBLE);
@@ -1000,7 +1126,18 @@ public class InicioActivity extends android.app.Activity {
             CargaInfo.setVisibility(View.GONE);
             ProcesoMensaje.setVisibility(View.GONE);
             //cargarinfo.setVisibility(View.VISIBLE);
+            // Crear un Handler
+            Handler handler = new Handler(Looper.getMainLooper());
 
+// Ejecutar la tarea después del retraso especificado
+            handler.postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    // Código que deseas ejecutar después del retraso
+                    mayRequestStoragePermission();
+                    cargarDatosBD();
+                }
+            }, 100);
         }
 
         public BaseDatosHelper getDb() {
@@ -1171,7 +1308,7 @@ public class InicioActivity extends android.app.Activity {
         }
     }
     public static void actualInventario(){
-        try {cargarProductos(false);} catch (Exception e) {}
+        try {cargarProductosAsincrono(false);} catch (Exception e) {}
         for(Producto producto: listaProductos){
             for( Venta venta :listaVentas){
                 for (VentaProducto vProducto: venta.getVentaProductos()){

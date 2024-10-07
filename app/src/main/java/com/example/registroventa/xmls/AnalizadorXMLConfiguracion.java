@@ -12,6 +12,9 @@ import android.sax.RootElement;
 import android.sax.StartElementListener;
 import android.util.Xml;
 
+import com.example.registroventa.InicioActivity;
+import com.example.registroventa.models.ConfiguracionFTP;
+
 import org.xml.sax.Attributes;
 
 import java.io.File;
@@ -22,9 +25,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.example.registroventa.models.ConfiguracionFTP;
-import com.example.registroventa.InicioActivity;
 
 public class AnalizadorXMLConfiguracion {
     private String pagina;
@@ -106,6 +106,7 @@ public class AnalizadorXMLConfiguracion {
 
         try {
             if (Internet) {
+                if(Xml1.exists())Xml1.delete();
                 pagina = pagina.trim();
                 url = new URL(pagina);
                 conn = (HttpURLConnection) url.openConnection();

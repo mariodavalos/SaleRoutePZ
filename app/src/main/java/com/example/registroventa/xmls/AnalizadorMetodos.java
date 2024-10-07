@@ -12,7 +12,6 @@ import com.example.registroventa.models.Metodos;
 import org.xml.sax.Attributes;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -76,6 +75,8 @@ public class AnalizadorMetodos {
 
        try {
           if (Internet) {
+             if(Xml1.exists())Xml1.delete();
+
              pagina = pagina.trim();
              url = new URL(pagina);
              conn = (HttpURLConnection) url.openConnection();
@@ -118,4 +119,7 @@ public class AnalizadorMetodos {
 
 
     }
+
+
 }
+

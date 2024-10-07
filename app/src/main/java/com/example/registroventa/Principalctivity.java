@@ -87,9 +87,10 @@ public class Principalctivity extends android.app.Activity {
         }
     }
     public void cargarInformacionOnClick(View view) {
-        cargando.setVisibility(View.VISIBLE);
-        InicioActivity.Toast(Principalctivity.this,"Actualizando datos, esta operación puede tardar. Espere por favor");
-        new ActualizarDatos().execute(null, null, null);
+//        cargando.setVisibility(View.VISIBLE);
+//        InicioActivity.Toast(Principalctivity.this,"Actualizando datos, esta operación puede tardar. Espere por favor");
+//        ActualizarDatos actualizar = new ActualizarDatos(this, InicioActivity.db, true);
+//        actualizar.execute(params);
     }
     public void registrarVentasOnClick(View view) {
         Intent intent = new Intent(this, ListaVentasActivity.class);
@@ -418,9 +419,9 @@ public class Principalctivity extends android.app.Activity {
                     List<BasicNameValuePair> nameValuePairs = new ArrayList<>(3);
                     Date fecha = new Date();
                     String DeviceKey = InicioActivity.SharedPref.getString("devicekey", "");
-                    if(DeviceKey.length()<1) {
+                    if(DeviceKey.isEmpty()) {
                         TelephonyManager tm = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
-                        if (DeviceKey == null || DeviceKey.length()<1) DeviceKey = (Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID));
+                        if (DeviceKey == null || DeviceKey.isEmpty()) DeviceKey = (Settings.Secure.getString(getApplicationContext().getContentResolver(), Settings.Secure.ANDROID_ID));
                         InicioActivity.SharedPref.edit().putString("devicekey", DeviceKey).apply();
                     }
 
@@ -460,50 +461,84 @@ public class Principalctivity extends android.app.Activity {
         protected void onPostExecute(Void result) {
         }
     }
-    public class ActualizarDatos extends AsyncTask<Void, Void, Void> {
-        private boolean error = false;
-        private String mensajeError = "";
-
-        protected Void doInBackground(Void... progress) {
-            try {
-                InicioActivity.cargarDatos();
-            } catch (Exception e) {
-                error = true;
-                mensajeError = e.toString();
-                if (mensajeError.equalsIgnoreCase("java.lang.RuntimeException: Can't create handler inside thread that has not called Looper.prepare()"))
-                    mensajeError = "Revise su conexion a internet";
-
-            }
-            return null;
-        }
-
-        protected void onProgressUpdate(Void... progress) {
-        }
-
-        protected void onPostExecute(Void result) {
-            if (error) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(
-                        Principalctivity.this);
-                builder.setMessage(mensajeError)
-                        .setTitle("Error BD Cargando Datos")
-                        .setCancelable(false);
-                builder.setPositiveButton("OK", null);
-                AlertDialog dialog = builder.create();
-                dialog.show();
-            } else {
-                InicioActivity.Toast(Principalctivity.this,"Catalogos de Clientes y Productos actualizados");
-//                Toast toast = Toast.makeText(Principalctivity.this, "Catalogos de Clientes y Productos actualizados", Toast.LENGTH_LONG);
-//                toast.show();
-
-            }
-            cargando.setVisibility(View.GONE);
-        }
-
-        protected void onPreExecute(Void result) {
-
-
-        }
-    }
+//    class ActualizarDatos extends AsyncTask<Void, String, Void> {
+//        BaseDatosHelper db;
+//        private android.content.Context context;
+//        private boolean error = false;
+//        private String mensajeError = "";
+//        private boolean isInternet = false;
+//
+//        public ActualizarDatos(android.content.Context context, BaseDatosHelper db, boolean isInternet) {
+//            this.context = context;
+//            this.db = db;
+//            this.isInternet = isInternet;
+//        }
+//
+//
+//        @Override
+//        protected Void doInBackground(Void... arg0) {
+//            String base="Vendedores.xml";
+//            try {
+//                publishProgress("Procesando Vendedores...");
+//                InicioActivity.cargarVendedores(isInternet);base="Clientes.xml";
+//                publishProgress("Procesando Clientes...");
+//                InicioActivity.cargarClientesAsincrono(isInternet);base="Productos.xml";
+//                publishProgress("Procesando Productos...");
+//                InicioActivity.cargarProductosAsincrono(isInternet);base="Cuentas.xml";
+//                publishProgress("Procesando Cuentas por pagar...");
+//                InicioActivity.cargarCuentas(isInternet);base="Configuracion.xml";
+//                publishProgress("Procesando Configuracion...");
+//                InicioActivity.cargarConfiguracion(isInternet);base="ListadePrecios.xml";
+//                publishProgress("Procesando Precios Negociados...");
+//                InicioActivity.cargarListaPrecios(isInternet);base="PreciosAdicionales.xml";
+//                publishProgress("Procesando Precios Adicionales...");
+//                InicioActivity.cargarPreciosAdicionales(isInternet);base="MetodosPago.xml";
+//                publishProgress("Procesando Metodos de Pago...");
+//                InicioActivity.cargarMetodos(isInternet);
+//                publishProgress(" ");
+//
+//            } catch (Exception e) {
+//                publishProgress(" ");
+//                error = true;
+//                mensajeError = e.toString();
+//                if (mensajeError.equalsIgnoreCase("java.lang.RuntimeException: Can't create handler inside thread that has not called Looper.prepare()"))
+//                    mensajeError = "Revise su conexion a internet";
+//                if (mensajeError.equalsIgnoreCase("java.io.FileNotFoundException: /mnt/sdcard/Android/data/com.ventaenruta/vendedor.xml: open failed: ENOENT (No such file or directory)"))
+//                    mensajeError = "No se crearon los archivos. Revise su conexion a internet";
+//                if (InicioActivity.getListaVendedores() == null)
+//                    mensajeError = "No se encontraron vendedores en la base de datos. Favor de verificar";
+//                if(mensajeError.indexOf("not well-formed")>0 || mensajeError.indexOf("unclosed token")>0 || mensajeError.indexOf("FileNotFoundException")>0)
+//                    mensajeError = "El archivo "+base+" de la base de datos esta dañado, comuniquese con el Administrador";
+//                if (mensajeError.indexOf("PreciosAdicionales")>0)
+//                    error = false;
+//            }
+//            return null;
+//        }
+//
+//        protected void onPostExecute(Void result) {
+//            if (error) {
+//                AlertDialog.Builder builder = new AlertDialog.Builder(
+//                        Principalctivity.this);
+//                builder.setMessage(mensajeError)
+//                        .setTitle("Error BD Cargando Datos")
+//                        .setCancelable(false);
+//                builder.setPositiveButton("OK", null);
+//                AlertDialog dialog = builder.create();
+//                dialog.show();
+//            } else {
+//                InicioActivity.Toast(Principalctivity.this,"Catalogos de Clientes y Productos actualizados");
+////                Toast toast = Toast.makeText(Principalctivity.this, "Catalogos de Clientes y Productos actualizados", Toast.LENGTH_LONG);
+////                toast.show();
+//
+//            }
+//            cargando.setVisibility(View.GONE);
+//        }
+//
+//        protected void onPreExecute(Void result) {
+//
+//
+//        }
+//    }
     public abstract class EnviarCuentasPOST extends AsyncTask<Void, Void, Void> {
         public EnviarCuentasPOST() {}
         protected Void doInBackground(Void... progress) {
@@ -552,34 +587,31 @@ public class Principalctivity extends android.app.Activity {
                 HttpClient httpclient = new DefaultHttpClient();
                 HttpPost httppost = new HttpPost(Principalctivity.Configuracion(InicioActivity.InicioActividad.getExternalFilesDir(null)).getFTP().trim() + "recibirventas.php");
 
-                    List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
+                List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(3);
+                StringBuilder Datos = new StringBuilder("<productos>");
+                for (Producto producto : InicioActivity.getListaProductos()) {
+                    Datos.append("<producto>")
+                            .append("<clave>").append(producto.getClave()).append("</clave>")
+                            .append("<descripcion>").append(producto.getDescripcion()).append("</descripcion>")
+                            .append("<precio1>").append(producto.getPrecio(0)).append("</precio1>")
+                            .append("<precio2>").append(producto.getPrecio(1)).append("</precio2>")
+                            .append("<precio3>").append(producto.getPrecio(2)).append("</precio3>")
+                            .append("<precio4>").append(producto.getPrecio(3)).append("</precio4>")
+                            .append("<precio5>").append(producto.getPrecio(4)).append("</precio5>")
+                            .append("<precioS>").append(producto.getPrecio(5)).append("</precioS>")
+                            .append("<costo>").append(producto.getCosto()).append("</costo>")
+                            .append("<existencia>").append(producto.getExistencia()).append("</existencia>")
+                            .append("</producto>");
+                }
+                Datos.append("</productos>");
 
-                    StringBuilder Datos = new StringBuilder("<productos>");
-                    int productosContador = 0;
-                    for(Producto producto : InicioActivity.getListaProductos()){
-                        String productoString = "<producto>"+
-                                "<clave>" + producto.getClave() + "</clave>"+
-                                "<descripcion>"+producto.getDescripcion()+"</descripcion>"+
-                                "<precio1>"+ producto.getPrecios().get(0)+"</precio1>"+
-                                "<precio2>"+ producto.getPrecios().get(1)+"</precio2>"+
-                                "<precio3>"+ producto.getPrecios().get(2)+"</precio3>"+
-                                "<precio4>"+ producto.getPrecios().get(3)+"</precio4>"+
-                                "<precio5>"+ producto.getPrecios().get(4)+"</precio5>"+
-                                "<precioS>"+ (producto.getPrecios().size()<5?0:producto.getPrecios().get(5))+"</precioS>"+
-                                "<costo>"+producto.getCosto()+"</costo>"+
-                                "<existencia>"+producto.getExistencia()+"</existencia>"+
-                                "</producto>";
-                        productoString = productoString.
-                                replace("&","&amp;").
-                                replace("ï¿½","N").
-                                replace("Ñ","N").
-                                replace("ñ","n");
-                        Datos.append(productoString);
-                        productosContador++;
-                    }
-                    Datos.append("</productos>");
+                String DatosFinal = Datos.toString()
+                        .replace("&", "&amp;")
+                        .replace("ï¿½", "N")
+                        .replace("Ñ", "N")
+                        .replace("ñ", "n");
                     nameValuePairs.add(new BasicNameValuePair("archivo", "productos.xml"));
-                    nameValuePairs.add(new BasicNameValuePair("ventas", Datos.toString()));
+                    nameValuePairs.add(new BasicNameValuePair("ventas", DatosFinal));
                     httppost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
 
                     // Execute HTTP Post Request

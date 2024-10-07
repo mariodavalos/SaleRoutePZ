@@ -118,7 +118,7 @@ public class AnalizadorXMLCuentas {
             directorio = new File(Carpeta.getExternalFilesDir(null), "Android/data/com.ventaenruta");
         }
         FileOutputStream file = null;
-        if (directorio.exists() == false) directorio.mkdirs();
+        if (!directorio.exists()) directorio.mkdirs();
         Xml1 = new File(directorio, "cxcs.xml");
 
         URL url;
@@ -128,6 +128,7 @@ public class AnalizadorXMLCuentas {
 
         try {
             if (Internet) {
+                if(Xml1.exists())Xml1.delete();
                 pagina = pagina.trim();
                 url = new URL(pagina);
                 conn = (HttpURLConnection) url.openConnection();

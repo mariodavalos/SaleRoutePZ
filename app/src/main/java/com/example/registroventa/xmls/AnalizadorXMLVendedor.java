@@ -102,7 +102,7 @@ public class AnalizadorXMLVendedor {
             directorio = new File(Carpeta.getExternalFilesDir(null), "Android/data/com.ventaenruta");
         }
         FileOutputStream file;
-        if (directorio.exists() == false) directorio.mkdirs();
+        if (!directorio.exists()) directorio.mkdirs();
         Xml1 = new File(directorio, "vendedor.xml");
 
         URL url;
@@ -112,6 +112,7 @@ public class AnalizadorXMLVendedor {
 
         try {
             if (Internet) {
+                if(Xml1.exists())Xml1.delete();
                 pagina = pagina.trim();
                 url = new URL(pagina);
                 conn = (HttpURLConnection) url.openConnection();

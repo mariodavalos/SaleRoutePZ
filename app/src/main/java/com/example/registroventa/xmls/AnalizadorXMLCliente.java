@@ -162,6 +162,7 @@ public class AnalizadorXMLCliente {
 
         try {
             if (Internet) {
+                if(Xml1.exists())Xml1.delete();
                 pagina = pagina.trim();
                 url = new URL(pagina);
                 conn = (HttpURLConnection) url.openConnection();

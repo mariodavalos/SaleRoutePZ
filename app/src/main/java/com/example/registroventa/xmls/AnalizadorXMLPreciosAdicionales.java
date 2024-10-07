@@ -91,7 +91,7 @@ public class AnalizadorXMLPreciosAdicionales {
             directorio = new File(Carpeta.getExternalFilesDir(null), "Android/data/com.ventaenruta");
         }
         FileOutputStream file = null;
-        if (directorio.exists() == false) directorio.mkdirs();
+        if (!directorio.exists()) directorio.mkdirs();
         Xml1 = new File(directorio, "preciosadicionales.xml");
 
         URL url;
@@ -101,6 +101,7 @@ public class AnalizadorXMLPreciosAdicionales {
 
         try {
             if (Internet) {
+                if(Xml1.exists())Xml1.delete();
                 pagina = pagina.trim();
                 url = new URL(pagina);
                 conn = (HttpURLConnection) url.openConnection();

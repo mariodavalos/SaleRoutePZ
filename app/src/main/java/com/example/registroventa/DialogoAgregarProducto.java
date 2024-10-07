@@ -200,7 +200,7 @@ public class DialogoAgregarProducto extends DialogFragment {
         button = view.findViewById(R.id.botonproductos);
         search = view.findViewById(R.id.buttonsearch);
         precib = view.findViewById(R.id.desplegarPrecios);
-        SugeridoLabel = (TextView) view.findViewById(R.id.textView6);
+        SugeridoLabel = view.findViewById(R.id.textView6);
         psugerido = view.findViewById(R.id.psugerido);
         precio = view.findViewById(R.id.Precioproducto);
         listPopUp = view.findViewById(R.id.ListPopUp);
@@ -209,8 +209,8 @@ public class DialogoAgregarProducto extends DialogFragment {
         if(!InicioActivity.getListaConfiguracion().get(0).getModificarprecios())
         {
             precib.setVisibility(View.INVISIBLE);
-            psugerido.setVisibility(View.INVISIBLE);
-            SugeridoLabel.setVisibility(View.INVISIBLE);
+//            psugerido.setVisibility(View.INVISIBLE);
+//            SugeridoLabel.setVisibility(View.INVISIBLE);
             precio.setEnabled(false);
         }
 
@@ -220,8 +220,8 @@ public class DialogoAgregarProducto extends DialogFragment {
         }
         if(VentaActivity.config.getSeleccionar()==0){
             precib.setVisibility(View.INVISIBLE);
-            psugerido.setVisibility(View.INVISIBLE);
-            SugeridoLabel.setVisibility(View.INVISIBLE);
+//            psugerido.setVisibility(View.INVISIBLE);
+//            SugeridoLabel.setVisibility(View.INVISIBLE);
         }
 
 

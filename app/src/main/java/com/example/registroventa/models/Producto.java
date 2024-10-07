@@ -35,6 +35,15 @@ public class Producto {
         this.descripcion = descripcion;
     }
 
+    // Método auxiliar para obtener precios de manera segura
+    public String getPrecio(int index) {
+        if (precios.size() > index) {
+            return precios.get(index).toString();
+        } else {
+            return "0"; // Devuelve "0" si no hay un precio en el índice especificado
+        }
+    }
+
     public List<Double> getPrecios() {
         return precios;
     }
